@@ -13,14 +13,15 @@ h1 {
     color: darkslategray;
     padding: 1em 1.5em;
     text-decoration: none;
+    text-align: center;
 }
 
 p {
     color: darkslategray;
     padding: 1em 1.5em;
     text-decoration: none;
+    text-align: center;
 }
-
-nav-container{
-    {text-align: right;}
+canvas{
+    box-shadow: black 20px 10px 50px;
 }
