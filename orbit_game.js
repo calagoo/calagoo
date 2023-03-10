@@ -96,6 +96,11 @@ function planetMovement() {
   planetVX += planetAX * (1 / fps)*24;
   planetVY += planetAY * (1 / fps)*24;
 
+  let max_arr = 1000 // max array length
+  if (planet_arrX.length > max_arr){
+    planet_arrX = planet_arrX.slice(Math.max(planet_arrX.length - max_arr,0))
+    planet_arrY = planet_arrY.slice(Math.max(planet_arrY.length - max_arr,0))
+  }
   planet_arrX[planet_arrX.length] = planetX
   planet_arrY[planet_arrY.length] = planetY
 
