@@ -1,4 +1,4 @@
-const canvas = document.getElementById("game");
+const canvas = document.getElementById("orbit_game");
 const ctx = canvas.getContext("2d");
 
 // constants
