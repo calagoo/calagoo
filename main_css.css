@@ -1,48 +1,48 @@
 body {
-    background-color: rgba(205, 200, 200, 0.3);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  background-color: rgba(205, 200, 200, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 a {
-    color: darkslategray;
-    padding: 0em 1em;
-    text-decoration: none;
-    text-transform: uppercase;
+  color: darkslategray;
+  padding: 0em 1em;
+  text-decoration: none;
+  text-transform: uppercase;
 }
 
 h1 {
-    color: darkslategray;
-    padding: 1em 1.5em;
-    text-decoration: none;
-    text-align: center;
-    max-width: 500px;
+  color: darkslategray;
+  padding: 1em 1.5em;
+  text-decoration: none;
+  text-align: center;
+  max-width: 500px;
 }
 h2 {
-    color: darkslategray;
-    padding: 0em 1.5em;
-    text-decoration: none;
-    text-align: center;
-    max-width: 500px;
-    font-size: large;
+  color: darkslategray;
+  padding: 0em 1.5em;
+  text-decoration: none;
+  text-align: center;
+  max-width: 500px;
+  font-size: large;
 }
 
 p {
-    color: darkslategray;
-    padding: 1em 1.5em;
-    text-decoration: none;
-    text-align: center;
-    max-width: 500px;
+  color: darkslategray;
+  padding: 1em 1.5em;
+  text-decoration: none;
+  text-align: center;
+  max-width: 500px;
 }
 small {
-    color: darkslategray;
-    padding: 0em 1.5em;
-    text-decoration: none;
-    text-align: center;
-    max-width: 500px;
+  color: darkslategray;
+  padding: 0em 1.5em;
+  text-decoration: none;
+  text-align: center;
+  max-width: 500px;
 }
-canvas{
-    box-shadow: black 20px 5px 50px;
+canvas {
+  box-shadow: black 20px 5px 50px;
 }
