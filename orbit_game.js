@@ -19,8 +19,8 @@ let mUy = 0;
 let dragX = 0;
 let dragY = 0;
 let pause_square = [
-  canvas.width - 40,
-  canvas.height - 40,
+  canvas.width - 50,
+  canvas.height - 50,
   canvas.width,
   canvas.height,
 ];
@@ -73,7 +73,9 @@ function drawGame() {
     drawPlayButton();
     if (planet) {
       drawPlanet();
-      drawProjLine();
+      if (!pause_toggle){
+        drawProjLine();
+      }
     }
   } else {
     clearScreen();
@@ -131,10 +133,7 @@ function planetMovement() {
 
   planetX += planetVX * scale * timestep;
   planetY += planetVY * scale * timestep;
-  console.log(
-    Math.round(planetVX * 100) / 100,
-    Math.round(planetVY * 100) / 100
-  );
+
   let max_arr = 1000; // max array length
   if (planet_arrX.length > max_arr) {
     planet_arrX = planet_arrX.slice(Math.max(planet_arrX.length - max_arr, 0));
@@ -295,15 +294,13 @@ function drawOrbitText() {
 function mouseDown() {
   pause = true;
   drag = true;
-  mDx = window.event.clientX - rect.left;
-  mDy = window.event.clientY - rect.top;
+  mDx = window.event.pageX - rect.left;
+  mDy = window.event.pageY - rect.top;
   if (mDx > pause_square[0] && mDy > pause_square[1]) {
     if (pause_toggle) {
       pause_toggle = false;
-      console.log("toggle false");
     } else {
       pause_toggle = true;
-      console.log("toggle true");
     }
     return;
   }
@@ -344,16 +341,16 @@ function checkMouseDrag() {
 }
 
 function mouseDrag() {
-  dragX = window.event.clientX - rect.left;
-  dragY = window.event.clientY - rect.top;
+  dragX = window.event.pageX - rect.left;
+  dragY = window.event.pageY - rect.top;
 }
 
 function mouseUp() {
   if (pause_toggle) {
     return;
   }
-  var mUx = window.event.clientX - rect.left;
-  var mUy = window.event.clientY - rect.top;
+  var mUx = window.event.pageX - rect.left;
+  var mUy = window.event.pageY - rect.top;
 
   if (mUx > pause_square[0] && mUy > pause_square[1]) {
     pause = false;
@@ -374,11 +371,17 @@ function mouseUp() {
 }
 
 function drawPauseButton() {
+  ctx.fillStyle = "#2D3033"
+  ctx.fillRect(pause_square[0],pause_square[1],pause_square[2],pause_square[3]);
+  
   ctx.fillStyle = "white";
   ctx.fillRect(canvas.width - 40, canvas.height - 40, 10, 30);
   ctx.fillRect(canvas.width - 20, canvas.height - 40, 10, 30);
 }
 function drawPlayButton() {
+  ctx.fillStyle = "#2D3033"
+  ctx.fillRect(pause_square[0],pause_square[1],pause_square[2],pause_square[3]);
+
   ctx.fillStyle = "white";
   ctx.beginPath();
   ctx.moveTo(canvas.width - 40, canvas.height - 40);
