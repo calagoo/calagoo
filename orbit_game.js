@@ -1,9 +1,13 @@
 const canvas = document.getElementById("orbit_game");
 const ctx = canvas.getContext("2d");
 
+// issues to work out:
+// orbit precedes over time?? not sure why. To watch, increase x/y array size
+
 // constants
 let fps = 60; // frames per second
-const mspf = (1 / fps) * 1000; // milliseconds per frame
+const dt = (1 / fps) * 1000; // milliseconds per frame
+const timestep = 6 * 3600; // 6 hours in seconds
 var centerX = canvas.width / 2; // finding center of the screen
 var centerY = canvas.height / 2;
 let mDx = 0; // letting mouse down X and Y to be global
@@ -16,22 +20,25 @@ let dragY = 0;
 let rect = canvas.getBoundingClientRect();
 let pause = false;
 let drag = false;
-let G = 6.67428e-11 // gravitational constant
-let AU = 149.6e6 // km
+let G = 6.67428e-11; // gravitational constant // (N*m**2 / kg**2)
+let AU = 149.6e6 * 1000; // m
+let dist = 0;
+const scale = 220 / AU;
 // forces
 let gravAngle = 0;
-let gravPull = 0;
+let gravForce = 0;
 
 // sun variables
-let sunMass = 1.989*10**30; // kg
+let sunMass = 1.989e30; // kg
 let sunRadius = 20;
 let sunX = centerX;
 let sunY = centerY;
+let mU = sunMass * G;
 
 // planet variables
 let planet = false; // planet is real boolean
 let planetRadius = 7;
-let planetMass = 5.97219*10**24; // earth mass, kg
+let planetMass = 5.97219e24; // earth mass, kg
 let planetX = 0;
 let planetY = 0;
 let planet_arrX = [];
@@ -44,7 +51,7 @@ let planetAY = 0;
 // game loop
 function drawGame() {
   if (pause || drag) {
-    setTimeout(drawGame, mspf);
+    setTimeout(drawGame, dt);
     clearScreen();
     drawSun();
     if (planet) {
@@ -54,15 +61,14 @@ function drawGame() {
   } else {
     clearScreen();
     drawSun();
-    setTimeout(drawGame, mspf);
+    setTimeout(drawGame, dt);
     if (planet) {
       planetMovement();
     }
-    if (planet) {
-      drawPlanet();
-      drawAccelLine();
-    }
+    // if (planet) {
+    // }
   }
+  drawOrbitText();
 }
 
 function clearScreen() {
@@ -86,26 +92,36 @@ function planetMovement() {
   if (dist < (sunRadius * 1.9 + planetRadius * 1.9) / 2) {
     planet = false;
   }
-  dist = (dist / 300) * AU * 1000; // convert to meters
-  gravAngle = Math.atan2(sunY - planetY, sunX - planetX); // when the sun is to the right of the planet is 0 degrees
-  gravPull = (G * planetMass * sunMass) / dist ** 2;
+  dist = dist / scale; // distance is divided by 300 pixels then converted to meters
 
-  planetAX = (gravPull / planetMass) * Math.cos(gravAngle);
-  planetAY = (gravPull / planetMass) * Math.sin(gravAngle);
+  var dist_x = Math.round((sunX - planetX) * 1000) / 1000;
+  var dist_y = Math.round((sunY - planetY) * 1000) / 1000;
 
-  planetVX += planetAX * (1 / fps)*24;
-  planetVY += planetAY * (1 / fps)*24;
+  gravAngle = Math.atan2(dist_y, dist_x); // when the sun is to the right of the planet is 0 degrees
+  gravForce = (mU * planetMass) / dist ** 2;
 
-  let max_arr = 1000 // max array length
-  if (planet_arrX.length > max_arr){
-    planet_arrX = planet_arrX.slice(Math.max(planet_arrX.length - max_arr,0))
-    planet_arrY = planet_arrY.slice(Math.max(planet_arrY.length - max_arr,0))
+  if (planet) {
+    // if planet is true (if it is created and not within the sun), draw it and show the acceleration line
+    drawPlanet();
+    drawAccelLine();
   }
-  planet_arrX[planet_arrX.length] = planetX
-  planet_arrY[planet_arrY.length] = planetY
 
-  planetX += planetVX * (1 / fps)*24;
-  planetY += planetVY * (1 / fps)*24;
+  planetAX = (gravForce / planetMass) * Math.cos(gravAngle);
+  planetAY = (gravForce / planetMass) * Math.sin(gravAngle);
+
+  planetVX += planetAX * timestep;
+  planetVY += planetAY * timestep;
+
+  planetX += planetVX * scale * timestep;
+  planetY += planetVY * scale * timestep;
+
+  let max_arr = 1000; // max array length
+  if (planet_arrX.length > max_arr) {
+    planet_arrX = planet_arrX.slice(Math.max(planet_arrX.length - max_arr, 0));
+    planet_arrY = planet_arrY.slice(Math.max(planet_arrY.length - max_arr, 0));
+  }
+  planet_arrX[planet_arrX.length] = planetX;
+  planet_arrY[planet_arrY.length] = planetY;
 }
 
 function drawPlanet() {
@@ -117,17 +133,17 @@ function drawPlanet() {
   ctx.strokeStyle = "red";
   ctx.stroke();
 
-  drawPath()
+  drawPath();
 
   planet = true;
 }
 
-function drawPath(){
-  for (let i = 0; i<planet_arrX.length;++i){
+function drawPath() {
+  for (let i = 0; i < planet_arrX.length; ++i) {
     ctx.beginPath();
-    ctx.moveTo(planet_arrX[i-1], planet_arrY[i-1]);
+    ctx.moveTo(planet_arrX[i - 1], planet_arrY[i - 1]);
     ctx.lineTo(planet_arrX[i], planet_arrY[i]);
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 2;
     ctx.strokeStyle = "red";
     ctx.stroke();
   }
@@ -135,18 +151,20 @@ function drawPath(){
 
 function drawAccelLine() {
   accel = (planetAX ** 2 + planetAY ** 2) ** 0.5;
-  modifier = .001
-  acc_mod = accel/modifier
-  if (acc_mod > 45) {
-    acc_mod = 45
+  modifier = 0.001;
+  acc_mod = accel / modifier;
+  if (acc_mod > 75) {
+    acc_mod = 75;
   }
-  aX = ((acc_mod * Math.cos(gravAngle)) + planetX);
-  aY = ((acc_mod * Math.sin(gravAngle)) + planetY);
+
+  // gravAngle = Math.atan2(sunY - planetY, sunX - planetX); // when the sun is to the right of the planet is 0 degrees
+  aX = acc_mod * Math.cos(gravAngle) + planetX;
+  aY = acc_mod * Math.sin(gravAngle) + planetY;
   ctx.beginPath();
   ctx.moveTo(planetX, planetY);
   ctx.lineTo(aX, aY);
   ctx.lineWidth = 1;
-  ctx.strokeStyle = "white";
+  ctx.strokeStyle = "red";
   ctx.stroke();
 }
 
@@ -157,6 +175,52 @@ function drawProjLine() {
   ctx.lineWidth = 1;
   ctx.strokeStyle = "white";
   ctx.stroke();
+}
+
+function drawOrbitText() {
+  ctx.font = "16px serif";
+  ctx.fillStyle = "white";
+  ctx.fillText("Orbital Data:", 1, 15);
+  ctx.fillText("Timestep (hours): " + timestep / 3600, canvas.width - 150, 15);
+
+  // Math for the orbital dynamics is done here
+  roundedDistance = dist / 1000;
+  orbitalSpeed = Math.sqrt(mU / dist);
+  orbitalPeriod =
+    Math.sqrt((4 * Math.PI ** 2 * dist ** 3) / (G * sunMass)) / 3600; //need average radius of orbit for this to work...
+
+  velocty = Math.sqrt(planetX ** 2 + planetY ** 2);
+
+  // converting position vector into proper units and with respect to the sun -- also adding a Z component
+  const r_vect = [(sunX - planetX) / scale, (sunY - planetY) / scale, 0];
+  const v_vect = [planetVX, planetVY, 0];
+
+  sam_vect = math.cross(r_vect, v_vect); //specific angular momentum
+
+  // eccentricity vector equation using specific angular momentum
+  ecc_vect = math.subtract(
+    math.divide(math.cross(v_vect, sam_vect),mU),
+    math.divide(r_vect,math.norm(r_vect))
+  );
+  // convert to normal eccentricity by taking magnitude
+  ecc = math.norm(ecc_vect);
+
+  specific_orbital_energy = (planetVX ** 2 + planetVY ** 2) / 2 - mU / dist;
+  semimajor_axis = -mU / (2 * specific_orbital_energy);
+
+  ctx.fillText(
+    "Distance (10\u2076 km): " + Math.round(roundedDistance / 1e4) / 1e2,
+    1,
+    30
+  );
+  ctx.fillText(
+    "Orbital Speed (km/s): " + Math.round(orbitalSpeed / 1e2) / 1e1,
+    1,
+    45
+  );
+  ctx.fillText("ECC (): " + ecc, 1, 60);
+
+  // ctx.fillText("Orbital Period (): " + orbitalPeriod, 1, 60);
 }
 
 function mouseDown() {
@@ -178,8 +242,8 @@ function mouseDown() {
   planetVY = 0;
   planetAX = 0;
   planetAY = 0;
-  planet_arrX = []
-  planet_arrY = []
+  planet_arrX = [];
+  planet_arrY = [];
 
   drawPlanet();
   return mDx, mDy;
@@ -203,13 +267,15 @@ function mouseUp() {
   let releaseDiff = ((mUx - mDx) ** 2 + (mUy - mDy) ** 2) ** 0.5;
   let releaseAngle = Math.atan2(mDy - mUy, mDx - mUx);
 
-  modifier = 50
+  modifier = 300;
 
-  planetVX = -releaseDiff/modifier * Math.cos(releaseAngle);
-  planetVY = -releaseDiff/modifier * Math.sin(releaseAngle);
+  planetVX = -releaseDiff * modifier * Math.cos(releaseAngle);
+  planetVY = -releaseDiff * modifier * Math.sin(releaseAngle);
 
   pause = false;
   drag = false;
 }
+
+// function mag()
 
 drawGame();
