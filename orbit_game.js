@@ -18,9 +18,16 @@ let mUx = 0; // letting mouse down X and Y to be global
 let mUy = 0;
 let dragX = 0;
 let dragY = 0;
+let pause_square = [
+  canvas.width - 40,
+  canvas.height - 40,
+  canvas.width,
+  canvas.height,
+];
 
 let rect = canvas.getBoundingClientRect();
 let pause = false;
+let pause_toggle = false;
 let drag = false;
 let G = 6.67428e-11; // gravitational constant // (N*m**2 / kg**2)
 let AU = 149.6e6 * 1000; // m
@@ -63,6 +70,7 @@ function drawGame() {
     setTimeout(drawGame, dt);
     clearScreen();
     drawSun();
+    drawPlayButton();
     if (planet) {
       drawPlanet();
       drawProjLine();
@@ -70,12 +78,11 @@ function drawGame() {
   } else {
     clearScreen();
     drawSun();
+    drawPauseButton();
     setTimeout(drawGame, dt);
     if (planet) {
       planetMovement();
     }
-    // if (planet) {
-    // }
   }
   drawOrbitText();
 }
@@ -101,8 +108,9 @@ function planetMovement() {
   if (dist < (sunRadius * 1.9 + planetRadius * 1.9) / 2) {
     planet = false;
   }
-  dist = dist / scale; // distance is divided by 300 pixels then converted to meters
+  dist = dist / scale;
 
+  // in hindsight I shouldve made a custom rounding function, but a lot through this script I use this rounding technique to get n sig figs (in this case n=3)
   var dist_x = Math.round((sunX - planetX) * 1000) / 1000;
   var dist_y = Math.round((sunY - planetY) * 1000) / 1000;
 
@@ -123,7 +131,10 @@ function planetMovement() {
 
   planetX += planetVX * scale * timestep;
   planetY += planetVY * scale * timestep;
-
+  console.log(
+    Math.round(planetVX * 100) / 100,
+    Math.round(planetVY * 100) / 100
+  );
   let max_arr = 1000; // max array length
   if (planet_arrX.length > max_arr) {
     planet_arrX = planet_arrX.slice(Math.max(planet_arrX.length - max_arr, 0));
@@ -147,6 +158,7 @@ function drawPlanet() {
   planet = true;
 }
 
+//draws line that planet leaves behind using the planet positional array and a for loop
 function drawPath() {
   for (let i = 0; i < planet_arrX.length; ++i) {
     ctx.beginPath();
@@ -158,11 +170,12 @@ function drawPath() {
   }
 }
 
+//draws the line of force/acceleration
 function drawAccelLine() {
   accel = (planetAX ** 2 + planetAY ** 2) ** 0.5;
   modifier = 0.01;
   acc_mod = accel ** 0.5 / modifier;
-  if (acc_mod > 75) {
+  if (acc_mod > 75) { // this if statement limits the length of the force vector
     acc_mod = 75;
   }
 
@@ -176,6 +189,7 @@ function drawAccelLine() {
   ctx.stroke();
 }
 
+//draws the line projected when clicking and dragging to shoot the planet
 function drawProjLine() {
   ctx.beginPath();
   ctx.moveTo(mDx, mDy);
@@ -210,9 +224,7 @@ function drawOrbitText() {
   ecc = math.norm(ecc_vect);
   ecc_arr[ecc_arr.length] = ecc;
   if (ecc_arr.length > 20) {
-    ecc_arr = ecc_arr.slice(
-      Math.max(ecc_arr.length - 20, 0)
-    );
+    ecc_arr = ecc_arr.slice(Math.max(ecc_arr.length - 20, 0));
   }
 
   specific_orbital_energy = (planetVX ** 2 + planetVY ** 2) / 2 - mU / dist;
@@ -222,9 +234,7 @@ function drawOrbitText() {
   apoapsis = semimajor_axis * (1 + ecc);
   apoapsis_arr[apoapsis_arr.length] = apoapsis;
   if (apoapsis_arr.length > 250) {
-    apoapsis_arr = apoapsis_arr.slice(
-      Math.max(apoapsis_arr.length - 250, 0)
-    );
+    apoapsis_arr = apoapsis_arr.slice(Math.max(apoapsis_arr.length - 250, 0));
   }
 
   periapsis = semimajor_axis * (1 - ecc);
@@ -257,15 +267,21 @@ function drawOrbitText() {
     1,
     45
   );
-  ctx.fillText("Eccentricity: " + Math.round(average(ecc_arr) * 100) / 100, 1, 60);
+  ctx.fillText(
+    "Eccentricity: " + Math.round(average(ecc_arr) * 100) / 100,
+    1,
+    60
+  );
 
   ctx.fillText(
-    "Apoapsis (10\u2076 km): " + Math.round(average(apoapsis_arr) / 1000 / 1e4) / 1e2,
+    "Apoapsis (10\u2076 km): " +
+      Math.round(average(apoapsis_arr) / 1000 / 1e4) / 1e2,
     1,
     75
   );
   ctx.fillText(
-    "Periapsis (10\u2076 km): " + Math.round(average(periapsis_arr) / 1000 / 1e4) / 1e2,
+    "Periapsis (10\u2076 km): " +
+      Math.round(average(periapsis_arr) / 1000 / 1e4) / 1e2,
     1,
     90
   );
@@ -281,6 +297,17 @@ function mouseDown() {
   drag = true;
   mDx = window.event.clientX - rect.left;
   mDy = window.event.clientY - rect.top;
+  if (mDx > pause_square[0] && mDy > pause_square[1]) {
+    if (pause_toggle) {
+      pause_toggle = false;
+      console.log("toggle false");
+    } else {
+      pause_toggle = true;
+      console.log("toggle true");
+    }
+    return;
+  }
+
   dragX = mDx;
   dragY = mUy;
   if (mDx < 0 || mDy < 0) {
@@ -299,13 +326,13 @@ function mouseDown() {
   planetAY = 0;
   planet_arrX = [];
   planet_arrY = [];
-  
+
   // orbit data
   ecc_arr = [];
   apoapsis_arr = [];
   periapsis_arr = [];
   orbitalPeriod_arr = [];
-  
+
   drawPlanet();
   return mDx, mDy;
 }
@@ -322,8 +349,17 @@ function mouseDrag() {
 }
 
 function mouseUp() {
+  if (pause_toggle) {
+    return;
+  }
   var mUx = window.event.clientX - rect.left;
   var mUy = window.event.clientY - rect.top;
+
+  if (mUx > pause_square[0] && mUy > pause_square[1]) {
+    pause = false;
+    drag = false;
+    return;
+  }
 
   let releaseDiff = ((mUx - mDx) ** 2 + (mUy - mDy) ** 2) ** 0.5;
   let releaseAngle = Math.atan2(mDy - mUy, mDx - mUx);
@@ -335,6 +371,20 @@ function mouseUp() {
 
   pause = false;
   drag = false;
+}
+
+function drawPauseButton() {
+  ctx.fillStyle = "white";
+  ctx.fillRect(canvas.width - 40, canvas.height - 40, 10, 30);
+  ctx.fillRect(canvas.width - 20, canvas.height - 40, 10, 30);
+}
+function drawPlayButton() {
+  ctx.fillStyle = "white";
+  ctx.beginPath();
+  ctx.moveTo(canvas.width - 40, canvas.height - 40);
+  ctx.lineTo(canvas.width - 10, canvas.height - 25);
+  ctx.lineTo(canvas.width - 40, canvas.height - 10);
+  ctx.fill();
 }
 
 drawGame();
