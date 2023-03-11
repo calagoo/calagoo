@@ -151,20 +151,19 @@ function drawPath() {
 
 function drawAccelLine() {
   accel = (planetAX ** 2 + planetAY ** 2) ** 0.5;
-  modifier = 0.001;
-  acc_mod = accel / modifier;
+  modifier = 0.01;
+  acc_mod = accel**0.5 / modifier;
   if (acc_mod > 75) {
     acc_mod = 75;
   }
 
-  // gravAngle = Math.atan2(sunY - planetY, sunX - planetX); // when the sun is to the right of the planet is 0 degrees
   aX = acc_mod * Math.cos(gravAngle) + planetX;
   aY = acc_mod * Math.sin(gravAngle) + planetY;
   ctx.beginPath();
   ctx.moveTo(planetX, planetY);
   ctx.lineTo(aX, aY);
   ctx.lineWidth = 1;
-  ctx.strokeStyle = "red";
+  ctx.strokeStyle = "white";
   ctx.stroke();
 }
 
@@ -218,7 +217,7 @@ function drawOrbitText() {
     1,
     45
   );
-  ctx.fillText("ECC (): " + ecc, 1, 60);
+  ctx.fillText("Eccentricity: " + Math.round(ecc*100)/100, 1, 60);
 
   // ctx.fillText("Orbital Period (): " + orbitalPeriod, 1, 60);
 }
