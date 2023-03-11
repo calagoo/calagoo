@@ -4,7 +4,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.6.0/math.js"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Robert Rodriguez</title>
 
     <link rel="stylesheet" href="main_css.css" />
 
@@ -16,10 +16,10 @@
       </style>
       <nav data-hover-hint="nav">
         <div class="link-title">
+          <a href="https://github.com/calagoo"> GITHUB</a>
           <a href="http://mailto:robbierodiguez98@gmail.com"
             >ROBBIERODRIGUEZ98@GMAIL.COM</a
           >
-          <a href="https://github.com/calagoo">GITHUB</a>
           <a
             href="https://github.com/calagoo/calagoo.github.io/blob/main/March9%20Resume.pdf"
             >RESUME</a
@@ -28,6 +28,7 @@
       </nav>
     </div>
   </head>
+
   <body>
     <h1
       decorator="inlineTextEditable"
@@ -38,7 +39,7 @@
     >
       Robert Rodriguez Jr
     </h1>
-    <p
+    <h2
       decorator="inlineTextEditable"
       contenteditable="false"
       class="header-container"
@@ -46,9 +47,47 @@
       value="Aerospace Engineering Graduate from ASU"
     >
       Aerospace Engineering Graduate from ASU
+    </h2>
+    <p
+      decorator="inlineTextEditable"
+      contenteditable="false"
+      class="header-container"
+      data-text-keypath="page.masthead.text.text"
+      value="Aerospace Engineering Graduate from ASU"
+    >
+      Hello, I am Robert Rodriguez. I graduated in December of 2022 from Arizona
+      State University and started working shortly after. I figured out my
+      passion towards the end of high school, I knew I wanted to be involved in
+      the aerospace engineering industry. <br />
+      I have always loved cars and racing, especially Formula 1, so I thought
+      going into a field closely related to aerodynamics would be fun. Over the
+      course of my education I found out that I enjoy just about all parts of
+      aerospace engineering, including flight planning flight testing,
+      aerodynamics, and orbits/geodesy. <br />
+      After starting work I became much more interested in geodesy and GNSS in
+      general. This new passion ignited some other interests, such as coding and
+      data analysis. I had coded using MATLAB throughout college, but once I
+      started using Python my skills greatly improved.<br />
+      Some other hobbies I have include working on my motorcycle in my free
+      time, designing and printing CAD parts using SOLIDWORKS, and I also love
+      snowboarding, mountain biking and rock climbing (bouldering).<br />
+      I have added these small simulations to showcase my coding and interests.
+      As a disclaimer, I don't have much experience with Javascript, and these
+      are my first tries with it.
     </p>
-    <canvas id="orbit_game" width="500" height="500" onmousedown="mouseDown()" onmouseup="mouseUp()" onmousemove="checkMouseDrag()"></canvas>
+    <canvas
+      id="orbit_game"
+      width="500"
+      height="500"
+      onmousedown="mouseDown()"
+      onmouseup="mouseUp()"
+      onmousemove="checkMouseDrag()"
+    ></canvas>
     <script src="orbit_game.js"></script>
-    <small>Note: Due to the larger timestep, the orbit undergoes slight apsidal precession.<br>This is why some orbital elements that should stay constant in these conditions fluctuate.</small>
+    <small
+      >Note: Due to the larger timestep, the orbit undergoes slight apsidal
+      precession.This is why some orbital elements that should stay constant in
+      these conditions fluctuate.</small
+    >
   </body>
 </html>

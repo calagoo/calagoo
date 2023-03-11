@@ -8,7 +8,7 @@ body {
 
 a {
     color: darkslategray;
-    padding: 1em 1em;
+    padding: 0em 1em;
     text-decoration: none;
     text-transform: uppercase;
 }
@@ -18,6 +18,15 @@ h1 {
     padding: 1em 1.5em;
     text-decoration: none;
     text-align: center;
+    max-width: 500px;
+}
+h2 {
+    color: darkslategray;
+    padding: 0em 1.5em;
+    text-decoration: none;
+    text-align: center;
+    max-width: 500px;
+    font-size: large;
 }
 
 p {
@@ -25,12 +34,14 @@ p {
     padding: 1em 1.5em;
     text-decoration: none;
     text-align: center;
+    max-width: 500px;
 }
 small {
     color: darkslategray;
     padding: 0em 1.5em;
     text-decoration: none;
     text-align: center;
+    max-width: 500px;
 }
 canvas{
     box-shadow: black 20px 5px 50px;
