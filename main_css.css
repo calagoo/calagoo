@@ -26,6 +26,12 @@ p {
     text-decoration: none;
     text-align: center;
 }
+small {
+    color: darkslategray;
+    padding: 0em 1.5em;
+    text-decoration: none;
+    text-align: center;
+}
 canvas{
-    box-shadow: black 20px 10px 50px;
+    box-shadow: black 20px 5px 50px;
 }

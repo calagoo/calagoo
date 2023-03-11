@@ -271,7 +271,7 @@ function drawOrbitText() {
   );
   ctx.fillText(
     "Period (days): " + Math.round(average(orbitalPeriod_arr)),
-    canvas.width - 150,
+    canvas.width - 127,
     30
   );
 }
