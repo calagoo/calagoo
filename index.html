@@ -76,19 +76,27 @@
       are my first tries with it. Also this website is always a work in
       progress.
     </p>
-    <canvas
-      id="orbit_game"
-      width="500"
-      height="500"
-      onmousedown="mouseDown()"
-      onmouseup="mouseUp()"
-      onmousemove="checkMouseDrag()"
-    ></canvas>
-    <script src="orbit_game.js"></script>
-    <small
-      >Note: Due to the larger timestep, the orbit undergoes slight apsidal
-      precession.This is why some orbital elements that should stay constant in
-      these conditions fluctuate.</small
-    >
+    <div style="flex: auto;" class="row">
+      <figure>
+        <canvas
+          id="orbit_game"
+          width="500"
+          height="500"
+          onmousedown="mouseDown()"
+          onmouseup="mouseUp()"
+          onmousemove="checkMouseDrag()"
+        ></canvas>
+        <script src="orbit_game.js"></script>
+        <figcaption style="width: 500px">
+          Note: Due to the larger timestep, the orbit undergoes slight apsidal
+          precession.This is why some orbital elements that should stay constant
+          in these conditions fluctuate.
+        </figcaption>
+      </figure>
+      <figure>
+        <canvas id="PID_game" width="500" height="500"></canvas>
+        <figcaption style="width: 500px">Placeholder</figcaption>
+      </figure>
+    </div>
   </body>
 </html>
