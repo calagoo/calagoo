@@ -1,8 +1,10 @@
 const canvas = document.getElementById("orbit_game");
 const ctx = canvas.getContext("2d");
+const average = (array) => array.reduce((a, b) => a + b) / array.length;
 
 // issues to work out:
 // orbit precedes over time?? not sure why. To watch, increase x/y array size
+// First javascript code, so if there is anything glaring wrong (other than the immense use of global vars -- ignore that) then please let me know.
 
 // constants
 let fps = 60; // frames per second
@@ -24,6 +26,7 @@ let G = 6.67428e-11; // gravitational constant // (N*m**2 / kg**2)
 let AU = 149.6e6 * 1000; // m
 let dist = 0;
 const scale = 220 / AU;
+
 // forces
 let gravAngle = 0;
 let gravForce = 0;
@@ -47,6 +50,12 @@ let planetVX = 0;
 let planetVY = 0;
 let planetAX = 0;
 let planetAY = 0;
+
+// orbit data
+var ecc_arr = [];
+var apoapsis_arr = [];
+var periapsis_arr = [];
+var orbitalPeriod_arr = [];
 
 // game loop
 function drawGame() {
@@ -152,7 +161,7 @@ function drawPath() {
 function drawAccelLine() {
   accel = (planetAX ** 2 + planetAY ** 2) ** 0.5;
   modifier = 0.01;
-  acc_mod = accel**0.5 / modifier;
+  acc_mod = accel ** 0.5 / modifier;
   if (acc_mod > 75) {
     acc_mod = 75;
   }
@@ -184,10 +193,6 @@ function drawOrbitText() {
 
   // Math for the orbital dynamics is done here
   roundedDistance = dist / 1000;
-  orbitalSpeed = Math.sqrt(mU / dist);
-  orbitalPeriod =
-    Math.sqrt((4 * Math.PI ** 2 * dist ** 3) / (G * sunMass)) / 3600; //need average radius of orbit for this to work...
-
   velocty = Math.sqrt(planetX ** 2 + planetY ** 2);
 
   // converting position vector into proper units and with respect to the sun -- also adding a Z component
@@ -198,14 +203,49 @@ function drawOrbitText() {
 
   // eccentricity vector equation using specific angular momentum
   ecc_vect = math.subtract(
-    math.divide(math.cross(v_vect, sam_vect),mU),
-    math.divide(r_vect,math.norm(r_vect))
+    math.divide(math.cross(v_vect, sam_vect), mU),
+    math.divide(r_vect, math.norm(r_vect))
   );
   // convert to normal eccentricity by taking magnitude
   ecc = math.norm(ecc_vect);
+  ecc_arr[ecc_arr.length] = ecc;
+  if (ecc_arr.length > 20) {
+    ecc_arr = ecc_arr.slice(
+      Math.max(ecc_arr.length - 20, 0)
+    );
+  }
 
   specific_orbital_energy = (planetVX ** 2 + planetVY ** 2) / 2 - mU / dist;
   semimajor_axis = -mU / (2 * specific_orbital_energy);
+
+  //apoapsis and its average array so that the flucations aren't as severe.
+  apoapsis = semimajor_axis * (1 + ecc);
+  apoapsis_arr[apoapsis_arr.length] = apoapsis;
+  if (apoapsis_arr.length > 250) {
+    apoapsis_arr = apoapsis_arr.slice(
+      Math.max(apoapsis_arr.length - 250, 0)
+    );
+  }
+
+  periapsis = semimajor_axis * (1 - ecc);
+  periapsis_arr[periapsis_arr.length] = periapsis;
+  if (periapsis_arr.length > 250) {
+    periapsis_arr = periapsis_arr.slice(
+      Math.max(periapsis_arr.length - 250, 0)
+    );
+  }
+
+  orbitalSpeed = Math.sqrt(mU * (2 / dist - 1 / semimajor_axis));
+
+  orbitalPeriod =
+    (2 * Math.PI * Math.sqrt(semimajor_axis ** 3 / mU)) / (3600 * 24);
+
+  orbitalPeriod_arr[orbitalPeriod_arr.length] = orbitalPeriod;
+  if (orbitalPeriod_arr.length > 100) {
+    orbitalPeriod_arr = orbitalPeriod_arr.slice(
+      Math.max(orbitalPeriod_arr.length - 100, 0)
+    );
+  }
 
   ctx.fillText(
     "Distance (10\u2076 km): " + Math.round(roundedDistance / 1e4) / 1e2,
@@ -217,9 +257,23 @@ function drawOrbitText() {
     1,
     45
   );
-  ctx.fillText("Eccentricity: " + Math.round(ecc*100)/100, 1, 60);
+  ctx.fillText("Eccentricity: " + Math.round(average(ecc_arr) * 100) / 100, 1, 60);
 
-  // ctx.fillText("Orbital Period (): " + orbitalPeriod, 1, 60);
+  ctx.fillText(
+    "Apoapsis (10\u2076 km): " + Math.round(average(apoapsis_arr) / 1000 / 1e4) / 1e2,
+    1,
+    75
+  );
+  ctx.fillText(
+    "Periapsis (10\u2076 km): " + Math.round(average(periapsis_arr) / 1000 / 1e4) / 1e2,
+    1,
+    90
+  );
+  ctx.fillText(
+    "Period (days): " + Math.round(average(orbitalPeriod_arr)),
+    canvas.width - 150,
+    30
+  );
 }
 
 function mouseDown() {
@@ -235,6 +289,8 @@ function mouseDown() {
   if (mDx > canvas.width || mDy > canvas.height) {
     return;
   }
+
+  // Clear Variables
   planetX = mDx;
   planetY = mDy;
   planetVX = 0;
@@ -243,7 +299,13 @@ function mouseDown() {
   planetAY = 0;
   planet_arrX = [];
   planet_arrY = [];
-
+  
+  // orbit data
+  ecc_arr = [];
+  apoapsis_arr = [];
+  periapsis_arr = [];
+  orbitalPeriod_arr = [];
+  
   drawPlanet();
   return mDx, mDy;
 }
@@ -274,7 +336,5 @@ function mouseUp() {
   pause = false;
   drag = false;
 }
-
-// function mag()
 
 drawGame();
