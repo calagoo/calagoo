@@ -308,8 +308,9 @@ function closure() {
   orbit_mouseDown = function mouseDown() {
     pause = true;
     drag = true;
-    mDx = window.event.pageX - rect.left;
-    mDy = window.event.pageY - rect.top;
+    mDx = window.event.pageX - canvas.offsetLeft;
+    mDy = window.event.pageY - canvas.offsetTop;
+
     if (mDx > pause_square[0] && mDy > pause_square[1]) {
       if (pause_toggle) {
         pause_toggle = false;
@@ -347,25 +348,25 @@ function closure() {
 
     drawPlanet();
     return mDx, mDy;
-  }
+  };
 
   orbit_checkMouseDrag = function checkMouseDrag() {
     if (drag) {
       mouseDrag();
     }
-  }
+  };
 
   function mouseDrag() {
-    dragX = window.event.pageX - rect.left;
-    dragY = window.event.pageY - rect.top;
+    dragX = window.event.pageX - canvas.offsetLeft;
+    dragY = window.event.pageY - canvas.offsetTop;
   }
 
   orbit_mouseUp = function mouseUp() {
     if (pause_toggle) {
       return;
     }
-    var mUx = window.event.pageX - rect.left;
-    var mUy = window.event.pageY - rect.top;
+    var mUx = window.event.pageX - canvas.offsetLeft;
+    var mUy = window.event.pageY - canvas.offsetTop;
 
     if (mUx > pause_square[0] && mUy > pause_square[1]) {
       pause = false;
@@ -383,7 +384,7 @@ function closure() {
 
     pause = false;
     drag = false;
-  }
+  };
 
   function drawPauseButton() {
     ctx.fillStyle = "#2D3033";
