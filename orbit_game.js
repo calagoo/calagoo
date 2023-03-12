@@ -320,7 +320,6 @@ function closure() {
       return;
     }
 
-    console.log(mDx, mDy);
     dragX = mDx;
     dragY = mUy;
     if (mDx < 0 || mDy < 0) {
