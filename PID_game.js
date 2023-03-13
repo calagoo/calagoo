@@ -40,7 +40,6 @@ function closure() {
 
     // GAME DRAWING MAIN LOOP
     function drawGame() {
-        heightLast = height;
         ticks++;
         if (ticks > 60) {
             ticks = 1;
@@ -49,6 +48,7 @@ function closure() {
         clearScreen();
         drawTargetLine();
         planeMove_out = planeMovement(height, targetHeight, angle);
+        heightLast = height;
         height = planeMove_out[0];
         angle = planeMove_out[1];
         drawTextData(height, targetHeight, angle);
@@ -66,6 +66,7 @@ function closure() {
     function drawTargetLine() {
         var targetHeight_pxl = heightConvert(targetHeight);
 
+        // draw dashed part of line
         ctx.setLineDash([5, 3]);
         ctx.beginPath();
         ctx.moveTo(0, targetHeight_pxl);
@@ -73,6 +74,12 @@ function closure() {
         ctx.lineWidth = 1;
         ctx.strokeStyle = "white";
         ctx.stroke();
+
+        // draw grabbable circle
+        ctx.beginPath();
+        ctx.fillStyle = "grey";
+        ctx.arc(canvas.width - 5, targetHeight_pxl, 20, 0, 2 * Math.PI, false);
+        ctx.fill();
     }
 
     function pid(
@@ -85,7 +92,8 @@ function closure() {
         pv_last,
         ierr,
         high,
-        low
+        low,
+        op0
     ) {
         // Calculate the error
         error = setpoint - process_variable;
@@ -94,27 +102,28 @@ function closure() {
         p = kp * error;
 
         // Calculate the integral term
-        i = ierr + ki * error * dt;
-
-        dpv = (process_variable - pv_last) / dt;
+        ierr = ierr + ki * error * (dt / 1000);
+        i = ierr;
+        dpv = (process_variable - pv_last) / (dt / 1000);
         // Calculate the derivative term
         d = -kd * dpv;
 
         // Return the sum of the three terms
-
-        output = p + i + d;
-
+        output = op0 + p + i + d;
         if (output < low || output > high) {
-            i = i - ki * error * dt;
+            i = i - ki * error * (dt / 1000);
             output = Math.max(low, Math.min(high, output));
         }
         return [output, ierr];
     }
 
     function planeMovement(height, targetHeight, angle) {
-        kp = .1;
-        ki = 0;
-        kd = 0;
+
+        // Classic PID
+        kp = 1;
+        ki = 0.001;
+        kd = .8;
+
         pidOut = pid(
             kp,
             ki,
@@ -125,7 +134,8 @@ function closure() {
             heightLast,
             pidOut[1],
             (high = 20),
-            (low = -20)
+            (low = -20),
+            (op0 = 0.509249975) //bias, at this angle the lift == mass
         );
 
         angle = pidOut[0];
@@ -139,17 +149,16 @@ function closure() {
         // Finding the interpolated value of CL using linear interpolation and the closest values near the angle of attack in order to find the values greater and smaller than CL.
         // for the 3rd element (a) in lerp(x,y,a), we have to specify that when the angles become negative to take the absolute value, if not we will eventually divide by 0 and it will throw an error.
         // the if statement is so that if the angle is negative, we choose the bigger value as 1. Because when we abs, the bigger value is actually the smaller (it is 3:30 am currently... bad explanation)
-        if (angle < 0){
+        if (angle < 0) {
             var CL_interp = lerp(
                 CL[closestIndex[0]],
                 CL[closestIndex[1]],
-                1- (Math.abs(angle) -
+                1 -
+                (Math.abs(angle) -
                     Math.min(Math.abs(closestAngles[0]), Math.abs(closestAngles[1]))) /
                 Math.max(Math.abs(closestAngles[0]), Math.abs(closestAngles[1]))
             );
-            
-        }
-        else{
+        } else {
             var CL_interp = lerp(
                 CL[closestIndex[0]],
                 CL[closestIndex[1]],
@@ -158,19 +167,17 @@ function closure() {
                 Math.max(Math.abs(closestAngles[0]), Math.abs(closestAngles[1]))
             );
         }
-        
 
         var lift = ((CL_interp * (density * vel ** 2)) / 2) * sref;
 
         excessLift = lift - mass * 9.81;
         accelY = excessLift / mass;
-        velY += accelY * dt * 0.001;
-        height += velY * dt * 0.001;
+        velY += (accelY * (dt/1000));
+        height += (velY * (dt/1000));
         //     console.log(angle,            1-(Math.abs(angle) -
         //     Math.min(Math.abs(closestAngles[0]), Math.abs(closestAngles[1]))) /
         // Math.max(Math.abs(closestAngles[0]), Math.abs(closestAngles[1])),CL_interp)
         drawPlane(heightConvert(height));
-
         return [height, angle];
     }
 
@@ -228,10 +235,11 @@ function closure() {
         ctx.font = "16px serif";
         ctx.fillStyle = "white";
         ctx.fillText("Plane Data:", 1, 15);
-        ctx.fillText("Height: " + height + " m", 1, 30);
+        ctx.fillText("Height: " + round(height, 2) + " m", 1, 30);
         ctx.fillText("Target: " + targetHeight + " m", 1, 45);
-        ctx.fillText("Pitch: " + angle + " deg", 1, 60);
-        ctx.fillText("Lift: " + excessLift + " N", 1, 75);
+        ctx.fillText("Pitch: " + round(angle, 2) + " deg", 1, 60);
+        ctx.fillText("Lift: " + round(excessLift / 1000, 2) + " kN", 1, 75);
+        ctx.fillText("Velocity: " + round(velY, 2) + " m/s", 1, 90);
     }
 
     const detectClose = (x, array) => {
@@ -261,6 +269,10 @@ function closure() {
 
         // it has numbers left or right, return the closest in each array
         return [lower[0], higher[0]];
+    };
+
+    const round = (x, sigfigs) => {
+        return Math.round(x * 10 ** sigfigs) / 10 ** sigfigs;
     };
 
     drawGame();
