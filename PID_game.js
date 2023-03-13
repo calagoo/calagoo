@@ -63,6 +63,16 @@ function closure() {
         height = planeMove_out[0];
         angle = planeMove_out[1];
         drawTextData(height, targetHeight, angle);
+
+
+        // short clamp to make sure the target height isn't too large or small (this is just a backup, the one in the mouseMove() function shouldnt fail)
+        if (targetHeight > 150){
+            targetHeight = 150
+        } 
+        else if (targetHeight < 15){
+            targetHeight = 15
+        }
+
     }
 
     function clearScreen() {
@@ -190,9 +200,6 @@ function closure() {
         accelY = excessLift / mass;
         velY += (accelY * (dt/1000));
         height += (velY * (dt/1000));
-        //     console.log(angle,            1-(Math.abs(angle) -
-        //     Math.min(Math.abs(closestAngles[0]), Math.abs(closestAngles[1]))) /
-        // Math.max(Math.abs(closestAngles[0]), Math.abs(closestAngles[1])),CL_interp)
         drawPlane(heightConvert(height));
         return [height, angle];
     }
@@ -204,58 +211,28 @@ function closure() {
         ctx.fillStyle = "white";
 
         // Body
-        angle = 0;
         ctx.save();
         ctx.translate(centerX - planeLength / 2, height - planeHeight / 2);
         ctx.rotate((-angle * Math.PI) / 180);
         ctx.fillRect(0, 0, planeLength, planeHeight);
         ctx.restore();
-
-        // // Tail
-        // ctx.beginPath();
-        // ctx.moveTo(centerX - planeLength / 4, height - planeHeight / 2);
-        // ctx.lineTo(centerX - planeLength / 2, height - planeHeight * 1.7);
-        // ctx.lineTo(centerX - planeLength / 2, height - planeHeight / 2);
-        // ctx.fill();
-
-        // // Nose
-        // ctx.beginPath();
-        // ctx.moveTo(centerX + (planeLength / 2) * 1.7, height);
-        // ctx.lineTo(centerX + planeLength / 2, height - planeHeight / 2);
-        // ctx.lineTo(centerX + planeLength / 2, height + planeHeight / 2);
-        // ctx.fill();
-
-        // //exhaust
-
-        // if (ticks % 8) {
-        //       flameColors = ["red", "orange"];
-        //     } else {
-        //           flameColors = ["orange", "red"];
-        //         }
-
-        //         ctx.fillStyle = flameColors[0];
-        //         ctx.beginPath();
-        //         ctx.moveTo(centerX - (planeLength / 2) * 2, height - 4);
-        //         ctx.lineTo(centerX - planeLength / 2, height - planeHeight / 2);
-        //         ctx.lineTo(centerX - planeLength / 2, height + planeHeight / 2);
-        //         ctx.fill();
-        //         ctx.fillStyle = flameColors[1];
-        //         ctx.beginPath();
-        //         ctx.moveTo(centerX - (planeLength / 2) * 2, height + 4);
-        //         ctx.lineTo(centerX - planeLength / 2, height - planeHeight / 2);
-        //         ctx.lineTo(centerX - planeLength / 2, height + planeHeight / 2);
-        //         ctx.fill();
     }
 
     function drawTextData(height, targetHeight, angle) {
         ctx.font = "16px serif";
         ctx.fillStyle = "white";
         ctx.fillText("Plane Data:", 1, 15);
-        ctx.fillText("Height: " + round(height, 2) + " m", 1, 30);
-        ctx.fillText("Target: " + targetHeight + " m", 1, 45);
-        ctx.fillText("Pitch: " + round(angle, 2) + " deg", 1, 60);
-        ctx.fillText("Lift: " + round(excessLift / 1000, 2) + " kN", 1, 75);
-        ctx.fillText("Velocity: " + round(velY, 2) + " m/s", 1, 90);
+        ctx.fillText("Height: " + round(height, 1) + " m", 1, 30);
+        ctx.fillText(round(targetHeight,0) + " m", 1, targetHeight_pxl-2);
+        ctx.fillText("Angle of Attack: " + round(angle, 2) + " deg", canvas.width-175, 15);
+        ctx.fillText("Lift: " + round((excessLift+(mass*9.81)) / 1000, 2) + " kN", 1, 45);
+        ctx.fillText("Velocity: " + round(velY, 2) + " m/s", 1, 60);
+        ctx.font = "12px serif";
+        ctx.save()
+        ctx.translate(canvas.width-3,targetHeight_pxl+16)
+        ctx.rotate(-90*Math.PI/180)
+        ctx.fillText("DRAG",0,0)
+        ctx.restore()
     }
 
 
@@ -274,9 +251,11 @@ function closure() {
     PID_mouseMove = function mouseMove(){
         mousePosX_drag = window.event.pageX - canvas.offsetLeft;
         mousePosY_drag = window.event.pageY - canvas.offsetTop;
-        if (mouseDown_bool){
-            if (mousePosX_click > 475 && mousePosY_click < 20 && mousePosY_click > -20){
-                moveTargetHeight(mousePosX_drag,mousePosY_drag)
+        if (mouseDown_bool){ // checks if the mouse is currently clicking/holding down
+            if (mousePosX_click > 475 && mousePosY_click < 20 && mousePosY_click > -20){ // checks that you clicked originally on the height drag ball
+                if (heightConvertInv(mousePosY_drag) <= 150 && heightConvertInv(mousePosY_drag) >= 15){ // doesn't track if you try to change height to too high or too low
+                    moveTargetHeight(mousePosX_drag,mousePosY_drag)
+                }
             }
         }
     }
