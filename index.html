@@ -76,7 +76,7 @@
       are my first tries with it. Also this website is always a work in
       progress.
     </p>
-    <div style="flex: auto;" class="row">
+    <div style="flex: auto" class="row">
       <figure>
         <canvas
           id="orbit_game"
@@ -94,7 +94,14 @@
         </figcaption>
       </figure>
       <figure>
-        <canvas id="PID_game" width="500" height="500"></canvas>
+        <canvas
+          id="PID_game"
+          width="500"
+          height="500"
+          onmousedown="PID_mouseDown()"
+          onmouseup="PID_mouseUp()"
+          onmousemove="PID_mouseMove()"
+        ></canvas>
         <script src="PID_game.js"></script>
         <figcaption style="width: 500px">Placeholder</figcaption>
       </figure>

@@ -1,7 +1,17 @@
+var PID_mouseDown;
+var PID_mouseUp;
+var PID_mouseMove;
+
 function closure() {
     const canvas = document.getElementById("PID_game");
     const ctx = canvas.getContext("2d");
     const lerp = (x, y, a) => x * (1 - a) + y * a; // linear interpolation function
+
+    //other
+    var mouseUp_bool = true
+    var mouseDown_bool = false
+    var mousePosX_click
+    var mousePosY_click
 
     //// sim constants
     const fps = 60; // frames per second
@@ -11,6 +21,7 @@ function closure() {
 
     //// sim variables
     var targetHeight = 100;
+    var targetHeight_pxl = 0;
     var ticks = 0;
     var flameColors = [];
     var height = 50;
@@ -62,9 +73,14 @@ function closure() {
     function heightConvert(ht) {
         return canvas.height - (canvas.height / 200) * ht;
     }
+    
+    function heightConvertInv(ht){
+        return 200 - (ht*200)/canvas.height;
+    }
+
 
     function drawTargetLine() {
-        var targetHeight_pxl = heightConvert(targetHeight);
+        targetHeight_pxl = heightConvert(targetHeight);
 
         // draw dashed part of line
         ctx.setLineDash([5, 3]);
@@ -241,6 +257,36 @@ function closure() {
         ctx.fillText("Lift: " + round(excessLift / 1000, 2) + " kN", 1, 75);
         ctx.fillText("Velocity: " + round(velY, 2) + " m/s", 1, 90);
     }
+
+
+    function moveTargetHeight(mousePosX,mousePosY){
+        targetHeight = heightConvertInv(mousePosY)
+        }
+
+
+    PID_mouseDown = function mouseDown(){
+        mouseUp_bool = false
+        mouseDown_bool = true
+        mousePosX_click = (window.event.pageX - canvas.offsetLeft);
+        mousePosY_click = (targetHeight_pxl) - (window.event.pageY - canvas.offsetTop);
+    }
+    
+    PID_mouseMove = function mouseMove(){
+        mousePosX_drag = window.event.pageX - canvas.offsetLeft;
+        mousePosY_drag = window.event.pageY - canvas.offsetTop;
+        if (mouseDown_bool){
+            if (mousePosX_click > 475 && mousePosY_click < 20 && mousePosY_click > -20){
+                moveTargetHeight(mousePosX_drag,mousePosY_drag)
+            }
+        }
+    }
+    PID_mouseUp = function mouseUp(){
+        mouseUp_bool = true
+        mouseDown_bool = false
+        console.log("Mouse Up")
+    }
+
+
 
     const detectClose = (x, array) => {
         // if array has less or equal 2 elements, no further verification needed
