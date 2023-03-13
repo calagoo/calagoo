@@ -254,7 +254,6 @@ function closure() {
         xPos += velX * (dt / 1000)
 
         pitch = Math.atan2(velY,velX+vel)
-        console.log(pitch * 180 / Math.PI)
         drawPlane(heightConvert(height),pitch);
         return [height, angle, xPos];
     }
@@ -277,12 +276,12 @@ function closure() {
         ctx.font = "16px monospace";
         ctx.fillStyle = "white";
         ctx.fillText("Plane Data:", 1, 15);
-        ctx.fillText(`Height   = ${round(height, 1)} m`, 1, 30);
-        ctx.fillText(`Lift     = ${round((excessLift + (mass * 9.81)) / 1000, 2)} kN`, 1, 45);
-        ctx.fillText(`Velocity = ${round(velX+vel, 2)}, ${round(velY, 2)} m/s`, 1, 60);
+        ctx.fillText(`Height   = ${round(height, 1).toFixed(2)} m`, 1, 30);
+        ctx.fillText(`Lift     = ${round((excessLift + (mass * 9.81)) / 1000, 2).toFixed(2)} kN`, 1, 45);
+        ctx.fillText(`Velocity = ${round(velX+vel, 2).toFixed(2)}, ${round(velY, 2)} m/s`, 1, 60);
         
-        ctx.fillText(`AoA   = ${round(angle, 2)} deg`, canvas.width - 150, 30);
-        ctx.fillText(`Pitch = ${round(pitch*180/Math.PI, 2)} deg`, canvas.width - 150, 45);
+        ctx.fillText(`AoA   = ${round(angle, 2).toFixed(2)} deg`, canvas.width - 150, 30);
+        ctx.fillText(`Pitch = ${round(pitch*180/Math.PI, 2).toFixed(2)} deg`, canvas.width - 150, 45);
 
         ctx.fillText(round(targetHeight, 0) + " m", 1, targetHeight_pxl - 2);
         // ctx.fillText("P: " + round(p, 1), 1, canvas.height - 2);
@@ -323,7 +322,6 @@ function closure() {
     PID_mouseUp = function mouseUp() {
         mouseUp_bool = true
         mouseDown_bool = false
-        console.log("Mouse Up")
     }
 
 

@@ -228,13 +228,13 @@ function closure() {
   }
 
   function drawOrbitText() {
-    ctx.font = "16px serif";
+    ctx.font = "16px monospace";
     ctx.fillStyle = "white";
     ctx.fillText("Orbital Data:", 1, 15);
     ctx.fillText(
-      "Timestep (hours): " + timestep / 3600,
-      canvas.width - 150,
-      15
+      "Timestep (hr) = " + (timestep / 3600),
+      canvas.width - 180,
+      30
     );
 
     // Math for the orbital dynamics is done here
@@ -290,37 +290,37 @@ function closure() {
     }
 
     ctx.fillText(
-      "Distance (10\u2076 km): " + Math.round(roundedDistance / 1e4) / 1e2,
+      "Distance      = " + (Math.round(roundedDistance / 1e4) / 1e2).toFixed(2) + " (10\u2076 km)",
       1,
       30
     );
     ctx.fillText(
-      "Orbital Speed (km/s): " + Math.round(orbitalSpeed / 1e2) / 1e1,
+      "Orbital Speed = " + (Math.round(orbitalSpeed / 1e2) / 1e1).toFixed(2) + " (km/s)",
       1,
       45
     );
     ctx.fillText(
-      "Eccentricity: " + Math.round(average(ecc_arr) * 100) / 100,
+      "Eccentricity  = " + (Math.round(average(ecc_arr) * 100) / 100).toFixed(2),
       1,
       60
     );
 
     ctx.fillText(
-      "Apoapsis (10\u2076 km): " +
-        Math.round(average(apoapsis_arr) / 1000 / 1e4) / 1e2,
+      "Apoapsis      = " +
+        (Math.round(average(apoapsis_arr) / 1000 / 1e4) / 1e2).toFixed(2) + " (10\u2076 km)",
       1,
       75
     );
     ctx.fillText(
-      "Periapsis (10\u2076 km): " +
-        Math.round(average(periapsis_arr) / 1000 / 1e4) / 1e2,
+      "Periapsis     = " +
+        (Math.round(average(periapsis_arr) / 1000 / 1e4) / 1e2).toFixed(2) + " (10\u2076 km)",
       1,
       90
     );
     ctx.fillText(
-      "Period (days): " + Math.round(average(orbitalPeriod_arr)),
-      canvas.width - 127,
-      30
+      "Period (days) = " + Math.round(average(orbitalPeriod_arr)),
+      canvas.width - 180,
+      45
     );
   }
 
