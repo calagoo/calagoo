@@ -8,12 +8,11 @@
 
     <link rel="stylesheet" href="main_css.css" />
 
+  </head>
+  
+  <body>
     <div class="link-container">
       <style>
-        .link-container {
-          background-color: #5a5a5a;
-          width: 100%;
-        }
         div {
           text-align: center;
         }
@@ -33,9 +32,11 @@
               margin: 4px 2px;
               transition-duration: 0.4s;
               cursor: pointer;
+              box-shadow: inset black 0px 1px 2px;
+
             }
             .button:hover {
-              background-color: rgb(25, 25, 25);
+              background-color: rgb(172,170,175);
               color: white;
             }
           </style>
@@ -51,9 +52,6 @@
         </div>
       </nav>
     </div>
-  </head>
-
-  <body>
     <h1
       decorator="inlineTextEditable"
       contenteditable="false"
@@ -106,19 +104,19 @@
         Hello, I am Robert Rodriguez. I graduated in December of 2022 from
         Arizona State University and started working shortly after. I figured
         out my passion towards the end of high school, I knew I wanted to be
-        involved in the aerospace engineering industry. <br />
+        involved in the aerospace engineering industry. <br /><br />
         I have always loved cars and racing, especially Formula 1, so I thought
         going into a field closely related to aerodynamics would be fun. Over
         the course of my education I found out that I enjoy just about all parts
         of aerospace engineering, including flight planning flight testing,
-        aerodynamics, and orbits/geodesy. <br />
+        aerodynamics, and orbits/geodesy. <br /><br />
         After starting work I became much more interested in geodesy and GNSS in
         general. This new passion ignited some other interests, such as coding
         and data analysis. I had coded using MATLAB throughout college, but once
-        I started using Python my skills greatly improved.<br />
+        I started using Python my skills greatly improved.<br /><br />
         Some other hobbies I have include working on my motorcycle in my free
         time, designing and printing CAD parts using SOLIDWORKS, and I also love
-        snowboarding, mountain biking and rock climbing (bouldering).<br />
+        snowboarding, mountain biking and rock climbing (bouldering).<br /><br />
         I have added these small simulations to showcase my coding and
         interests. As a disclaimer, I don't have much experience with
         Javascript, and these are my first tries with it. Also this website is
@@ -153,7 +151,8 @@
             onmousemove="PID_mouseMove()"
           ></canvas>
           <script src="PID_game.js"></script>
-          <figcaption style="width: 500px">Placeholder</figcaption>
+          <figcaption style="width: 500px">This simulation takes values of a Boeing 737 (including mass, CL, CD, thrust, and more) 
+            and inputs it into a PID to keep it both level on the target height, and in the X-center of the window </figcaption>
         </figure>
       </div>
     </div>
