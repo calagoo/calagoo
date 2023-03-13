@@ -7,6 +7,15 @@ function closure() {
   const ctx = canvas.getContext("2d");
   const average = (array) => array.reduce((a, b) => a + b) / array.length;
 
+  var starX = []
+  var starY = []
+  const starCount = Math.random()*100
+  for(i=0;i<starCount;i++){
+    starX[i] = Math.random()*canvas.width
+    starY[i] = Math.random()*canvas.height
+  }
+
+
   // issues to work out:
   // orbit precedes over time?? not sure why. To watch, increase x/y array size
   // First javascript code, so if there is anything glaring wrong (other than the immense use of global vars -- ignore that) then please let me know.
@@ -74,6 +83,7 @@ function closure() {
     if (pause || drag) {
       setTimeout(drawGame, dt);
       clearScreen();
+      drawStars()
       drawSun();
       drawPlayButton();
       if (planet) {
@@ -84,6 +94,7 @@ function closure() {
       }
     } else {
       clearScreen();
+      drawStars()
       drawSun();
       drawPauseButton();
       setTimeout(drawGame, dt);
@@ -97,6 +108,14 @@ function closure() {
   function clearScreen() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+  
+  function drawStars(){
+    for(i=0;i<starX.length;i++){
+
+      ctx.fillStyle = "white";
+      ctx.fillRect(starX[i], starY[i], 1, 1);
+    }
   }
 
   function drawSun() {

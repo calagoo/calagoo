@@ -52,9 +52,10 @@ function closure() {
     // GAME DRAWING MAIN LOOP
     function drawGame() {
         ticks++;
-        if (ticks > 60) {
+        if (ticks > canvas.width) {
             ticks = 1;
         }
+        
         setTimeout(drawGame, dt);
         clearScreen();
         drawTargetLine();
@@ -63,7 +64,6 @@ function closure() {
         height = planeMove_out[0];
         angle = planeMove_out[1];
         drawTextData(height, targetHeight, angle);
-
 
         // short clamp to make sure the target height isn't too large or small (this is just a backup, the one in the mouseMove() function shouldnt fail)
         if (targetHeight > 150){
@@ -159,8 +159,8 @@ function closure() {
             dt,
             heightLast,
             pidOut[1],
-            (high = 20),
-            (low = -20),
+            (high = 10),
+            (low = -10),
             (op0 = 0.509249975) //bias, at this angle the lift == mass
         );
 
@@ -221,12 +221,15 @@ function closure() {
     function drawTextData(height, targetHeight, angle) {
         ctx.font = "16px serif";
         ctx.fillStyle = "white";
-        ctx.fillText("Plane Data:", 1, 15);
+        ctx.fillText("Plane Data (Based off 737):", 1, 15);
         ctx.fillText("Height: " + round(height, 1) + " m", 1, 30);
         ctx.fillText(round(targetHeight,0) + " m", 1, targetHeight_pxl-2);
         ctx.fillText("Angle of Attack: " + round(angle, 2) + " deg", canvas.width-175, 15);
         ctx.fillText("Lift: " + round((excessLift+(mass*9.81)) / 1000, 2) + " kN", 1, 45);
-        ctx.fillText("Velocity: " + round(velY, 2) + " m/s", 1, 60);
+        ctx.fillText("Vertical Vel: " + round(velY, 2) + " m/s", 1, 60);
+        ctx.fillText("P: " + round(p, 1), 1, canvas.height-2);
+        ctx.fillText("I: " + round(i, 2), 70, canvas.height-2);
+        ctx.fillText("D: " + round(d, 3), 135, canvas.height-2);
         ctx.font = "12px serif";
         ctx.save()
         ctx.translate(canvas.width-3,targetHeight_pxl+16)
