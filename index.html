@@ -10,17 +10,41 @@
 
     <div class="link-container">
       <style>
+        .link-container {
+          background-color: #5a5a5a;
+          width: 100%;
+        }
         div {
           text-align: center;
         }
       </style>
       <nav data-hover-hint="nav">
         <div class="link-title">
-          <a href="https://github.com/calagoo"> GITHUB</a>
-          <a href="http://mailto:robbierodiguez98@gmail.com"
+          <style>
+            .button {
+              background-color: #5a5a5a; /* Green */
+              border: none;
+              color: white;
+              padding: 16px 32px;
+              text-align: center;
+              text-decoration: none;
+              display: inline-block;
+              font-size: 16px;
+              margin: 4px 2px;
+              transition-duration: 0.4s;
+              cursor: pointer;
+            }
+            .button:hover {
+              background-color: rgb(25, 25, 25);
+              color: white;
+            }
+          </style>
+          <a class="button" href="https://github.com/calagoo"> GITHUB</a>
+          <a class="button" href="http://mailto:robbierodiguez98@gmail.com"
             >ROBBIERODRIGUEZ98@GMAIL.COM</a
           >
           <a
+            class="button"
             href="https://github.com/calagoo/calagoo.github.io/blob/main/March9%20Resume.pdf"
             >RESUME</a
           >
@@ -38,73 +62,103 @@
       value="Robert Rodriguez Jr"
     >
       Robert Rodriguez Jr
-    </h1>
-    <h2
-      decorator="inlineTextEditable"
-      contenteditable="false"
-      class="header-container"
-      data-text-keypath="page.masthead.text.text"
-      value="Aerospace Engineering Graduate from ASU"
-    >
-      Aerospace Engineering Graduate from ASU
+      <h2
+        style="padding-top: 0px"
+        decorator="inlineTextEditable"
+        contenteditable="false"
+        class="header-container"
+        data-text-keypath="page.masthead.text.text"
+        value="Aerospace Engineering Graduate from ASU"
+      >
+        Aerospace Engineering Graduate from ASU
+        
+        <div class="tab">
+          <script src="tabs.js"></script>
+          <button
+          class="tablinks"
+          onclick="openSection(event, 'About Me')"
+          id="defaultOpen"
+          >
+          About Me
+        </button>
+        <button class="tablinks" onclick="openSection(event, 'Simulations')">
+          Simulations
+        </button>
+        <button class="tablinks" onclick="openSection(event, 'Other')">
+          Other
+        </button>
+      </div>
     </h2>
-    <p
-      decorator="inlineTextEditable"
-      contenteditable="false"
-      class="header-container"
-      data-text-keypath="page.masthead.text.text"
-      value="Aerospace Engineering Graduate from ASU"
-    >
-      Hello, I am Robert Rodriguez. I graduated in December of 2022 from Arizona
-      State University and started working shortly after. I figured out my
-      passion towards the end of high school, I knew I wanted to be involved in
-      the aerospace engineering industry. <br />
-      I have always loved cars and racing, especially Formula 1, so I thought
-      going into a field closely related to aerodynamics would be fun. Over the
-      course of my education I found out that I enjoy just about all parts of
-      aerospace engineering, including flight planning flight testing,
-      aerodynamics, and orbits/geodesy. <br />
-      After starting work I became much more interested in geodesy and GNSS in
-      general. This new passion ignited some other interests, such as coding and
-      data analysis. I had coded using MATLAB throughout college, but once I
-      started using Python my skills greatly improved.<br />
-      Some other hobbies I have include working on my motorcycle in my free
-      time, designing and printing CAD parts using SOLIDWORKS, and I also love
-      snowboarding, mountain biking and rock climbing (bouldering).<br />
-      I have added these small simulations to showcase my coding and interests.
-      As a disclaimer, I don't have much experience with Javascript, and these
-      are my first tries with it. Also this website is always a work in
-      progress.
-    </p>
-    <div style="flex: auto" class="row">
-      <figure>
-        <canvas
-          id="orbit_game"
-          width="500"
-          height="500"
-          onmousedown="orbit_mouseDown()"
-          onmouseup="orbit_mouseUp()"
-          onmousemove="orbit_checkMouseDrag()"
-        ></canvas>
-        <script src="orbit_game.js"></script>
-        <figcaption style="width: 500px">
-          Note: Due to the larger timestep, the orbit undergoes slight apsidal
-          precession.This is why some orbital elements that should stay constant
-          in these conditions fluctuate.
-        </figcaption>
-      </figure>
-      <figure>
-        <canvas
-          id="PID_game"
-          width="500"
-          height="500"
-          onmousedown="PID_mouseDown()"
-          onmouseup="PID_mouseUp()"
-          onmousemove="PID_mouseMove()"
-        ></canvas>
-        <script src="PID_game.js"></script>
-        <figcaption style="width: 500px">Placeholder</figcaption>
-      </figure>
+    </h1>
+
+    <div id="About Me" class="tabcontent">
+      <script>
+        // Get the element with id="defaultOpen" and click on it
+        document.getElementById("defaultOpen").click();
+        </script>
+      <p
+        decorator="inlineTextEditable"
+        contenteditable="false"
+        class="header-container"
+        data-text-keypath="page.masthead.text.text"
+        value="Aerospace Engineering Graduate from ASU"
+      >
+        Hello, I am Robert Rodriguez. I graduated in December of 2022 from
+        Arizona State University and started working shortly after. I figured
+        out my passion towards the end of high school, I knew I wanted to be
+        involved in the aerospace engineering industry. <br />
+        I have always loved cars and racing, especially Formula 1, so I thought
+        going into a field closely related to aerodynamics would be fun. Over
+        the course of my education I found out that I enjoy just about all parts
+        of aerospace engineering, including flight planning flight testing,
+        aerodynamics, and orbits/geodesy. <br />
+        After starting work I became much more interested in geodesy and GNSS in
+        general. This new passion ignited some other interests, such as coding
+        and data analysis. I had coded using MATLAB throughout college, but once
+        I started using Python my skills greatly improved.<br />
+        Some other hobbies I have include working on my motorcycle in my free
+        time, designing and printing CAD parts using SOLIDWORKS, and I also love
+        snowboarding, mountain biking and rock climbing (bouldering).<br />
+        I have added these small simulations to showcase my coding and
+        interests. As a disclaimer, I don't have much experience with
+        Javascript, and these are my first tries with it. Also this website is
+        always a work in progress.
+      </p>
     </div>
-  </body>
+    <div id="Simulations" class="tabcontent">
+      <div style="flex: auto" class="row">
+        <figure>
+          <canvas
+            id="orbit_game"
+            width="500"
+            height="500"
+            onmousedown="orbit_mouseDown()"
+            onmouseup="orbit_mouseUp()"
+            onmousemove="orbit_checkMouseDrag()"
+          ></canvas>
+          <script src="orbit_game.js"></script>
+          <figcaption style="width: 500px">
+            Note: Due to the larger timestep, the orbit undergoes slight apsidal
+            precession.This is why some orbital elements that should stay
+            constant in these conditions fluctuate.
+          </figcaption>
+        </figure>
+        <figure>
+          <canvas
+            id="PID_game"
+            width="500"
+            height="500"
+            onmousedown="PID_mouseDown()"
+            onmouseup="PID_mouseUp()"
+            onmousemove="PID_mouseMove()"
+          ></canvas>
+          <script src="PID_game.js"></script>
+          <figcaption style="width: 500px">Placeholder</figcaption>
+        </figure>
+      </div>
+    </div>
+    <div id="Other" class="tabcontent">
+      <p> other</p>
+    </div>
+    </body>
 </html>
