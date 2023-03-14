@@ -62,14 +62,16 @@ function closure() {
     // clouds
     cloudArray = []
     class cloud {
-        constructor(x, y, dist, size, xOffset, yOffset) {
+        constructor(x, y, dist, size, xOffset, yOffset,lobes) {
             this.x = x
             this.y = y
             this.dist = dist
-            this.size = size
-            this.xOffset = xOffset
-            this.yOffset = yOffset
-
+            this.lobes = lobes
+            for(i=0;i<lobes;i++){
+                size[i] = 5 + Math.random() * 3
+                xOffset[i] = 4 - Math.random() * 8
+                yOffset[i] = 4 - Math.random() * 8
+            }
         }
     }
     
@@ -94,12 +96,9 @@ function closure() {
 
         // drawing clouds
         if ((Math.random() > .90 && cloudArray.length < 25) || cloudArray.length < 5) {
-            cloudArray[cloudArray.length] = new cloud(canvas.width + 10,        // x pos
-                heightConvert(centerY - Math.random() * 250),                   // height
-                1 + round(Math.random() * 5, 0),                                // distance from camera
-                5 + Math.random() * 3,                                          // lobe size
-                4 - Math.random() * 8,                                          // x,y offset
-                4 - Math.random() * 8)                                          // x,y offset                                       
+                cloudArray[cloudArray.length] = new cloud(canvas.width + 10,         // x pos
+                    heightConvert(centerY - Math.random() * 250),                    // height
+                    1 + round(Math.random() * 5, 0))                                 // distance from camera
     
         }
         for (i = 0; i < cloudArray.length; i++) {
@@ -137,7 +136,10 @@ function closure() {
         }
         // ctx.fillRect(cloudObj.x, cloudObj.y, 10, 10);
         ctx.beginPath();
-        ctx.arc(cloudObj.x + cloudObj.xOffset, cloudObj.y + cloudObj.yOffset, cloudObj.size + cloudObj.dist - cloudObj.yOffset, 0, 2 * Math.PI, false);
+        for(i=0;i<cloudObj.lobes;i++){
+            ctx.arc(cloudObj.x + cloudObj.xOffset, cloudObj.y + cloudObj.yOffset, cloudObj.size + cloudObj.dist - cloudObj.yOffset, 0, 2 * Math.PI, false);
+
+        }
         ctx.arc(cloudObj.x - cloudObj.xOffset, cloudObj.y - cloudObj.yOffset, cloudObj.size + cloudObj.dist + cloudObj.xOffset, 0, 2 * Math.PI, false);
         ctx.arc(cloudObj.x, cloudObj.y + cloudObj.yOffset**1.5, cloudObj.size, 0, 2 * Math.PI, false);
         // ctx.arc(cloudObj.x, cloudObj.y, cloudObj.size + cloudObj.dist, 0, 2 * Math.PI, false);
