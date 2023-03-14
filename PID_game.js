@@ -59,6 +59,21 @@ function closure() {
     const sref = 125; // m^2
     const maxthrust = 64_400; // Newtons
 
+    // clouds
+    cloudArray = []
+    class cloud {
+        constructor(x, y, dist, size, xOffset, yOffset) {
+            this.x = x
+            this.y = y
+            this.dist = dist
+            this.size = size
+            this.xOffset = xOffset
+            this.yOffset = yOffset
+
+        }
+    }
+    
+    
     // GAME DRAWING MAIN LOOP
     function drawGame() {
         ticks++;
@@ -68,8 +83,32 @@ function closure() {
 
         setTimeout(drawGame, dt);
         clearScreen();
+
+
+        // drawing clouds
+        if ((Math.random() > .95 && cloudArray.length < 25) || cloudArray.length < 5) {
+            cloudArray[cloudArray.length] = new cloud(canvas.width + 10,        // x pos
+                heightConvert(centerY - Math.random() * 250),                   // height
+                1 + round(Math.random() * 5, 0),                                // distance from cam
+                5 + Math.random() * 3,                                          // lobe size
+                4 - Math.random() * 8,                                          // x,y offset
+                4 - Math.random() * 8)                                          // x,y offset                                       
+    
+        }
+        for (i = 0; i < cloudArray.length; i++) {
+            cloudArray[i].x -= cloudArray[i].dist/2
+            if (cloudArray[i].x != undefined) {
+                drawCloud(cloudArray[i])
+            }
+            if (cloudArray[i].x < -10) {
+                cloudArray.splice(i, 1)
+            }
+        }
+
+
+
         drawTargetLine();
-        planeMove_out = planeMovement(height, targetHeight, angle,xPos);
+        planeMove_out = planeMovement(height, targetHeight, angle, xPos);
         heightLast = height;
         xPosLast = xPos;
         height = planeMove_out[0];
@@ -87,8 +126,19 @@ function closure() {
 
     }
 
+    function drawCloud(cloudObj) {
+        ctx.fillStyle = `rgb(${255 * (cloudObj.dist / 5)**0.2},${255 * (cloudObj.dist / 5)**0.2},${255 * (cloudObj.dist / 5)**0.2})`;
+        // ctx.fillRect(cloudObj.x, cloudObj.y, 10, 10);
+        ctx.beginPath();
+        ctx.arc(cloudObj.x + cloudObj.xOffset, cloudObj.y + cloudObj.yOffset, cloudObj.size + cloudObj.dist - cloudObj.yOffset, 0, 2 * Math.PI, false);
+        ctx.arc(cloudObj.x - cloudObj.xOffset, cloudObj.y - cloudObj.yOffset, cloudObj.size + cloudObj.dist + cloudObj.xOffset, 0, 2 * Math.PI, false);
+        ctx.arc(cloudObj.x, cloudObj.y + cloudObj.yOffset**2, cloudObj.size, 0, 2 * Math.PI, false);
+        // ctx.arc(cloudObj.x, cloudObj.y, cloudObj.size + cloudObj.dist, 0, 2 * Math.PI, false);
+        ctx.fill();
+    }
+
     function clearScreen() {
-        ctx.fillStyle = "black";
+        ctx.fillStyle = "#00ABF0";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
@@ -152,7 +202,7 @@ function closure() {
             i = i - ki * error * (dt / 1000);
             output = Math.max(low, Math.min(high, output));
         }
-        return [output, ierr,p,i,d];
+        return [output, ierr, p, i, d];
     }
 
     function planeMovement(height, targetHeight, angle, xPos) {
@@ -161,8 +211,8 @@ function closure() {
         // kp = 1;
         // ki = 0.001;
         // kd = .8;
-        
-        
+
+
         pidOut_x = pid(
             kp = 20,
             ki = 0.01,
@@ -172,11 +222,11 @@ function closure() {
             dt,
             xPosLast,
             pidOut_x[1],
-            (high = maxthrust/1000),
+            (high = maxthrust / 1000),
             (low = 0),
-            (op0 = drag/1000) //bias
+            (op0 = drag / 1000) //bias
         );
-            
+
         pidOut_height = pid(
             kp = 1,
             ki = 0.001,
@@ -241,24 +291,24 @@ function closure() {
 
         lift = ((CL_interp * (density * vel ** 2)) / 2) * sref;
         drag = ((CD_interp * (density * vel ** 2)) / 2) * sref;
-        
-        thrust = pidOut_x[0]*1000
-        
+
+        thrust = pidOut_x[0] * 1000
+
         excessLift = lift - mass * 9.81;
-        accelY = (excessLift+thrust*Math.sin(angle*Math.PI/180)) / mass; // add lift and thrust together to get total upwards force
+        accelY = (excessLift + thrust * Math.sin(angle * Math.PI / 180)) / mass; // add lift and thrust together to get total upwards force
         velY += (accelY * (dt / 1000));
         height += (velY * (dt / 1000));
-        
+
         accelX = (thrust - drag) / mass
         velX += (accelX * (dt / 1000));
         xPos += velX * (dt / 1000)
 
-        pitch = Math.atan2(velY,velX+vel)
-        drawPlane(heightConvert(height),pitch);
+        pitch = Math.atan2(velY, velX + vel)
+        drawPlane(heightConvert(height), pitch);
         return [height, angle, xPos];
     }
 
-    function drawPlane(height,pitch) {
+    function drawPlane(height, pitch) {
         var planeLength = 40;
         var planeHeight = 10;
 
@@ -278,10 +328,10 @@ function closure() {
         ctx.fillText("Plane Data:", 1, 15);
         ctx.fillText(`Height   = ${round(height, 1).toFixed(2)} m`, 1, 30);
         ctx.fillText(`Lift     = ${round((excessLift + (mass * 9.81)) / 1000, 2).toFixed(2)} kN`, 1, 45);
-        ctx.fillText(`Velocity = ${round(velX+vel, 2).toFixed(2)}, ${round(velY, 2)} m/s`, 1, 60);
-        
+        ctx.fillText(`Velocity = ${round(velX + vel, 2).toFixed(2)}, ${round(velY, 2)} m/s`, 1, 60);
+
         ctx.fillText(`AoA   = ${round(angle, 2).toFixed(2)} deg`, canvas.width - 150, 30);
-        ctx.fillText(`Pitch = ${round(pitch*180/Math.PI, 2).toFixed(2)} deg`, canvas.width - 150, 45);
+        ctx.fillText(`Pitch = ${round(pitch * 180 / Math.PI, 2).toFixed(2)} deg`, canvas.width - 150, 45);
 
         ctx.fillText(round(targetHeight, 0) + " m", 1, targetHeight_pxl - 2);
         // ctx.fillText("P: " + round(p, 1), 1, canvas.height - 2);
