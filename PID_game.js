@@ -327,7 +327,63 @@ function closure() {
         ctx.rotate(-pitch);
         ctx.fillRect(0, 0, planeLength, planeHeight);
         ctx.fillStyle = "black";
-        ctx.fillRect(2, 2, planeLength-4, planeHeight-4);
+        
+        // Windows
+        ctx.setLineDash([5, 3]);
+        ctx.beginPath();
+        ctx.moveTo(2, 3);
+        ctx.lineTo(planeLength-2, 3);
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = "black";
+        ctx.stroke();
+        
+        // Tail
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        ctx.moveTo(10,0)
+        ctx.lineTo(0,0)
+        ctx.lineTo(0,-10)
+        ctx.closePath()
+        ctx.fill()
+        
+        // Nose
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        ctx.moveTo(planeLength,0)
+        ctx.lineTo(planeLength+10,planeHeight/2)
+        ctx.lineTo(planeLength,planeHeight)
+        ctx.closePath()
+        ctx.fill()
+
+        // Wing
+        ctx.beginPath();
+        ctx.moveTo(planeLength/2,planeHeight-2)
+        ctx.lineTo(planeLength/2-3,planeHeight+5)
+        ctx.lineTo(planeLength/2+3,planeHeight+5)
+        ctx.lineTo(planeLength/2+6,planeHeight-2)
+        ctx.closePath()
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+        ctx.fillStyle = "white";
+        ctx.fill()
+        
+        // Boost!
+        ctx.beginPath();
+        ctx.moveTo(0,0)
+        ctx.lineTo(-(thrust-20000)*20/64.4e3,planeHeight/2)
+        ctx.lineTo(0,planeHeight)
+        ctx.fillStyle = "orange";
+        ctx.fill()
+        
+        ctx.beginPath();
+        ctx.moveTo(0,2)
+        ctx.lineTo(-(thrust-20000)*14/64.4e3,planeHeight/2)
+        ctx.lineTo(0,planeHeight-2)
+        ctx.fillStyle = "yellow";
+        ctx.fill()
+        
+
         ctx.restore();
     }
 
@@ -336,6 +392,10 @@ function closure() {
         //draw text box
         ctx.fillStyle = "rgba(0,0,0,0.6)"
         ctx.fillRect(0,0,canvas.width,66)
+        ctx.fillStyle = "rgba(0,0,0,0.6)"
+        ctx.fillRect(0,canvas.height-60,100,100)
+        ctx.fillStyle = "rgba(0,0,0,0.6)"
+        ctx.fillRect(canvas.width-100,canvas.height-60,100,100)
 
 
         ctx.font = "16px monospace";
@@ -345,13 +405,21 @@ function closure() {
         ctx.fillText(`Lift     = ${round((excessLift + (mass * 9.81)) / 1000, 2).toFixed(2)} kN`, 1, 45);
         ctx.fillText(`Velocity = ${round(velX + vel, 2).toFixed(2)}, ${round(velY, 2)} m/s`, 1, 60);
 
-        ctx.fillText(`AoA   = ${round(angle, 2).toFixed(2)} deg`, canvas.width - 150, 30);
-        ctx.fillText(`Pitch = ${round(pitch * 180 / Math.PI, 2).toFixed(2)} deg`, canvas.width - 150, 45);
-
+        ctx.fillText(`AoA    = ${round(angle, 2).toFixed(2)} deg`, canvas.width - 162, 30);
+        ctx.fillText(`Pitch  = ${round(pitch * 180 / Math.PI, 2).toFixed(2)} deg`, canvas.width - 162, 45);
+        ctx.fillText(`Thrust = ${round(thrust/1e3, 2).toFixed(2)} kN`, canvas.width - 162, 60);
         ctx.fillText(round(targetHeight, 0) + " m", 1, targetHeight_pxl - 2);
-        // ctx.fillText("P: " + round(p, 1), 1, canvas.height - 2);
-        // ctx.fillText("I: " + round(i, 2), 70, canvas.height - 2);
-        // ctx.fillText("D: " + round(d, 3), 135, canvas.height - 2);
+        
+        //PID Text
+        ctx.fillText("Height PID:", 1, canvas.height - 2-45);
+        ctx.fillText("P = " + round(pidOut_height[2], 2).toFixed(2), 1, canvas.height - 2-30);
+        ctx.fillText("I = " + round(pidOut_height[3], 2).toFixed(2), 1, canvas.height - 2-15);
+        ctx.fillText("D = " + round(pidOut_height[4], 2).toFixed(2), 1, canvas.height - 2);
+        ctx.fillText("xPos PID:", canvas.width-97, canvas.height - 2-45);
+        ctx.fillText("P = " + round(pidOut_x[2], 2).toFixed(2), canvas.width-97, canvas.height - 2-30);
+        ctx.fillText("I = " + round(pidOut_x[3], 2).toFixed(2), canvas.width-97, canvas.height - 2-15);
+        ctx.fillText("D = " + round(pidOut_x[4], 2).toFixed(2), canvas.width-97, canvas.height - 2);
+
         ctx.font = "12px serif";
         ctx.save()
         ctx.translate(canvas.width - 3, targetHeight_pxl + 16)
