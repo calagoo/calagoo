@@ -60,7 +60,7 @@ function closure() {
     const maxthrust = 64_400; // Newtons
 
     // clouds
-    cloudArray = []
+    cloudArray = [] // creating a cloudArray and a cloud class. This will allow me to randomize each cloud. First time using classes in JS; I am sure this isn't ideal.
     class cloud {
         constructor(x, y, dist, size,xOffset,yOffset,lobes,blur) {
             this.x = x
@@ -72,11 +72,11 @@ function closure() {
             this.yOffset = yOffset
             this.blur = blur
             var maxOffset=60
-            for(i=0; i<lobes ;i++){
+            for(i=0; i<lobes ;i++){                         // Now here we can randomize some of the details such as the size, position, and blur
                 size[i] = (2 + Math.random() * 2);
                 xOffset[i] = (maxOffset/2 - Math.random() * maxOffset);
-                yOffset[i] = (maxOffset/2 - Math.random() * maxOffset)*(xOffset[i]/maxOffset)**0.2;
-                blur[i] = (1-(((xOffset[i]**2 + yOffset[i]**2)**0.5)/((maxOffset**2 + maxOffset**2)**0.5)))*0.6
+                yOffset[i] = (maxOffset/2 - Math.random() * maxOffset)*(xOffset[i]/maxOffset)**0.2;     // the y offset is multiplied by the unit vector for x to the 0.2 power --  because I like the shape it makes
+                blur[i] = (1-(((xOffset[i]**2 + yOffset[i]**2)**0.5)/((maxOffset**2 + maxOffset**2)**0.5)))*0.6 // I find the magnitude unit vector of the position and blur based on the farthest points. This makes the outside of the cloud fuzzier
             }
 
         }
@@ -101,26 +101,27 @@ function closure() {
         angle = planeMove_out[1];
         xPos = planeMove_out[2];
         // drawing clouds
-        if ((Math.random() > .90 && cloudArray.length < 25) || cloudArray.length < 5) {
+        if ((Math.random() > .90 && cloudArray.length < 50) || cloudArray.length < 5) {     // 90% chance per frame that a cloud will spawn, or 99.8% chance one will spawn every second. If unlucky, there is a minimum and max amount of clouds. There will always be at least 5.
             cloudArray[cloudArray.length] = new cloud(canvas.width + 30,                // x pos
             heightConvert(centerY - Math.random() * 250),                           // height
             1 + round(Math.random() * 5, 0),                                        // distance from camera
             [],                                                                     // size
             [],                                                                     // xOffset
             [],                                                                     // yOffset
-            1 + round(Math.random() * 100,0),                                       // lobes
+            1 + round(Math.random() * 100,0),                                       // lobes - the amount of parts the cloud has, with a max of 1+100 here (+1 so it isnt zero, probably could do +15 too)
             [])                                                                     // blur
         }
-        for (i = 0; i < cloudArray.length; i++) {
-            cloudArray[i].x -= cloudArray[i].dist/2
-            if (cloudArray[i].x != undefined) {
-                drawCloud(cloudArray[i])
+        for (i = 0; i < cloudArray.length; i++) {       // for each cloud...
+            cloudArray[i].x -= cloudArray[i].dist/2     // movement speed is based off distance from camera, causing parallax effect (farther obj move "slower").. divide by two because it looks better... 200m/s is actually pretty fast so the clouds would be flying by
+            if (cloudArray[i].x != undefined) {         // just so nothing throws an error, although not sure if this even works here
+                drawCloud(cloudArray[i])                // draw the cloud!
                 if (cloudArray[i].dist <= 3 && Math.abs(cloudArray[i].x - xPos)< 50 && Math.abs(heightConvertInv(cloudArray[i].y) - height) < 15){
-                    drawPlane(heightConvert(height), pitch);
+                    // drawCloud(cloudArray[i],"red") // uncomment this for clouds around the plane to light up red when the plane should go in front of them
+                    drawPlane(heightConvert(height), pitch); // if the cloud is at the correct distance and near the plane, draw plane again so it ends up in FRONT of the rearward clouds
                 }
             }
             if (cloudArray[i].x < -30) {
-                cloudArray.splice(i, 1)
+                cloudArray.splice(i, 1)     // when cloud leaves frame, delete the obj from the array
             }
         }
 
@@ -138,23 +139,17 @@ function closure() {
 
     function drawCloud(cloudObj,color) {
         
-        if (color != undefined){
-            ctx.fillStyle = color
-        }
-        // ctx.fillRect(cloudObj.x, cloudObj.y, 10, 10);
         
-        // console.log(cloudObj.lobes)
         
-        ctx.beginPath();
-        for(j=0;j<cloudObj.lobes;j++){
-            
+        for(j=0;j<cloudObj.lobes;j++){            
             ctx.fillStyle = `rgba(${240 * (cloudObj.dist / 5)**0.2},${240 * (cloudObj.dist / 5)**0.2},${240 * (cloudObj.dist / 5)**0.2},${cloudObj.blur[j]})`;
+            if (color != undefined){ // for debug purposes
+                ctx.fillStyle = color
+            }
             ctx.fillRect(cloudObj.x + cloudObj.xOffset[j], cloudObj.y + cloudObj.yOffset[j], cloudObj.size[j] + cloudObj.dist, cloudObj.size[j] + cloudObj.dist);
         }
-        // ctx.arc(cloudObj.x - cloudObj.xOffset, cloudObj.y - cloudObj.yOffset, cloudObj.size + cloudObj.dist + cloudObj.xOffset, 0, 2 * Math.PI, false);
-        // ctx.arc(cloudObj.x, cloudObj.y + cloudObj.yOffset**1.5, cloudObj.size, 0, 2 * Math.PI, false);
-        // ctx.arc(cloudObj.x, cloudObj.y, cloudObj.size + cloudObj.dist, 0, 2 * Math.PI, false);
-        ctx.fill();
+
+        // originally clouds were made up of circles using context.arc(), but arcs sometimes have weird effects when close to eachother
     }
 
     function clearScreen() {
@@ -162,11 +157,11 @@ function closure() {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    function heightConvert(ht) {
+    function heightConvert(ht) { // convert meters to pixels
         return canvas.height - (canvas.height / 200) * ht;
     }
 
-    function heightConvertInv(ht) {
+    function heightConvertInv(ht) { // convert pixels to meters
         return 200 - (ht * 200) / canvas.height;
     }
 
@@ -212,7 +207,10 @@ function closure() {
         // Calculate the integral term
         ierr = ierr + ki * error * (dt / 1000);
         i = ierr;
+
+        // change in process variable
         dpv = (process_variable - pv_last) / (dt / 1000);
+
         // Calculate the derivative term
         d = -kd * dpv;
 
@@ -227,12 +225,6 @@ function closure() {
 
     function planeMovement(height, targetHeight, angle, xPos) {
 
-        // // Classic PID
-        // kp = 1;
-        // ki = 0.001;
-        // kd = .8;
-
-
         pidOut_x = pid(
             kp = 20,
             ki = 0.01,
@@ -244,7 +236,7 @@ function closure() {
             pidOut_x[1],
             (high = maxthrust / 1000),
             (low = 0),
-            (op0 = drag / 1000) //bias
+            (op0 = drag / 1000) //bias, this means at 0 thrust == drag
         );
 
         pidOut_height = pid(
@@ -323,7 +315,8 @@ function closure() {
         velX += (accelX * (dt / 1000));
         xPos += velX * (dt / 1000)
 
-        pitch = Math.atan2(velY, velX + vel)
+        pitch = Math.atan2(velY, velX + vel) // find pitch using atan2, whichever way the aircraft is accelerating is where itll pitch to
+
         drawPlane(heightConvert(height), pitch);
         return [height, angle, xPos];
     }
@@ -384,19 +377,17 @@ function closure() {
         // Boost!
         ctx.beginPath();
         ctx.moveTo(0,0)
-        ctx.lineTo(-(thrust-20000)*20/64.4e3,planeHeight/2)
+        ctx.lineTo(-(thrust-30000)*40/64.4e3,planeHeight/2) // make flame dependent on thrust
         ctx.lineTo(0,planeHeight)
         ctx.fillStyle = "orange";
         ctx.fill()
         
         ctx.beginPath();
         ctx.moveTo(0,2)
-        ctx.lineTo(-(thrust-20000)*14/64.4e3,planeHeight/2)
+        ctx.lineTo(-(thrust-30000)*30/64.4e3,planeHeight/2)
         ctx.lineTo(0,planeHeight-2)
         ctx.fillStyle = "yellow";
         ctx.fill()
-        
-
         ctx.restore();
     }
 
@@ -471,7 +462,7 @@ function closure() {
     }
 
 
-
+    // not my function
     const detectClose = (x, array) => {
         // if array has less or equal 2 elements, no further verification needed
         if (array.length <= 2) {
@@ -501,6 +492,7 @@ function closure() {
         return [lower[0], higher[0]];
     };
 
+    // simpler rounding function than the Math.round()
     const round = (x, sigfigs) => {
         return Math.round(x * 10 ** sigfigs) / 10 ** sigfigs;
     };
