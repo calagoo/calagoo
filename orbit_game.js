@@ -7,14 +7,13 @@ function closure() {
   const ctx = canvas.getContext("2d");
   const average = (array) => array.reduce((a, b) => a + b) / array.length;
 
-  var starX = []
-  var starY = []
-  const starCount = Math.random()*100
-  for(i=0;i<starCount;i++){
-    starX[i] = Math.random()*canvas.width
-    starY[i] = Math.random()*canvas.height
+  var starX = [];
+  var starY = [];
+  const starCount = Math.random() * 100;
+  for (i = 0; i < starCount; i++) {
+    starX[i] = Math.random() * canvas.width;
+    starY[i] = Math.random() * canvas.height;
   }
-
 
   // issues to work out:
   // orbit precedes over time?? not sure why. To watch, increase x/y array size
@@ -83,7 +82,7 @@ function closure() {
     if (pause || drag) {
       setTimeout(drawGame, dt);
       clearScreen();
-      drawStars()
+      drawStars();
       drawSun();
       drawPlayButton();
       if (planet) {
@@ -94,7 +93,7 @@ function closure() {
       }
     } else {
       clearScreen();
-      drawStars()
+      drawStars();
       drawSun();
       drawPauseButton();
       setTimeout(drawGame, dt);
@@ -109,9 +108,9 @@ function closure() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
-  
-  function drawStars(){
-    for(i=0;i<starX.length;i++){
+
+  function drawStars() {
+    for (i = 0; i < starX.length; i++) {
       ctx.fillStyle = "white";
       ctx.fillRect(starX[i], starY[i], 1, 1);
     }
@@ -230,11 +229,7 @@ function closure() {
     ctx.font = "16px monospace";
     ctx.fillStyle = "white";
     ctx.fillText("Orbital Data:", 1, 15);
-    ctx.fillText(
-      "Timestep (hr) = " + (timestep / 3600),
-      canvas.width - 180,
-      30
-    );
+    ctx.fillText("Timestep (hr) = " + timestep / 3600, canvas.width - 180, 30);
 
     // Math for the orbital dynamics is done here
     roundedDistance = dist / 1000;
@@ -289,30 +284,37 @@ function closure() {
     }
 
     ctx.fillText(
-      "Distance      = " + (Math.round(roundedDistance / 1e4) / 1e2).toFixed(2) + " (10\u2076 km)",
+      "Distance      = " +
+        (Math.round(roundedDistance / 1e4) / 1e2).toFixed(2) +
+        " (10\u2076 km)",
       1,
       30
     );
     ctx.fillText(
-      "Orbital Speed = " + (Math.round(orbitalSpeed / 1e2) / 1e1).toFixed(2) + " (km/s)",
+      "Orbital Speed = " +
+        (Math.round(orbitalSpeed / 1e2) / 1e1).toFixed(2) +
+        " (km/s)",
       1,
       45
     );
     ctx.fillText(
-      "Eccentricity  = " + (Math.round(average(ecc_arr) * 100) / 100).toFixed(2),
+      "Eccentricity  = " +
+        (Math.round(average(ecc_arr) * 100) / 100).toFixed(2),
       1,
       60
     );
 
     ctx.fillText(
       "Apoapsis      = " +
-        (Math.round(average(apoapsis_arr) / 1000 / 1e4) / 1e2).toFixed(2) + " (10\u2076 km)",
+        (Math.round(average(apoapsis_arr) / 1000 / 1e4) / 1e2).toFixed(2) +
+        " (10\u2076 km)",
       1,
       75
     );
     ctx.fillText(
       "Periapsis     = " +
-        (Math.round(average(periapsis_arr) / 1000 / 1e4) / 1e2).toFixed(2) + " (10\u2076 km)",
+        (Math.round(average(periapsis_arr) / 1000 / 1e4) / 1e2).toFixed(2) +
+        " (10\u2076 km)",
       1,
       90
     );

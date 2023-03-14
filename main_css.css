@@ -97,6 +97,7 @@ canvas {
   display: flex;
 }
 
+/* For camvases to stack when window is shrunk */
 @media screen and (max-width: 1000px) {
   .row {
     flex-direction: column;
