@@ -93,12 +93,12 @@ canvas {
   display: flex;
 }
 
-#footer {
-  position: absolute;
+/* for version number */
+#footer { 
+  position: fixed;
   bottom: 0;
   text-align: right;
   width: 100%;
-
   color: #5A5A5A;
 }
 
