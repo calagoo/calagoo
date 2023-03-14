@@ -84,12 +84,19 @@ function closure() {
         setTimeout(drawGame, dt);
         clearScreen();
 
+        drawTargetLine();
+        planeMove_out = planeMovement(height, targetHeight, angle, xPos);
+        heightLast = height;
+        xPosLast = xPos;
+        height = planeMove_out[0];
+        angle = planeMove_out[1];
+        xPos = planeMove_out[2];
 
         // drawing clouds
-        if ((Math.random() > .95 && cloudArray.length < 25) || cloudArray.length < 5) {
+        if ((Math.random() > .90 && cloudArray.length < 25) || cloudArray.length < 5) {
             cloudArray[cloudArray.length] = new cloud(canvas.width + 10,        // x pos
                 heightConvert(centerY - Math.random() * 250),                   // height
-                1 + round(Math.random() * 5, 0),                                // distance from cam
+                1 + round(Math.random() * 5, 0),                                // distance from camera
                 5 + Math.random() * 3,                                          // lobe size
                 4 - Math.random() * 8,                                          // x,y offset
                 4 - Math.random() * 8)                                          // x,y offset                                       
@@ -99,21 +106,17 @@ function closure() {
             cloudArray[i].x -= cloudArray[i].dist/2
             if (cloudArray[i].x != undefined) {
                 drawCloud(cloudArray[i])
+                if (cloudArray[i].dist <= 3 && Math.abs(cloudArray[i].x - xPos)< 50 && Math.abs(heightConvertInv(cloudArray[i].y) - height) < 15){
+                    // console.log(cloudArray[i].y,height)
+                    // drawCloud(cloudArray[i],"red")
+                    drawPlane(heightConvert(height), pitch);
+                }
             }
             if (cloudArray[i].x < -10) {
                 cloudArray.splice(i, 1)
             }
         }
 
-
-
-        drawTargetLine();
-        planeMove_out = planeMovement(height, targetHeight, angle, xPos);
-        heightLast = height;
-        xPosLast = xPos;
-        height = planeMove_out[0];
-        angle = planeMove_out[1];
-        xPos = planeMove_out[2];
         drawTextData(height, targetHeight, angle);
 
         // short clamp to make sure the target height isn't too large or small (this is just a backup, the one in the mouseMove() function shouldnt fail)
@@ -126,13 +129,17 @@ function closure() {
 
     }
 
-    function drawCloud(cloudObj) {
+    function drawCloud(cloudObj,color) {
         ctx.fillStyle = `rgb(${255 * (cloudObj.dist / 5)**0.2},${255 * (cloudObj.dist / 5)**0.2},${255 * (cloudObj.dist / 5)**0.2})`;
+
+        if (color != undefined){
+            ctx.fillStyle = color
+        }
         // ctx.fillRect(cloudObj.x, cloudObj.y, 10, 10);
         ctx.beginPath();
         ctx.arc(cloudObj.x + cloudObj.xOffset, cloudObj.y + cloudObj.yOffset, cloudObj.size + cloudObj.dist - cloudObj.yOffset, 0, 2 * Math.PI, false);
         ctx.arc(cloudObj.x - cloudObj.xOffset, cloudObj.y - cloudObj.yOffset, cloudObj.size + cloudObj.dist + cloudObj.xOffset, 0, 2 * Math.PI, false);
-        ctx.arc(cloudObj.x, cloudObj.y + cloudObj.yOffset**2, cloudObj.size, 0, 2 * Math.PI, false);
+        ctx.arc(cloudObj.x, cloudObj.y + cloudObj.yOffset**1.5, cloudObj.size, 0, 2 * Math.PI, false);
         // ctx.arc(cloudObj.x, cloudObj.y, cloudObj.size + cloudObj.dist, 0, 2 * Math.PI, false);
         ctx.fill();
     }
@@ -313,16 +320,24 @@ function closure() {
         var planeHeight = 10;
 
         ctx.fillStyle = "white";
-
+        
         // Body
         ctx.save();
         ctx.translate(xPos - planeLength / 2, height - planeHeight / 2);
         ctx.rotate(-pitch);
         ctx.fillRect(0, 0, planeLength, planeHeight);
+        ctx.fillStyle = "black";
+        ctx.fillRect(2, 2, planeLength-4, planeHeight-4);
         ctx.restore();
     }
 
     function drawTextData(height, targetHeight, angle) {
+
+        //draw text box
+        ctx.fillStyle = "rgba(0,0,0,0.6)"
+        ctx.fillRect(0,0,canvas.width,66)
+
+
         ctx.font = "16px monospace";
         ctx.fillStyle = "white";
         ctx.fillText("Plane Data:", 1, 15);
