@@ -10,8 +10,11 @@ function closure() {
   //other
   var mouseUp_bool = true;
   var mouseDown_bool = false;
-  var mousePosX_click;
-  var mousePosY_click;
+  var mousePosX_click_target;
+  var mousePosY_click_target;
+  var mousePosX_click_cloud;
+  var mousePosY_click_cloud;
+  var maxCloudAmount = 24;
 
   //// sim constants
   const fps = 60; // frames per second
@@ -97,7 +100,6 @@ function closure() {
 
     setTimeout(drawGame, dt);
     clearScreen();
-
     drawTargetLine();
     planeMove_out = planeMovement(height, targetHeight, angle, xPos);
     heightLast = height;
@@ -107,47 +109,48 @@ function closure() {
     xPos = planeMove_out[2];
     // drawing clouds
     if (
-      (Math.random() > 0.9 && cloudArray.length < 50) ||
-      cloudArray.length < 5
-    ) {
-      // 90% chance per frame that a cloud will spawn, or 99.8% chance one will spawn every second. If unlucky, there is a minimum and max amount of clouds. There will always be at least 5.
-      cloudArray[cloudArray.length] = new cloud(
-        canvas.width + 30, // x pos
-        heightConvert(centerY - Math.random() * 250), // height
-        1 + round(Math.random() * 5, 0), // distance from camera
-        [], // size
-        [], // xOffset
-        [], // yOffset
-        1 + round(Math.random() * 100, 0), // lobes - the amount of parts the cloud has, with a max of 1+100 here (+1 so it isnt zero, probably could do +15 too)
-        []
-      ); // blur
-    }
-    for (i = 0; i < cloudArray.length; i++) {
-      // for each cloud...
-      cloudArray[i].x -= cloudArray[i].dist / 2; // movement speed is based off distance from camera, causing parallax effect (farther obj move "slower").. divide by two because it looks better... 200m/s is actually pretty fast so the clouds would be flying by
-      if (cloudArray[i].x != undefined) {
-        // just so nothing throws an error, although not sure if this even works here
-        drawCloud(cloudArray[i]); // draw the cloud!
-        if (
-          cloudArray[i].dist <= 3 &&
-          Math.abs(cloudArray[i].x - xPos) < 50 &&
-          Math.abs(heightConvertInv(cloudArray[i].y) - height) < 15
+        (Math.random() > 0.25 && cloudArray.length < maxCloudAmount) ||
+        cloudArray.length < 0
         ) {
-          // drawCloud(cloudArray[i],"red") // uncomment this for clouds around the plane to light up red when the plane should go in front of them
-          drawPlane(heightConvert(height), pitch); // if the cloud is at the correct distance and near the plane, draw plane again so it ends up in FRONT of the rearward clouds
+            // 90% chance per frame that a cloud will spawn, or 99.8% chance one will spawn every second. If unlucky, there is a minimum and max amount of clouds. There will always be at least 5.
+            cloudArray[cloudArray.length] = new cloud(
+                canvas.width + 30, // x pos
+                heightConvert(centerY - Math.random() * 250), // height
+                1 + round(Math.random() * 5, 0), // distance from camera
+                [], // size
+                [], // xOffset
+                [], // yOffset
+                1 + round(Math.random() * 100, 0), // lobes - the amount of parts the cloud has, with a max of 1+100 here (+1 so it isnt zero, probably could do +15 too)
+                []
+                ); // blur
+            }
+            for (i = 0; i < cloudArray.length; i++) {
+                // for each cloud...
+                cloudArray[i].x -= cloudArray[i].dist / 2; // movement speed is based off distance from camera, causing parallax effect (farther obj move "slower").. divide by two because it looks better... 200m/s is actually pretty fast so the clouds would be flying by
+                if (cloudArray[i].x != undefined) {
+                    // just so nothing throws an error, although not sure if this even works here
+                    drawCloud(cloudArray[i]); // draw the cloud!
+        if (
+            cloudArray[i].dist <= 3 &&
+            Math.abs(cloudArray[i].x - xPos) < 50 &&
+            Math.abs(heightConvertInv(cloudArray[i].y) - height) < 15
+            ) {
+                // drawCloud(cloudArray[i],"red") // uncomment this for clouds around the plane to light up red when the plane should go in front of them
+                drawPlane(heightConvert(height), pitch); // if the cloud is at the correct distance and near the plane, draw plane again so it ends up in FRONT of the rearward clouds
         }
-      }
-      if (cloudArray[i].x < -30) {
-        cloudArray.splice(i, 1); // when cloud leaves frame, delete the obj from the array
-      }
     }
+    if (cloudArray[i].x < -30) {
+        cloudArray.splice(i, 1); // when cloud leaves frame, delete the obj from the array
+    }
+}
 
-    drawTextData(height, targetHeight, angle);
+drawTextData(height, targetHeight, angle);
+drawCloudSlider(maxCloudAmount);
 
-    // short clamp to make sure the target height isn't too large or small (this is just a backup, the one in the mouseMove() function shouldnt fail)
-    if (targetHeight > 150) {
-      targetHeight = 150;
-    } else if (targetHeight < 30) {
+// short clamp to make sure the target height isn't too large or small (this is just a backup, the one in the mouseMove() function shouldnt fail)
+if (targetHeight > 150) {
+    targetHeight = 150;
+} else if (targetHeight < 30) {
       targetHeight = 30;
     }
   }
@@ -204,6 +207,25 @@ function closure() {
     ctx.fillStyle = "grey";
     ctx.arc(canvas.width - 5, targetHeight_pxl, 20, 0, 2 * Math.PI, false);
     ctx.fill();
+  }
+
+  function drawCloudSlider(maxCloudAmount){
+    
+    ctx.fillStyle = "white"
+    ctx.setLineDash([]);
+    ctx.beginPath()
+    ctx.moveTo(canvas.width/3,canvas.height-35)
+    ctx.lineTo(2*canvas.width/3,canvas.height-35)
+    ctx.stroke()
+    
+    diff = 2*canvas.width/3 - canvas.width/3
+    
+    ctx.beginPath()
+    ctx.arc((canvas.width/3)+maxCloudAmount/200*diff,canvas.height-35,10,0,2*Math.PI,false)
+    ctx.fill()
+    
+    ctx.font = "16px monospace";
+    ctx.fillText(`Max Clouds = ${maxCloudAmount}`,centerX-65,canvas.height-5)
   }
 
   function pid(
@@ -415,9 +437,7 @@ function closure() {
     ctx.fillStyle = "rgba(0,0,0,0.6)";
     ctx.fillRect(0, 0, canvas.width, 66);
     ctx.fillStyle = "rgba(0,0,0,0.6)";
-    ctx.fillRect(0, canvas.height - 60, 100, 100);
-    ctx.fillStyle = "rgba(0,0,0,0.6)";
-    ctx.fillRect(canvas.width - 100, canvas.height - 60, 100, 100);
+    ctx.fillRect(0, canvas.height-60, canvas.width, 100);
 
     ctx.font = "16px monospace";
     ctx.fillStyle = "white";
@@ -493,39 +513,57 @@ function closure() {
     ctx.restore();
   }
 
+  function moveCloudMax(mousePosX, mousePosY){
+    diff = 2*canvas.width/3 - canvas.width/3
+    maxCloudAmount = round(((mousePosX-(canvas.width/3))/diff)*200,0)
+  }
   function moveTargetHeight(mousePosX, mousePosY) {
     targetHeight = heightConvertInv(mousePosY);
   }
 
+
   PID_mouseDown = function mouseDown() {
     mouseUp_bool = false;
     mouseDown_bool = true;
-    mousePosX_click = window.event.pageX - canvas.offsetLeft;
-    mousePosY_click =
+    mousePosX_click_target = window.event.pageX - canvas.offsetLeft;
+    mousePosY_click_target =
       targetHeight_pxl - (window.event.pageY - canvas.offsetTop);
+    mousePosX_click_cloud = ((canvas.width/3)+maxCloudAmount/200*diff) - (window.event.pageX - canvas.offsetLeft);
+    mousePosY_click_cloud = (window.event.pageY - canvas.offsetTop);
   };
 
   PID_mouseMove = function mouseMove() {
     mousePosX_drag = window.event.pageX - canvas.offsetLeft;
     mousePosY_drag = window.event.pageY - canvas.offsetTop;
-    if (mouseDown_bool) {
-      // checks if the mouse is currently clicking/holding down
-      if (
-        mousePosX_click > 475 &&
-        mousePosY_click < 20 &&
-        mousePosY_click > -20
+    
+    if (mouseDown_bool) { // checks if the mouse is currently clicking/holding down
+        if (// checks that you clicked originally on the height drag ball
+          
+        mousePosX_click_target > 475 &&
+        mousePosY_click_target < 20 &&
+        mousePosY_click_target > -20
       ) {
-        // checks that you clicked originally on the height drag ball
-        if (
+        if (// doesn't track if you try to change height to too high or too low
+            
           heightConvertInv(mousePosY_drag) <= 150 &&
           heightConvertInv(mousePosY_drag) >= 30
         ) {
-          // doesn't track if you try to change height to too high or too low
           moveTargetHeight(mousePosX_drag, mousePosY_drag);
         }
       }
+      if (
+          mousePosX_click_cloud > -10 &&
+          mousePosX_click_cloud < +10 &&
+          mousePosY_click_cloud > canvas.height-50 &&
+          mousePosY_click_cloud < canvas.height-30
+          ) {
+            if(mousePosX_drag <= 2*canvas.width/3 && mousePosX_drag >= canvas.width/3){
+                moveCloudMax(mousePosX_drag, mousePosY_drag)
+            }
+      }
     }
   };
+
   PID_mouseUp = function mouseUp() {
     mouseUp_bool = true;
     mouseDown_bool = false;
