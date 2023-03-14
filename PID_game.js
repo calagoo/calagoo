@@ -131,8 +131,8 @@ function closure() {
         if (targetHeight > 150) {
             targetHeight = 150
         }
-        else if (targetHeight < 15) {
-            targetHeight = 15
+        else if (targetHeight < 30) {
+            targetHeight = 30
         }
 
     }
@@ -450,7 +450,7 @@ function closure() {
         mousePosY_drag = window.event.pageY - canvas.offsetTop;
         if (mouseDown_bool) { // checks if the mouse is currently clicking/holding down
             if (mousePosX_click > 475 && mousePosY_click < 20 && mousePosY_click > -20) { // checks that you clicked originally on the height drag ball
-                if (heightConvertInv(mousePosY_drag) <= 150 && heightConvertInv(mousePosY_drag) >= 15) { // doesn't track if you try to change height to too high or too low
+                if (heightConvertInv(mousePosY_drag) <= 150 && heightConvertInv(mousePosY_drag) >= 30) { // doesn't track if you try to change height to too high or too low
                     moveTargetHeight(mousePosX_drag, mousePosY_drag)
                 }
             }
