@@ -119,7 +119,7 @@ function closure() {
                     drawPlane(heightConvert(height), pitch);
                 }
             }
-            if (cloudArray[i].x < -10) {
+            if (cloudArray[i].x < -30) {
                 cloudArray.splice(i, 1)
             }
         }

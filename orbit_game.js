@@ -112,7 +112,6 @@ function closure() {
   
   function drawStars(){
     for(i=0;i<starX.length;i++){
-
       ctx.fillStyle = "white";
       ctx.fillRect(starX[i], starY[i], 1, 1);
     }
