@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-  <meta name="viewport" content="width=1280, initial-scale=1">
+  <meta name="viewport" content="width=1280, initial-scale=1" />
   <script>
     var siteWidth = 1280;
-    var scale = screen.width /siteWidth;
-    document.querySelector('meta[name="viewport"]').setAttribute('content', 'width='+siteWidth+', initial-scale='+scale+'');
+    var scale = screen.width / siteWidth;
+    document
+      .querySelector('meta[name="viewport"]')
+      .setAttribute(
+        "content",
+        "width=" + siteWidth + ", initial-scale=" + scale + ""
+      );
   </script>
   <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.6.0/math.js"></script>
@@ -68,30 +73,31 @@
       class="header-container"
       data-text-keypath="customizations.masthead.title.text"
       value="Robert Rodriguez Jr"
-      >
+    >
       Robert Rodriguez Jr
       <h2
-      style="padding-top: 0px"
-      decorator="inlineTextEditable"
-      contenteditable="false"
-      class="header-container"
-      data-text-keypath="page.masthead.text.text"
-      value="Aerospace Engineering Graduate from ASU"
+        style="padding-top: 0px"
+        decorator="inlineTextEditable"
+        contenteditable="false"
+        class="header-container"
+        data-text-keypath="page.masthead.text.text"
+        value="Aerospace Engineering Graduate from ASU"
       >
-      Aerospace Engineering Graduate from ASU
-      
-      <div class="tab">
-        <script src="tabs.js"></script>
-        <button class="tablinks" onclick="openSection(event, 'About Me')" id="defaultOpen">
-          About Me
+        Aerospace Engineering Graduate from ASU
+
+        <div class="tab">
+          <script src="tabs.js"></script>
+          <button class="tablinks" onclick="openSection(event, 'About Me')">
+            About Me
+          </button>
+          <button class="tablinks" onclick="openSection(event, 'Simulations')">
+            Simulations
           </button>
           <button
             class="tablinks"
-            onclick="openSection(event, 'Simulations')"
+            onclick="openSection(event, 'Other')"
+            id="defaultOpen"
           >
-            Simulations
-          </button>
-          <button class="tablinks" onclick="openSection(event, 'Other')">
             Other
           </button>
         </div>
@@ -99,16 +105,12 @@
     </h1>
 
     <div id="About Me" class="tabcontent">
-      <script>
-        // Get the element with id="defaultOpen" and click on it
-        document.getElementById("defaultOpen").click();
-      </script>
       <p
-      decorator="inlineTextEditable"
-      contenteditable="false"
-      class="header-container"
-      data-text-keypath="page.masthead.text.text"
-      value="Aerospace Engineering Graduate from ASU"
+        decorator="inlineTextEditable"
+        contenteditable="false"
+        class="header-container"
+        data-text-keypath="page.masthead.text.text"
+        value="Aerospace Engineering Graduate from ASU"
       >
         Hello, I am Robert Rodriguez. I graduated in December of 2022 from
         Arizona State University and started working shortly after. I figured
@@ -129,7 +131,7 @@
       </p>
     </div>
     <div id="Simulations" class="tabcontent">
-      <p style="margin-left: auto; margin-right: auto;">
+      <p style="margin-left: auto; margin-right: auto">
         I have added these small simulations to showcase my coding and
         interests. As a disclaimer, I don't have much experience with
         Javascript, and these are my first tries with it. I have always loved
@@ -235,7 +237,21 @@
     </div>
     <div id="Other" class="tabcontent">
       <p>other</p>
+      <canvas
+        id="Ball_game"
+        width="500"
+        height="500"
+        onmousedown="PID_mouseDown()"
+        onmouseup="PID_mouseUp()"
+        onmousemove="PID_mouseMove()"
+      ></canvas>
+      <script src="Ball_game.js"></script>
+      <figcaption style="width: 500px">
+      <script>
+        // Get the element with id="defaultOpen" and click on it
+        document.getElementById("defaultOpen").click();
+      </script>
     </div>
-    <div id="footer">Version: 0.4.0.1</div>
+    <div id="footer">Version: 0.4.0.5</div>
   </body>
-  </html>
+</html>
