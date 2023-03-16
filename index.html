@@ -23,35 +23,8 @@
 
 <body>
   <div class="link-container" style="text-align: center">
-    <!-- <style>
-      div {
-        text-align: center;
-      }
-    </style> -->
     <nav data-hover-hint="nav">
       <div class="link-title">
-        <!-- <style>
-          .button {
-            background-color: #5a5a5a;
-            /* Green */
-            border: none;
-            color: white;
-            padding: 16px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            transition-duration: 0.4s;
-            cursor: pointer;
-            box-shadow: inset black 0px 1px 2px;
-          }
-
-          .button:hover {
-            background-color: rgb(172, 170, 175);
-            color: white;
-          }
-        </style> -->
         <a class="linkButton" href="https://github.com/calagoo" target="_blank">
           GITHUB</a>
         <a class="linkButton" href="http://mailto:robbierodiguez98@gmail.com"
@@ -76,13 +49,14 @@
       <button class="tablinks" onclick="openSection(event, 'Simulations')">
         Simulations
       </button>
-      <button class="tablinks" onclick="openSection(event, 'Other')" id="defaultOpen">
-        Other
+      <button class="tablinks" onclick="openSection(event, 'WIP')" id="defaultOpen">
+        WIP
       </button>
     </div>
   </div>
 
   <div id="AboutMe" class="tabcontent">
+    <h2>About Me</h2>
     <p>
       Hello, I am Robert Rodriguez. I graduated in December of 2022 from
       Arizona State University and started working shortly after. I figured
@@ -103,6 +77,7 @@
     </p>
   </div>
   <div id="Simulations" class="tabcontent">
+    <h2>Simulations</h2>
     <p style="margin-left: auto; margin-right: auto">
       I have added these small simulations to showcase my coding and
       interests. As a disclaimer, I don't have much experience with
@@ -111,7 +86,8 @@
       Universe Sandbox. Although I have tried, solo game dev is not for me,
       but I have come to realize I love putting together small simulations
       such as the ones below. Visualizing how physics interact I think is
-      amazing, and it helps me stay sharp on math from university.<br><br>
+      amazing, and it helps me stay sharp on math from university as well as learning new concepts and most importantly,
+      how to implement it into code.<br><br>
       Also of course this entire website is always a work in progress. Please
       feel free and take a look at the source code on github to see how I
       created these little sims.
@@ -186,8 +162,13 @@
       </div>
     </div>
   </div>
-  <div id="Other" class="tabcontent">
-    <p>other</p>
+  <div id="WIP" class="tabcontent">
+    <h2>Work in Progress</h2>
+    <p>Want to see what I am working on currently? The simulation/visualizer should be on this page. It could range from
+      just an empty
+      canvas to a 99% complete sim. Currently this is showing collidiing balls, my attempt at a simple physics system.
+      As of 3/15/23, it is 50% complete, with most of the math finalized.
+    </p>
     <canvas id="Ball_game" width="500" height="500" onmousedown="PID_mouseDown()" onmouseup="PID_mouseUp()"
       onmousemove="PID_mouseMove()"></canvas>
     <script src="Ball_game.js"></script>
@@ -195,6 +176,7 @@
       // Get the element with id="defaultOpen" and click on it
       document.getElementById("defaultOpen").click();
     </script>
+  </div>
   </div>
   <div id="footer">Version: 0.4.1.23</div>
 </body>
