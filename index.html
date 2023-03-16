@@ -65,8 +65,7 @@
     <h1 contenteditable="false" data-text-keypath="customizations.masthead.title.text">
       Robert Rodriguez Jr
     </h1>
-    <p style="padding-top: 0px" contenteditable="false" class="subHeader" data-text-keypath="page.masthead.text.text"
-      value="Aerospace Engineering Graduate from ASU">
+    <p style="padding-top: 0px" class="subHeader">
       Aerospace Engineering Graduate from ASU
     </p>
     <div class="tab">
@@ -117,16 +116,16 @@
       feel free and take a look at the source code on github to see how I
       created these little sims.
     </p>
-    <div style="flex: auto" class="row">
-      <div>
-      <figcaption style="
+    <div style="max-width: 1050px; column-gap: 10px;" class="row">
+      <div style="max-width: 500px;">
+        <h3 style="text-align: center; color: rgb(30,60,60); margin: auto;">Orbiter</h3>
+        <p style="
             height: 520px;
             width: 500px;
             font-size: large;
-            padding-bottom: 10px;
+            padding: 20px 0px 0px 0px ;
             text-align: left;
             ">
-          <h3>Orbiter</h3>
           This is my orbiter simulation. This simulation uses data from the
           Earth and the Sun in order to accurately model orbits.
           <br><br>To model the gravitation forces, Newtons universal law
@@ -143,25 +142,25 @@
           then taking the magnitude of it.<br><br>
           Finally, apoapsis and periapsis are easily found by using the
           semi-major axis and the eccentrity.
-        </figcaption>
+        </p>
         <canvas id="orbit_game" width="500" height="500" onmousedown="orbit_mouseDown()" onmouseup="orbit_mouseUp()"
           onmousemove="orbit_checkMouseDrag()"></canvas>
         <script src="orbit_game.js"></script>
-        <figcaption style="width: 500px">
+        <small style="width: 500px; color:rgb(30,60,60);">
           NOTE: The reason some items fluctuate (such as period, or
           eccentricity) is because of the larger timestep. The smaller the
           timestep, the more accurate the values become.
-        </figcaption>
+        </small>
       </div>
-      <figure>
-        <figcaption style="
+      <div style="max-width: 500px;">
+        <h3 style="text-align: center;color: rgb(30,60,60); margin: auto;">Flight Control</h3>
+        <p style="
               height: 520px;
               width: 500px;
               font-size: large;
-              padding-bottom: 10px;
+              padding: 20px 0px 0px 0px ;
               text-align: left;
             ">
-          <h3>Flight Control</h3>
           This simulation takes values of a Boeing 737 (including mass, CL,
           CD, thrust, and more) and inputs it into a PID controller to keep it
           both level on the target height, and in the X-center of the
@@ -180,16 +179,11 @@
           transparent it becomes. I felt like this gave the clouds a neat
           digital look. Currently there is a 75% chance to spawn a cloud per
           tick. I implemented a cloud slider in case they get distracting.
-        </figcaption>
+        </p>
         <canvas id="PID_game" width="500" height="500" onmousedown="PID_mouseDown()" onmouseup="PID_mouseUp()"
           onmousemove="PID_mouseMove()"></canvas>
         <script src="PID_game.js"></script>
-        <figcaption style="width: 500px">
-          This simulation takes values of a Boeing 737 (including mass, CL,
-          CD, thrust, and more) and inputs it into a PID controller to keep it
-          both level on the target height, and in the X-center of the window.
-        </figcaption>
-      </figure>
+      </div>
     </div>
   </div>
   <div id="Other" class="tabcontent">
@@ -202,7 +196,7 @@
       document.getElementById("defaultOpen").click();
     </script>
   </div>
-  <div id="footer">Version: 0.4.1.22</div>
+  <div id="footer">Version: 0.4.1.23</div>
 </body>
 
 </html>
