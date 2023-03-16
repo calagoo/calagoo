@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-  <meta name="viewport" content="width=1280, initial-scale=1" />
+<meta name="viewport" content="width=1280, initial-scale=1">
+
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.6.0/math.js"></script>
+  <meta charset="UTF-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+  <title>Robert Rodriguez</title>
+
+  <link rel="stylesheet" href="main_css.css" >
+</head>
   <script>
     var siteWidth = 1280;
     var scale = screen.width / siteWidth;
@@ -11,247 +20,191 @@
         "width=" + siteWidth + ", initial-scale=" + scale + ""
       );
   </script>
-  <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.6.0/math.js"></script>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Robert Rodriguez</title>
 
-    <link rel="stylesheet" href="main_css.css" />
-  </head>
+<body>
+  <div class="link-container">
+    <style>
+      div {
+        text-align: center;
+      }
+    </style>
+    <nav data-hover-hint="nav">
+      <div class="link-title">
+        <style>
+          .button {
+            background-color: #5a5a5a;
+            /* Green */
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+            box-shadow: inset black 0px 1px 2px;
+          }
 
-  <body>
-    <div class="link-container">
-      <style>
-        div {
-          text-align: center;
-        }
-      </style>
-      <nav data-hover-hint="nav">
-        <div class="link-title">
-          <style>
-            .button {
-              background-color: #5a5a5a; /* Green */
-              border: none;
-              color: white;
-              padding: 16px 32px;
-              text-align: center;
-              text-decoration: none;
-              display: inline-block;
-              font-size: 16px;
-              margin: 4px 2px;
-              transition-duration: 0.4s;
-              cursor: pointer;
-              box-shadow: inset black 0px 1px 2px;
-            }
-            .button:hover {
-              background-color: rgb(172, 170, 175);
-              color: white;
-            }
-          </style>
-          <a class="button" href="https://github.com/calagoo" target="_blank">
-            GITHUB</a
-          >
-          <a
-            class="button"
-            href="http://mailto:robbierodiguez98@gmail.com"
-            target="_blank"
-            >ROBBIERODRIGUEZ98@GMAIL.COM</a
-          >
-          <a
-            class="button"
-            href="https://github.com/calagoo/calagoo.github.io/blob/main/March9%20Resume.pdf"
-            target="_blank"
-            >RESUME</a
-          >
-        </div>
-      </nav>
-    </div>
-    <h1
-      decorator="inlineTextEditable"
-      contenteditable="false"
-      class="header-container"
-      data-text-keypath="customizations.masthead.title.text"
-      value="Robert Rodriguez Jr"
-    >
-      Robert Rodriguez Jr
-      <h2
-        style="padding-top: 0px"
-        decorator="inlineTextEditable"
-        contenteditable="false"
-        class="header-container"
-        data-text-keypath="page.masthead.text.text"
-        value="Aerospace Engineering Graduate from ASU"
-      >
-        Aerospace Engineering Graduate from ASU
-
-        <div class="tab">
-          <script src="tabs.js"></script>
-          <button class="tablinks" onclick="openSection(event, 'About Me')">
-            About Me
-          </button>
-          <button class="tablinks" onclick="openSection(event, 'Simulations')">
-            Simulations
-          </button>
-          <button
-            class="tablinks"
-            onclick="openSection(event, 'Other')"
-            id="defaultOpen"
-          >
-            Other
-          </button>
-        </div>
-      </h2>
-    </h1>
-
-    <div id="About Me" class="tabcontent">
-      <p
-        decorator="inlineTextEditable"
-        contenteditable="false"
-        class="header-container"
-        data-text-keypath="page.masthead.text.text"
-        value="Aerospace Engineering Graduate from ASU"
-      >
-        Hello, I am Robert Rodriguez. I graduated in December of 2022 from
-        Arizona State University and started working shortly after. I figured
-        out my passion towards the end of high school, I knew I wanted to be
-        involved in the aerospace engineering industry. <br /><br />
-        I have always loved cars and racing, especially Formula 1, so I thought
-        going into a field closely related to aerodynamics would be fun. Over
-        the course of my education I found out that I enjoy just about all parts
-        of aerospace engineering, including flight planning flight testing,
-        aerodynamics, and orbits/geodesy. <br /><br />
-        After starting work I became much more interested in geodesy and GNSS in
-        general. This new passion ignited some other interests, such as coding
-        and data analysis. I had coded using MATLAB throughout college, but once
-        I started using Python my skills greatly improved.<br /><br />
-        Some other hobbies I have include working on my motorcycle in my free
-        time, designing and printing CAD parts using SOLIDWORKS, and I also love
-        snowboarding, mountain biking and rock climbing (bouldering).<br /><br />
-      </p>
-    </div>
-    <div id="Simulations" class="tabcontent">
-      <p style="margin-left: auto; margin-right: auto">
-        I have added these small simulations to showcase my coding and
-        interests. As a disclaimer, I don't have much experience with
-        Javascript, and these are my first tries with it. I have always loved
-        games that are scientifically based, such as Kerbal Space Program or
-        Universe Sandbox. Although I have tried, solo game dev is not for me,
-        but I have come to realize I love putting together small simulations
-        such as the ones below. Visualizing how physics interact I think is
-        amazing, and it helps me stay sharp on math from university.<br /><br />
-        Also of course this entire website is always a work in progress. Please
-        feel free and take a look at the source code on github to see how I
-        created these little sims.
-      </p>
-      <div style="flex: auto" class="row">
-        <figure>
-          <figcaption
-            style="
-              height: 520px;
-              width: 500px;
-              font-size: large;
-              padding-bottom: 10px;
-              text-align: left;
-            "
-          >
-            <h3>Orbiter</h3>
-            This is my orbiter simulation. This simulation uses data from the
-            Earth and the Sun in order to accurately model orbits.
-            <br /><br />To model the gravitation forces, Newtons universal law
-            of gravitation is used. This is then converted to acceleration from
-            the planets mass, and then converted further into velocity and
-            position.<br /><br />The gravity force angle is calculated through a
-            arctangent function, Math.atan2().<br /><br />The distance is simply
-            the magnitude of the x and y position relative to the sun, and the
-            orbital speed is found using the orbital speed equation with values
-            G, Mass-sun, distance and semi-major axis.<br /><br />
-            The semi-major axis is found using the specific orbital energy
-            equation.<br /><br />
-            Eccentricity is found by first finding the eccentricity vector and
-            then taking the magnitude of it.<br /><br />
-            Finally, apoapsis and periapsis are easily found by using the
-            semi-major axis and the eccentrity.
-          </figcaption>
-          <canvas
-            id="orbit_game"
-            width="500"
-            height="500"
-            onmousedown="orbit_mouseDown()"
-            onmouseup="orbit_mouseUp()"
-            onmousemove="orbit_checkMouseDrag()"
-          ></canvas>
-          <script src="orbit_game.js"></script>
-          <figcaption style="width: 500px">
-            NOTE: The reason some items fluctuate (such as period, or
-            eccentricity) is because of the larger timestep. The smaller the
-            timestep, the more accurate the values become.
-          </figcaption>
-        </figure>
-        <figure>
-          <figcaption
-            style="
-              height: 520px;
-              width: 500px;
-              font-size: large;
-              padding-bottom: 10px;
-              text-align: left;
-            "
-          >
-            <h3>Flight Control</h3>
-            This simulation takes values of a Boeing 737 (including mass, CL,
-            CD, thrust, and more) and inputs it into a PID controller to keep it
-            both level on the target height, and in the X-center of the
-            window.<br /><br />
-            The coefficient of lift and drag are found by taking values from
-            airfoiltools.com, they are then linearly interpolated using the
-            angle of attack. The lift is found by using the lift equation and
-            plugging in the density of air, the velocity of the aircraft and the
-            aircrafts wing reference area (sref).<br /><br />
-            In the case of this simulation we are taking the density of air to
-            be near sea-level at 1.225 kg/m<sup>3</sup>, and velocity is 200
-            m/s. The SREF of the Boeing 737 is about 125 m<sup>2</sup>.<br /><br />
-            This simulation also features procedurally generated clouds. Each
-            cloud is created out of a random number of "lobes", and each lobe is
-            placed randomly around the cloud. The further out a lobe, the more
-            transparent it becomes. I felt like this gave the clouds a neat
-            digital look. Currently there is a 75% chance to spawn a cloud per
-            tick. I implemented a cloud slider in case they get distracting.
-          </figcaption>
-          <canvas
-            id="PID_game"
-            width="500"
-            height="500"
-            onmousedown="PID_mouseDown()"
-            onmouseup="PID_mouseUp()"
-            onmousemove="PID_mouseMove()"
-          ></canvas>
-          <script src="PID_game.js"></script>
-          <figcaption style="width: 500px">
-            This simulation takes values of a Boeing 737 (including mass, CL,
-            CD, thrust, and more) and inputs it into a PID controller to keep it
-            both level on the target height, and in the X-center of the window.
-          </figcaption>
-        </figure>
+          .button:hover {
+            background-color: rgb(172, 170, 175);
+            color: white;
+          }
+        </style>
+        <a class="button" href="https://github.com/calagoo" target="_blank">
+          GITHUB</a>
+        <a class="button" href="http://mailto:robbierodiguez98@gmail.com"
+          target="_blank">ROBBIERODRIGUEZ98@GMAIL.COM</a>
+        <a class="button" href="https://github.com/calagoo/calagoo.github.io/blob/main/March9%20Resume.pdf"
+          target="_blank">RESUME</a>
       </div>
+    </nav>
+  </div>
+  <h1 decorator="inlineTextEditable" contenteditable="false" class="header-container"
+    data-text-keypath="customizations.masthead.title.text" value="Robert Rodriguez Jr">
+    Robert Rodriguez Jr
+    <h2 style="padding-top: 0px" decorator="inlineTextEditable" contenteditable="false" class="header-container"
+      data-text-keypath="page.masthead.text.text" value="Aerospace Engineering Graduate from ASU">
+      Aerospace Engineering Graduate from ASU
+
+      <div class="tab">
+        <script src="tabs.js"></script>
+        <button class="tablinks" onclick="openSection(event, 'About Me')">
+          About Me
+        </button>
+        <button class="tablinks" onclick="openSection(event, 'Simulations')">
+          Simulations
+        </button>
+        <button class="tablinks" onclick="openSection(event, 'Other')" id="defaultOpen">
+          Other
+        </button>
+      </div>
+    </h2>
+  </h1>
+
+  <div id="About Me" class="tabcontent">
+    <p decorator="inlineTextEditable" contenteditable="false" class="header-container"
+      data-text-keypath="page.masthead.text.text" value="Aerospace Engineering Graduate from ASU">
+      Hello, I am Robert Rodriguez. I graduated in December of 2022 from
+      Arizona State University and started working shortly after. I figured
+      out my passion towards the end of high school, I knew I wanted to be
+      involved in the aerospace engineering industry. <br ><br >
+      I have always loved cars and racing, especially Formula 1, so I thought
+      going into a field closely related to aerodynamics would be fun. Over
+      the course of my education I found out that I enjoy just about all parts
+      of aerospace engineering, including flight planning flight testing,
+      aerodynamics, and orbits/geodesy. <br ><br >
+      After starting work I became much more interested in geodesy and GNSS in
+      general. This new passion ignited some other interests, such as coding
+      and data analysis. I had coded using MATLAB throughout college, but once
+      I started using Python my skills greatly improved.<br ><br >
+      Some other hobbies I have include working on my motorcycle in my free
+      time, designing and printing CAD parts using SOLIDWORKS, and I also love
+      snowboarding, mountain biking and rock climbing (bouldering).<br ><br >
+    </p>
+  </div>
+  <div id="Simulations" class="tabcontent">
+    <p style="margin-left: auto; margin-right: auto">
+      I have added these small simulations to showcase my coding and
+      interests. As a disclaimer, I don't have much experience with
+      Javascript, and these are my first tries with it. I have always loved
+      games that are scientifically based, such as Kerbal Space Program or
+      Universe Sandbox. Although I have tried, solo game dev is not for me,
+      but I have come to realize I love putting together small simulations
+      such as the ones below. Visualizing how physics interact I think is
+      amazing, and it helps me stay sharp on math from university.<br ><br >
+      Also of course this entire website is always a work in progress. Please
+      feel free and take a look at the source code on github to see how I
+      created these little sims.
+    </p>
+    <div style="flex: auto" class="row">
+      <figure>
+        <figcaption style="
+              height: 520px;
+              width: 500px;
+              font-size: large;
+              padding-bottom: 10px;
+              text-align: left;
+            ">
+          <h3>Orbiter</h3>
+          This is my orbiter simulation. This simulation uses data from the
+          Earth and the Sun in order to accurately model orbits.
+          <br ><br >To model the gravitation forces, Newtons universal law
+          of gravitation is used. This is then converted to acceleration from
+          the planets mass, and then converted further into velocity and
+          position.<br ><br >The gravity force angle is calculated through a
+          arctangent function, Math.atan2().<br ><br >The distance is simply
+          the magnitude of the x and y position relative to the sun, and the
+          orbital speed is found using the orbital speed equation with values
+          G, Mass-sun, distance and semi-major axis.<br ><br >
+          The semi-major axis is found using the specific orbital energy
+          equation.<br ><br >
+          Eccentricity is found by first finding the eccentricity vector and
+          then taking the magnitude of it.<br ><br >
+          Finally, apoapsis and periapsis are easily found by using the
+          semi-major axis and the eccentrity.
+        </figcaption>
+        <canvas id="orbit_game" width="500" height="500" onmousedown="orbit_mouseDown()" onmouseup="orbit_mouseUp()"
+          onmousemove="orbit_checkMouseDrag()"></canvas>
+        <script src="orbit_game.js"></script>
+        <figcaption style="width: 500px">
+          NOTE: The reason some items fluctuate (such as period, or
+          eccentricity) is because of the larger timestep. The smaller the
+          timestep, the more accurate the values become.
+        </figcaption>
+      </figure>
+      <figure>
+        <figcaption style="
+              height: 520px;
+              width: 500px;
+              font-size: large;
+              padding-bottom: 10px;
+              text-align: left;
+            ">
+          <h3>Flight Control</h3>
+          This simulation takes values of a Boeing 737 (including mass, CL,
+          CD, thrust, and more) and inputs it into a PID controller to keep it
+          both level on the target height, and in the X-center of the
+          window.<br ><br >
+          The coefficient of lift and drag are found by taking values from
+          airfoiltools.com, they are then linearly interpolated using the
+          angle of attack. The lift is found by using the lift equation and
+          plugging in the density of air, the velocity of the aircraft and the
+          aircrafts wing reference area (sref).<br ><br >
+          In the case of this simulation we are taking the density of air to
+          be near sea-level at 1.225 kg/m<sup>3</sup>, and velocity is 200
+          m/s. The SREF of the Boeing 737 is about 125 m<sup>2</sup>.<br ><br >
+          This simulation also features procedurally generated clouds. Each
+          cloud is created out of a random number of "lobes", and each lobe is
+          placed randomly around the cloud. The further out a lobe, the more
+          transparent it becomes. I felt like this gave the clouds a neat
+          digital look. Currently there is a 75% chance to spawn a cloud per
+          tick. I implemented a cloud slider in case they get distracting.
+        </figcaption>
+        <canvas id="PID_game" width="500" height="500" onmousedown="PID_mouseDown()" onmouseup="PID_mouseUp()"
+          onmousemove="PID_mouseMove()"></canvas>
+        <script src="PID_game.js"></script>
+        <figcaption style="width: 500px">
+          This simulation takes values of a Boeing 737 (including mass, CL,
+          CD, thrust, and more) and inputs it into a PID controller to keep it
+          both level on the target height, and in the X-center of the window.
+        </figcaption>
+      </figure>
     </div>
-    <div id="Other" class="tabcontent">
-      <p>other</p>
-      <canvas
-        id="Ball_game"
-        width="500"
-        height="500"
-        onmousedown="PID_mouseDown()"
-        onmouseup="PID_mouseUp()"
-        onmousemove="PID_mouseMove()"
-      ></canvas>
-      <script src="Ball_game.js"></script>
-      <figcaption style="width: 500px">
+  </div>
+  <div id="Other" class="tabcontent">
+    <p>other</p>
+    <canvas id="Ball_game" width="500" height="500" onmousedown="PID_mouseDown()" onmouseup="PID_mouseUp()"
+      onmousemove="PID_mouseMove()"></canvas>
+    <script src="Ball_game.js"></script>
+    <figcaption style="width: 500px">
       <script>
         // Get the element with id="defaultOpen" and click on it
         document.getElementById("defaultOpen").click();
       </script>
-    </div>
-    <div id="footer">Version: 0.4.1.15</div>
-  </body>
+  </div>
+  <div id="footer">Version: 0.4.1.17</div>
+</body>
+
 </html>

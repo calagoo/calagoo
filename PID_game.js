@@ -418,14 +418,14 @@ if (targetHeight > 150) {
     // Boost!
     ctx.beginPath();
     ctx.moveTo(0, 0);
-    ctx.lineTo((-(thrust - 30000) * 40) / 64.4e3, planeHeight / 2); // make flame dependent on thrust
+    ctx.lineTo(((-thrust) / 30e3)*10, planeHeight / 2); // make flame dependent on thrust
     ctx.lineTo(0, planeHeight);
     ctx.fillStyle = "orange";
     ctx.fill();
 
     ctx.beginPath();
     ctx.moveTo(0, 2);
-    ctx.lineTo((-(thrust - 30000) * 30) / 64.4e3, planeHeight / 2);
+    ctx.lineTo(((-thrust) / 30e3)*5, planeHeight / 2);
     ctx.lineTo(0, planeHeight - 2);
     ctx.fillStyle = "yellow";
     ctx.fill();
