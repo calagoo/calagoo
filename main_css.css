@@ -41,6 +41,12 @@ a {
   color: rgb(230,225,233);
 }
 
+.header-container {
+  background-color: #5a5a5a;
+  width: 100%;
+  color: rgb(230,225,233);
+}
+
 
 h1 {
   background-color: #5A5A5A;
