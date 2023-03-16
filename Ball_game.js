@@ -39,6 +39,8 @@ function closure() {
         constructor(x, y, vx, vy, r, ctx) {
             this.x = x;
             this.y = y;
+            this.xLast = x;
+            this.yLast = y;
             this.vx = vx;
             this.vy = vy;
             this.r = r;
@@ -46,16 +48,28 @@ function closure() {
             this.mass = r; // mass, kg
             this.collided = []; // checks if ball has collided in the past frame, and with which ball
         }
-        drawBall(color) {
+        drawBall(color,last) {
+            // if color is not given, draw with white
             if (color != undefined) {
                 this.ctx.fillStyle = color;
             } else {
                 this.ctx.fillStyle = "white";
             }
+
+            if (last){
+                var x = this.xLast
+                var y = this.yLast
+            }
+            else if(last==undefined || last==false){
+                var x = this.x
+                var y = this.y
+
+            }
+
             this.ctx.beginPath();
             this.ctx.arc(
-                pixel2scale(this.x),
-                pixel2scale(this.y),
+                pixel2scale(x),
+                pixel2scale(y),
                 this.r,
                 0,
                 2 * Math.PI
@@ -157,6 +171,10 @@ function closure() {
             }
             this.checkSection(x, y, r);
 
+            //giving values to last x and y
+            this.xLast = x;
+            this.yLast = y;
+
             //modeling gravity -- Y
             this.vy += gravity * (dt / 1000);
             this.y += vy * (dt / 1000);
@@ -211,8 +229,8 @@ function closure() {
                             continue
                         }
                         if (debug) {
-                            sectionArray[i][j].drawBall("red"); //debug - circles to light up red when they are close to collision
-                            sectionArray[i][k].drawBall("blue"); //debug - circles to light up blue when they are close to collision
+                            sectionArray[i][j].drawBall("red",true); //debug - circles to light up red when they are close to collision
+                            sectionArray[i][k].drawBall("blue",true); //debug - circles to light up blue when they are close to collision
                         }
                         ballA = sectionArray[i][j]
                         ballB = sectionArray[i][k]
