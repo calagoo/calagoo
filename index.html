@@ -43,13 +43,13 @@
     </p>
     <div class="tab">
       <script src="tabs.js"></script>
-      <button class="tablinks" onclick="openSection(event, 'AboutMe')">
+      <button class="tablinks" onclick="openSection(event, 'AboutMe');checkTab('AboutMe')">
         About Me
       </button>
-      <button class="tablinks" onclick="openSection(event, 'Simulations')">
+      <button class="tablinks" onclick="openSection(event, 'Simulations');checkTab('Simulations')">
         Simulations
       </button>
-      <button class="tablinks" onclick="openSection(event, 'WIP')" id="defaultOpen">
+      <button class="tablinks" onclick="openSection(event, 'WIP');checkTab('WIP')" id="defaultOpen">
         WIP
       </button>
     </div>
@@ -164,10 +164,10 @@
   </div>
   <div id="WIP" class="tabcontent">
     <h2>Work in Progress</h2>
-    <p>Want to see what I am working on currently? The simulation/visualizer should be on this page. It could range from
-      just an empty
-      canvas to a 99% complete sim. Currently this is showing collidiing balls, my attempt at a simple physics system.
-      As of 3/15/23, it is 50% complete, with most of the math finalized.
+    <p style="padding-bottom: 20px;">Want to see what I am working on currently? The simulation or visualizer should be on this page. It could range
+      from just an empty canvas to a 99% complete sim. Currently, this is showing colliding balls, my attempt at a
+      simple physics system. As of 3/16/23, it is 80% complete, with all of the math finalized. The next step for this
+      project is figuring out how to implement an interactive feature to it.
     </p>
     <canvas id="Ball_game" width="500" height="500" onmousedown="PID_mouseDown()" onmouseup="PID_mouseUp()"
       onmousemove="PID_mouseMove()"></canvas>
@@ -177,7 +177,7 @@
       document.getElementById("defaultOpen").click();
     </script>
   </div>
-  <div id="footer">Version: 0.4.3.1</div>
+  <div id="footer">Version: 0.4.4.3</div>
 </body>
 
 </html>
