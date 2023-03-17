@@ -2,6 +2,12 @@ var orbit_mouseDown;
 var orbit_mouseUp;
 var orbit_checkMouseDrag;
 
+currentTab = "";
+function checkTab(name){
+    currentTab = name
+    console.log(`Current Tab: ${currentTab}`)
+}
+
 function closure() {
   const canvas = document.getElementById("orbit_game");
   const ctx = canvas.getContext("2d");
@@ -79,6 +85,12 @@ function closure() {
 
   // game loop
   function drawGame() {
+
+    if(currentTab!="Simulations"){
+      setTimeout(drawGame,500)
+      return
+    }
+
     if (pause || drag) {
       setTimeout(drawGame, dt);
       clearScreen();

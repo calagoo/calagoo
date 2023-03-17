@@ -2,28 +2,39 @@ var Ball_mouseDown;
 var Ball_mouseUp;
 var Ball_mouseMove;
 
+// Sets variable currentTab globally for all scripts. This checkTab function checks which tab 
+// is currently open and only runs games in the selected tab. I felt this would help performance, not sure if it does...
+let currentTab = "";
+function checkTab(name){
+    currentTab = name
+    console.log(`Current Tab: ${currentTab}`)
+}
+
 function closure() {
     const canvas = document.getElementById("Ball_game");
     const ctx = canvas.getContext("2d");
 
+    cWidth = canvas.width - 100
+    cHeight = canvas.height - 100
+
     //// sim constants
-    const debug = true;
-    const fps = 30; // frames per second
-    const dt = (1 / fps) * 1000; // milliseconds per frame
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const maxHeight = 50;
-    const collisionSections = 5 // choose sqrt of how many boxes -- 9 sections == 3, 81 sections == 9, etc
+    const debug = false;
+    const fps = 60; // frames per second
+    const dt = 1 / fps * 1000; // milliseconds per frame
+    const centerX = cWidth / 2;
+    const centerY = cHeight / 2;
+    const maxHeight = 100;
+    const collisionSections = 12 // choose sqrt of how many boxes -- 9 sections == 3, 81 sections == 9, etc
     let sectionArray = Array(collisionSections ** 2).fill(0).map(x => Array(0).fill(0))
 
     function pixel2scale(pxl) {
         // convert meters to pixels
-        return canvas.height - (canvas.height / maxHeight) * pxl;
+        return cHeight - (cHeight / maxHeight) * pxl;
     }
 
     function scale2pixel(scale) {
         // convert pixels to meters
-        return scale / (canvas.height / maxHeight);
+        return scale / (cHeight / maxHeight);
     }
 
     var ballArray = [];
@@ -31,10 +42,10 @@ function closure() {
         // forces
         // y: positive=down, negative=up
         //
-        gravity = 0; //-9.81 // gravity
+        gravity = 0//-9.81 // gravity
         xy = 0; // magnitude of x and y
         vel = 0;
-        e = 0.99; // restitution
+        e = 0.97; // restitution
 
         constructor(x, y, vx, vy, r, ctx) {
             this.x = x;
@@ -46,9 +57,10 @@ function closure() {
             this.r = r;
             this.ctx = ctx;
             this.mass = r; // mass, kg
-            this.collided = []; // checks if ball has collided in the past frame, and with which ball
+            this.collided = []; // checks if ball has collided in the current frame, and with which ball
+            this.collidedPast = []; // checks if ball has collided in the past and current frame, and with which ball
         }
-        drawBall(color,last) {
+        drawBall(color, last) {
             // if color is not given, draw with white
             if (color != undefined) {
                 this.ctx.fillStyle = color;
@@ -56,11 +68,11 @@ function closure() {
                 this.ctx.fillStyle = "white";
             }
 
-            if (last){
+            if (last) {
                 var x = this.xLast
                 var y = this.yLast
             }
-            else if(last==undefined || last==false){
+            else if (last == undefined || last == false) {
                 var x = this.x
                 var y = this.y
 
@@ -88,15 +100,19 @@ function closure() {
 
             if (ballBot < 0) {
                 this.vy = Math.abs(this.vy) * this.e;
+                this.y = (-ballBot + r)
             }
             if (ballTop > maxHeight) {
                 this.vy = -Math.abs(this.vy) * this.e;
+                this.y = 2 * maxHeight - ballTop - r
             }
             if (ballLeft < 0) {
                 this.vx = Math.abs(this.vx) * this.e;
+                this.x = (-ballLeft + r)
             }
             if (ballRight > maxHeight) {
                 this.vx = -Math.abs(this.vx) * this.e;
+                this.x = 2 * maxHeight - ballRight - r
             }
         }
 
@@ -186,27 +202,47 @@ function closure() {
         }
     }
 
+    var frame = 0
     function drawGame() {
-        sectionArray = Array(collisionSections ** 2).fill(0).map(x => Array(0).fill(0))
-        setTimeout(drawGame, dt);
-        clearScreen();
-
-        // we will start with two balls
-        if (ballArray.length < 4) {
-            ballArray[0] = new ball(10, 40, vx = 10, vy = 10, 30, ctx);
-            ballArray[1] = new ball(30, 40, vx = -10, vy = -10, 25, ctx);
-            ballArray[2] = new ball(30, 10, vx = -11, vy = 10, 20, ctx);
-            ballArray[3] = new ball(40, 10, vx = -11, vy = 10, 20, ctx);
+        if(currentTab == "WIP"){
+            frame++
+            if (frame >= fps) {
+                frame = 1
+            }
+    
+            startTime = performance.now()
+            sectionArray = Array(collisionSections ** 2).fill(0).map(x => Array(0).fill(0))
+            setTimeout(drawGame, dt);
+            clearScreen();
+    
+            if (ballArray.length < 50) {
+                xRand = (Math.random() * (maxHeight-10))+5
+                yRand = (Math.random() * (maxHeight-10))+5
+                vxRand = (Math.random() * 20) - 10
+                vyRand = (Math.random() * 20) - 10
+                rRand = (Math.random() * 5) + 5
+                ballArray[ballArray.length] = new ball(xRand, yRand, vxRand, vyRand, rRand, ctx);
+            }
+    
+            ballArray.forEach(function (item) {
+                item.drawBall();
+                item.ballMovement();
+                item.collided = [];
+                if (frame % 2 == 0) { // Every other frame clear the collided past array. If it hasnt collided in a turn we know it is not inside another ball
+                    item.collidedPast = [];
+                }
+            });
+    
+            checkBallCollision(ballArray, sectionArray)
+    
+            endTime = performance.now()
+            fpsCounter(endTime - startTime)
+            valueBorder()
         }
-
-        ballArray.forEach(function (item) {
-            item.drawBall();
-            item.ballMovement();
-            item.collided = [];
-        });
-
-        checkBallCollision(ballArray, sectionArray)
-
+        else{
+            clearScreen()
+            setTimeout(drawGame, dt);
+        }
     }
 
     function clearScreen() {
@@ -229,8 +265,8 @@ function closure() {
                             continue
                         }
                         if (debug) {
-                            sectionArray[i][j].drawBall("red",true); //debug - circles to light up red when they are close to collision
-                            sectionArray[i][k].drawBall("blue",true); //debug - circles to light up blue when they are close to collision
+                            sectionArray[i][j].drawBall("red", true); //debug - circles to light up red when they are close to collision
+                            sectionArray[i][k].drawBall("blue", true); //debug - circles to light up blue when they are close to collision
                         }
                         ballA = sectionArray[i][j]
                         ballB = sectionArray[i][k]
@@ -242,10 +278,9 @@ function closure() {
                             if (debug) {
                                 console.log("Collision!")
                             }
-                            
+
                             loop4:
                             for (var collision of ballA.collided) {
-                                console.log(collision, "and", ballB)
                                 if (collision == ballB) {
                                     break loop3;
                                 }
@@ -253,6 +288,23 @@ function closure() {
 
                             //angle of hit
                             angle = Math.atan2((ballA.y - ballB.y), (ballA.x - ballB.x))
+
+                            loop5:
+                            if (ballA.collidedPast.length >= 2) {
+                                for (var collisionPast of ballA.collidedPast.reverse()) {
+                                    if (collisionPast == ballB) {
+                                        // ballA.drawBall("red",true)
+                                        // ballB.drawBall("blue",true)
+                                        ballA.collidedPast = []
+                                        ballB.collidedPast = []
+                                        rA = scale2pixel(ballA.r)
+                                        rB = scale2pixel(ballB.r)
+                                        ballA.x += Math.abs(rA + rB - dist) * Math.cos(angle)
+                                        ballA.y += Math.abs(rA + rB - dist) * Math.sin(angle)
+                                        break loop3;
+                                    }
+                                }
+                            }
 
                             n = [ballB.x - ballA.x, ballB.y - ballA.y]   // normal vector
                             un = math.divide(n, math.norm(n))        // unit normal vector
@@ -289,6 +341,8 @@ function closure() {
 
                             ballA.collided[ballA.collided.length] = ballB
                             ballB.collided[ballB.collided.length] = ballA
+                            ballA.collidedPast[ballA.collidedPast.length] = ballB
+                            ballB.collidedPast[ballB.collidedPast.length] = ballA
                         }
 
                     }
@@ -298,7 +352,30 @@ function closure() {
         }
     }
 
+    function fpsCounter(timeDiff) {
+        calcFPS = 1000 / (timeDiff + dt)
+        if (calcFPS > fps) {
+            calcFPS = fps
+        }
+        ctx.font = "16px monospace";
+        ctx.textAlign = "center"
+        ctx.fillText(`FPS : ${round(calcFPS, 0)}`, cWidth+50, 15)
+    }
 
+    function valueBorder(){
+        ctx.beginPath()
+        ctx.moveTo(cWidth,0)
+        ctx.lineTo(cWidth,cHeight)
+        ctx.lineTo(0,cHeight)
+        ctx.strokeStyle = "white"
+        ctx.stroke()
+    }
+
+    
+    // simpler rounding function than the Math.round()
+    const round = (x, sigfigs) => {
+        return Math.round(x * 10 ** sigfigs) / 10 ** sigfigs;
+    };
     drawGame();
 }
 closure();

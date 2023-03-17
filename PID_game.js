@@ -1,6 +1,11 @@
 var PID_mouseDown;
 var PID_mouseUp;
 var PID_mouseMove;
+currentTab = "";
+function checkTab(name){
+    currentTab = name
+    console.log(`Current Tab: ${currentTab}`)
+}
 
 function closure() {
   const canvas = document.getElementById("PID_game");
@@ -93,79 +98,85 @@ function closure() {
 
   // GAME DRAWING MAIN LOOP
   function drawGame() {
-    ticks++;
-    if (ticks > canvas.width) {
-      ticks = 1;
-    }
 
-    setTimeout(drawGame, dt);
-    clearScreen();
-    drawTargetLine();
-    planeMove_out = planeMovement(height, targetHeight, angle, xPos);
-    heightLast = height;
-    xPosLast = xPos;
-    height = planeMove_out[0];
-    angle = planeMove_out[1];
-    xPos = planeMove_out[2];
-    // drawing clouds
-    if (
+    if(currentTab!="Simulations"){
+      setTimeout(drawGame,500)
+      return
+    }
+      
+      ticks++;
+      if (ticks > canvas.width) {
+        ticks = 1;
+      }
+      
+      setTimeout(drawGame, dt);
+      clearScreen();
+      drawTargetLine();
+      planeMove_out = planeMovement(height, targetHeight, angle, xPos);
+      heightLast = height;
+      xPosLast = xPos;
+      height = planeMove_out[0];
+      angle = planeMove_out[1];
+      xPos = planeMove_out[2];
+      // drawing clouds
+      if (
         (Math.random() > 0.25 && cloudArray.length < maxCloudAmount) ||
         cloudArray.length < 0
         ) {
-            // 90% chance per frame that a cloud will spawn, or 99.8% chance one will spawn every second. If unlucky, there is a minimum and max amount of clouds. There will always be at least 5.
-            cloudArray[cloudArray.length] = new cloud(
-                canvas.width + 30, // x pos
-                heightConvert(centerY - Math.random() * 250), // height
-                1 + round(Math.random() * 5, 0), // distance from camera
-                [], // size
-                [], // xOffset
-                [], // yOffset
-                1 + round(Math.random() * 100, 0), // lobes - the amount of parts the cloud has, with a max of 1+100 here (+1 so it isnt zero, probably could do +15 too)
+          // 90% chance per frame that a cloud will spawn, or 99.8% chance one will spawn every second. If unlucky, there is a minimum and max amount of clouds. There will always be at least 5.
+          cloudArray[cloudArray.length] = new cloud(
+            canvas.width + 30, // x pos
+            heightConvert(centerY - Math.random() * 250), // height
+            1 + round(Math.random() * 5, 0), // distance from camera
+            [], // size
+            [], // xOffset
+            [], // yOffset
+            1 + round(Math.random() * 100, 0), // lobes - the amount of parts the cloud has, with a max of 1+100 here (+1 so it isnt zero, probably could do +15 too)
                 []
                 ); // blur
-            }
-            for (i = 0; i < cloudArray.length; i++) {
+              }
+              for (i = 0; i < cloudArray.length; i++) {
                 // for each cloud...
                 cloudArray[i].x -= cloudArray[i].dist / 2; // movement speed is based off distance from camera, causing parallax effect (farther obj move "slower").. divide by two because it looks better... 200m/s is actually pretty fast so the clouds would be flying by
                 if (cloudArray[i].x != undefined) {
-                    // just so nothing throws an error, although not sure if this even works here
-                    drawCloud(cloudArray[i]); // draw the cloud!
-        if (
-            cloudArray[i].dist <= 3 &&
-            Math.abs(cloudArray[i].x - xPos) < 50 &&
-            Math.abs(heightConvertInv(cloudArray[i].y) - height) < 15
-            ) {
-                // drawCloud(cloudArray[i],"red") // uncomment this for clouds around the plane to light up red when the plane should go in front of them
-                drawPlane(heightConvert(height), pitch); // if the cloud is at the correct distance and near the plane, draw plane again so it ends up in FRONT of the rearward clouds
-        }
-    }
+                  // just so nothing throws an error, although not sure if this even works here
+                  drawCloud(cloudArray[i]); // draw the cloud!
+                  if (
+                    cloudArray[i].dist <= 3 &&
+                    Math.abs(cloudArray[i].x - xPos) < 50 &&
+                    Math.abs(heightConvertInv(cloudArray[i].y) - height) < 15
+                    ) {
+                      // drawCloud(cloudArray[i],"red") // uncomment this for clouds around the plane to light up red when the plane should go in front of them
+                      drawPlane(heightConvert(height), pitch); // if the cloud is at the correct distance and near the plane, draw plane again so it ends up in FRONT of the rearward clouds
+                    }
+                  }
     if (cloudArray[i].x < -30) {
-        cloudArray.splice(i, 1); // when cloud leaves frame, delete the obj from the array
-    }
-}
-
-drawTextData(height, targetHeight, angle);
-drawCloudSlider(maxCloudAmount);
-
-// short clamp to make sure the target height isn't too large or small (this is just a backup, the one in the mouseMove() function shouldnt fail)
-if (targetHeight > 150) {
-    targetHeight = 150;
-} else if (targetHeight < 30) {
-      targetHeight = 30;
+      cloudArray.splice(i, 1); // when cloud leaves frame, delete the obj from the array
     }
   }
+  
+  drawTextData(height, targetHeight, angle);
+  drawCloudSlider(maxCloudAmount);
+  
+  // short clamp to make sure the target height isn't too large or small (this is just a backup, the one in the mouseMove() function shouldnt fail)
+  if (targetHeight > 150) {
+    targetHeight = 150;
+  } else if (targetHeight < 30) {
+    targetHeight = 30;
+  }
+}
 
-  function drawCloud(cloudObj, color) {
-    for (j = 0; j < cloudObj.lobes; j++) {
-      ctx.fillStyle = `rgba(${240 * (cloudObj.dist / 5) ** 0.2},${
-        240 * (cloudObj.dist / 5) ** 0.2
-      },${240 * (cloudObj.dist / 5) ** 0.2},${cloudObj.blur[j]})`;
-      if (color != undefined) {
-        // for debug purposes
-        ctx.fillStyle = color;
-      }
-      ctx.fillRect(
-        cloudObj.x + cloudObj.xOffset[j],
+function drawCloud(cloudObj, color) {
+  for (j = 0; j < cloudObj.lobes; j++) {
+    ctx.fillStyle = `rgba(${240 * (cloudObj.dist / 5) ** 0.2},${
+      240 * (cloudObj.dist / 5) ** 0.2
+    },${240 * (cloudObj.dist / 5) ** 0.2},${cloudObj.blur[j]})`;
+    if (color != undefined) {
+      // for debug purposes
+      ctx.fillStyle = color;
+    }
+    ctx.fillRect(
+      cloudObj.x + cloudObj.xOffset[j],
         cloudObj.y + cloudObj.yOffset[j],
         cloudObj.size[j] + cloudObj.dist,
         cloudObj.size[j] + cloudObj.dist
@@ -607,3 +618,4 @@ if (targetHeight > 150) {
   drawGame();
 }
 closure();
+
