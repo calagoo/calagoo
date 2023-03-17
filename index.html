@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <meta name="viewport" content="width=1280, initial-scale=1">
+  <meta name="viewport" content="width=1024, initial-scale=1">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.6.0/math.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,28 +57,49 @@
 
   <div id="AboutMe" class="tabcontent">
     <h2>About Me</h2>
-    <p>
-      Hello, I am Robert Rodriguez. I graduated in December of 2022 from
-      Arizona State University and started working shortly after. I figured
-      out my passion towards the end of high school, I knew I wanted to be
-      involved in the aerospace engineering industry. <br><br>
-      I have always loved cars and racing, especially Formula 1, so I thought
-      going into a field closely related to aerodynamics would be fun. Over
-      the course of my education I found out that I enjoy just about all parts
-      of aerospace engineering, including flight planning flight testing,
-      aerodynamics, and orbits/geodesy. <br><br>
-      After starting work I became much more interested in geodesy and GNSS in
-      general. This new passion ignited some other interests, such as coding
-      and data analysis. I had coded using MATLAB throughout college, but once
-      I started using Python my skills greatly improved.<br><br>
-      Some other hobbies I have include working on my motorcycle in my free
-      time, designing and printing CAD parts using SOLIDWORKS, and I also love
-      snowboarding, mountain biking and rock climbing (bouldering).<br><br>
+    <p style="text-align: justify;">
+      <!-- I don't know how to add a tab..? please help -->
+      &emsp; Hello, I am Robert Rodriguez. I graduated in December 2022 from Arizona State University with a bachelor's
+      in
+      aeronautical engineering and started working shortly after. I have been interested in mechanical objects since I
+      was very young. I figured out my aerospace-related passions towards the end of high school due to some physics
+      classes I took. I am thankful our high school had a 3D design class as an elective; this is where I first used
+      SOLIDWORKS, followed shortly after by SOLIDWORKS flow simulation.<br>&emsp; Seeing the fluids being simulated and
+      being able
+      to cut a cross-section of the flow, I think it is so interesting to see how fluids move throughout their
+      constraints. Starting with cubes and pipes and seeing how air and water would interact over and in those objects,
+      I then moved to more advanced objects such as relatively simple airfoils and vehicle profiles. At this point, I
+      was learning almost all of my SOLIDWORKS at home on a student account with a computer that wasn't happy about all
+      of this new CPU stress. <br><br>
+      &emsp; I have always loved cars and racing, especially Formula 1, so I thought going into a field closely related
+      to
+      aerodynamics would be fun. I figured that if I combined my love for cars and aircraft, I would have no problem
+      pursuing aerospace engineering. Over the course of my education, I found out that I enjoy more than just
+      aerodynamics but just about all parts of aerospace engineering, including flight planning, flight testing, orbits,
+      and geodesy. <br>&emsp; My capstone project was really engaging and entertaining because I really enjoyed what I
+      was doing. The project involved
+      designing and simulating a space tourism aircraft capable of taking off and landing on a runway and being able to
+      make it above 300,000 feet. This project was a lot of fun. I was involved in most aspects of the design as our
+      team lead, but I single-handedly took on the flight testing and flight simulations of our proposed aircraft. Using
+      hundreds of different parameters, our final aircraft was able to sustain greater than 60 seconds above 300k feet
+      and was capable of taking 14 passengers on each trip. Each climb would approach Mach 3.4, and I had to simulate
+      different reentry angles to maintain relatively low stagnation temperatures. <br><br>
+      &emsp; After beginning my career, I was involved with a testing team as an intern. I was involved with testing
+      different GNSS receivers, and this caught my interest. I started learning Python to code in order to do data
+      analysis on the GNSS data. First, by scraping GGA messages, which are simple positioning messages that consist of
+      latitude, longitude, altitude, and a few other details. I became very involved in coding and data analysis. I had
+      coded using MATLAB throughout college, but once I started at this company, my skills greatly improved, so much so
+      that a few months after starting my internship, I became a Test Automation Engineer, where I am currently. This
+      position involved trying to automate the testing procedures as much as possible. This work helped me become much
+      more interested in geodesy and GNSS in general.<br><br>
+      &emsp; Some other hobbies I have include working on my motorcycle in my free
+      time, designing and printing CAD parts, and I also love
+      snowboarding, mountain biking and rock climbing (bouldering). Anything really to get the blood pumping, and being outdoors while doing it is a plus.<br><br>
     </p>
   </div>
   <div id="Simulations" class="tabcontent">
     <h2>Simulations</h2>
-    <p style="margin-left: auto; margin-right: auto">
+    <p style="margin-left: auto; margin-right: auto; text-align: justify;">
       I have added these small simulations to showcase my coding and
       interests. As a disclaimer, I don't have much experience with
       Javascript, and these are my first tries with it. I have always loved
@@ -94,17 +115,15 @@
     </p>
     <div style="max-width: 1050px; column-gap: 10px;" class="row">
       <div style="max-width: 500px;">
-        <h3 style="text-align: center; color: rgb(30,60,60); margin: auto;">Orbiter</h3>
+        <h3 style="text-align: justify; color: rgb(30,60,60); margin: auto;">Orbiter</h3>
         <p style="
             height: 520px;
             width: 500px;
-            font-size: large;
             padding: 20px 0px 0px 0px ;
-            text-align: left;
+            text-align: justify;
             ">
           This is my orbiter simulation. This simulation uses data from the
-          Earth and the Sun in order to accurately model orbits.
-          <br><br>To model the gravitation forces, Newtons universal law
+          Earth and the Sun in order to accurately model orbits. To model the gravitation forces, Newtons universal law
           of gravitation is used. This is then converted to acceleration from
           the planets mass, and then converted further into velocity and
           position.<br><br>The gravity force angle is calculated through a
@@ -129,13 +148,12 @@
         </small>
       </div>
       <div style="max-width: 500px;">
-        <h3 style="text-align: center;color: rgb(30,60,60); margin: auto;">Flight Control</h3>
+        <h3 style="text-align: justify;color: rgb(30,60,60); margin: auto;">Flight Control</h3>
         <p style="
               height: 520px;
               width: 500px;
-              font-size: large;
               padding: 20px 0px 0px 0px ;
-              text-align: left;
+              text-align: justify;
             ">
           This simulation takes values of a Boeing 737 (including mass, CL,
           CD, thrust, and more) and inputs it into a PID controller to keep it
@@ -164,7 +182,8 @@
   </div>
   <div id="WIP" class="tabcontent">
     <h2>Work in Progress</h2>
-    <p style="padding-bottom: 20px;">Want to see what I am working on currently? The simulation or visualizer should be on this page. It could range
+    <p style="padding-bottom: 20px;">Want to see what I am working on currently? The simulation or visualizer should be
+      on this page. It could range
       from just an empty canvas to a 99% complete sim. Currently, this is showing colliding balls, my attempt at a
       simple physics system. As of 3/16/23, it is 80% complete, with all of the math finalized. The next step for this
       project is figuring out how to implement an interactive feature to it.
