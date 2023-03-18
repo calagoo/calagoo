@@ -1,8 +1,8 @@
 // Things to add:
-// Randomize button for radius and color
-// Show collision mesh button
-// Show velocity vectors (maybe...)
-// Show total kinetic energy
+// Randomize button for radius and color    -- done
+// Show collision mesh button               -- done
+// Show velocity vectors (maybe...)         -- done
+// Show total kinetic energy                -- done
 // Mass changing (maybe...)
 // Gravity slider (try it out first.. might have issues with stagnation)
 // ...
@@ -242,13 +242,9 @@ function closure() {
             checkBallCollision(ballArray, sectionArray)
 
             endTime = performance.now()
-            fpsCounter(endTime - startTime)
             valueBorder()
-            ballCustomizer()
-            clearBalls()
-            drawCollisionMesh()
             if (clicked || isPlacing) {
-                placeBall();
+                placeBall(ballDrawing);
                 clicked = false;
             }
 
@@ -365,7 +361,18 @@ function closure() {
     }
 
 
-    function placeBall() {
+    function placeBall(drawMode) {
+
+        if (drawMode && isDragging) {
+            initX = canvas2game(mouseX)
+            initY = canvas2game(mouseY)
+            if (initX > 0 && initY > 0) {
+                isPlacing = true
+                if (frame % 5 == 0) ballArray[ballArray.length] = new ball(initX, initY, 0, 0, convertRange(sliderVal[0], 410, 490, 10, 30), ctx)
+            }
+            return
+        }
+
         if (!isPlacing) {
             initX = canvas2game(mouseX)
             initY = canvas2game(mouseY)
@@ -400,49 +407,15 @@ function closure() {
         ctx.arc(x, y, r, 0, 2 * Math.PI);
         ctx.fill();
     }
+
+    // draws the mesh used for detecting which balls are close to collision
     drawMesh = false
     function drawCollisionMesh() {
-        // ctx.beginPath()
-        // ctx.fillStyle = "grey"
-        // ctx.roundRect(10, cHeight + 10, 20, 20, 5)
-        // ctx.fill()
-        // ctx.fillStyle = "white"
-        // ctx.font = "12px monospace"
-        // ctx.fillText("Draw Mesh", 65, cHeight + 24)
-        // ctx.closePath()
-
-        // //check if clicked
-        // if (checkClickZone(10,cWidth+10,20,20) || drawMesh) {
-        //     ctx.beginPath()
-        //     ctx.fillStyle = "white"
-        //     ctx.roundRect(10, cHeight + 10, 20, 20, 5)
-        //     ctx.fill()
-        //     ctx.closePath()
-
-        //     if(drawMesh){
-        //         ctx.beginPath()
-        //         ctx.strokeStyle = "blue"
-        //         ctx.moveTo(14,cHeight+19)
-        //         ctx.lineTo(18,cHeight+23)
-        //         ctx.lineTo(26,cHeight+15)
-        //         ctx.lineWidth = "3"
-        //         ctx.stroke()
-        //         ctx.closePath()
-        //         ctx.lineWidth = "1" // revert back or else all lines mess up
-        //     }
-
-        //     if (clicked && checkClickZone(10,cWidth+10,20,20)) {
-        //         if (drawMesh) drawMesh = false
-        //         else drawMesh = true
-        //     } 
-        // }
-        drawMesh=drawCheckbox(10, cHeight+10, 20, 20, "Draw Mesh", drawMesh)
-        // console.log(drawMesh)
-        if (!drawMesh) {
+        drawMesh = drawCheckbox(10, cHeight + 10, 20, 20, "Show Mesh", drawMesh)
+        if (!drawMesh) { // if checkbox is not toggled, exit function now without drawing mesh
             return
         }
-
-
+        //  Uses same code as the ball.checkSection method
         var row = 1;
         var col = 1;
         var sectionsPerRow = (sectionArray.length) ** 0.5
@@ -472,67 +445,151 @@ function closure() {
         }
     }
 
+    var drawVV = false
+    function drawVelocityVectors(item, draw) {
+        if (!draw) {
+            drawVV = drawCheckbox(10, cHeight + 40, 20, 20, "Show Velocity", drawVV)
+        }
+
+        if (!drawVV || !item) return
+        ctx.beginPath()
+        ctx.moveTo(game2canvas(item.x), game2canvas(item.y))
+        ctx.lineTo(game2canvas(item.x) - item.vx, game2canvas(item.y) - item.vy)
+        ctx.strokeStyle = "white"
+        ctx.stroke()
+        ctx.closePath()
+    }
+
+    ballDrawing = false
+    function toggleDrawMode() {
+        ballDrawing = drawCheckbox(10, cHeight + 70, 20, 20, "Draw Mode", ballDrawing)
+
+        if (!ballDrawing) return
+
+        // placeBall()
+
+    }
+
+    function drawTotalKE(item, sigKE, draw) {
+        // Calculate total KE
+
+        if (!draw) {
+            ctx.fillStyle = `white`
+            ctx.fillText(`\u03A3 Kinetic Energy = ${round(sigKE, 0) / 1000} kJ`, 150, cHeight + 24)
+        }
+        if (!item) return
+
+        sigKE += 0.5 * item.mass * (item.vx ** 2 + item.vy ** 2)
+        return sigKE
+    }
+
     // Draw the outer wall that separates the values and sliders from the game area
     function valueBorder() {
         ctx.beginPath()
+        //main border
         ctx.moveTo(cWidth, 0)
         ctx.lineTo(cWidth, cHeight)
         ctx.lineTo(0, cHeight)
+        //sub-border (details)
+        ctx.moveTo(140, cHeight)
+        ctx.lineTo(140, canvas.height)
+
         ctx.strokeStyle = "white"
         ctx.stroke()
+        ctx.closePath()
+
+        //Drawing everything that goes in the border
+        fpsCounter(endTime - startTime)
+        ballCustomizer()
+        clearBalls()
+        drawCollisionMesh()
+        toggleDrawMode()
+
+        // checks if the items have already been drawn once in the loop so we dont draw it mulitple times
+        drawOnce = false
+        sigKE = 0   // init sigKE to 0 every frame
+        // Below I really didn't want to loop for 2 function by themselves so I made these complicated setups to do that. I am not sure how much fast it is but one loop > two loops
+        if (!ballArray.length) {
+            drawVelocityVectors(false, drawOnce)
+            drawTotalKE(false, sigKE, drawOnce)
+        }
+        for ([idx, item] of ballArray.entries()) {
+            drawVelocityVectors(item, drawOnce)  // loop for this
+            sigKE = drawTotalKE(item, sigKE, true) // loop for this
+            if (idx == ballArray.length - 1) {
+                sigKE = drawTotalKE(item, sigKE, false) // loop for this
+            }
+            drawOnce = true
+            // console.log(sigKE)
+        }
     }
 
+    function slider(x1, x2, y1, y2, squareSize, sliderVal, sliderArray, sliderIndex, horizontal) {
+        // Making Slider Line
+        ctx.strokeStyle = `white`
+        ctx.fillStyle = `white`
+        ctx.beginPath()
+        ctx.moveTo(x1, y1)
+        ctx.lineTo(x2, y2)
+        ctx.closePath()
+        ctx.stroke()
+
+        if (horizontal) {
+            sliderValArray = [sliderVal, (y2 - y1) / 2 - squareSize / 2]
+            // Mouse movement and dragging for horizontal slider
+            if (isDragging && (mouseX > x1 && mouseX < x2)) {
+                for ([idx, sliderBool] of sliderArray.entries()) {
+                    if ((idx != sliderIndex) && (!sliderBool)) {
+                        if (((mouseY > y1 - squareSize / 2 && mouseY < y2 + squareSize / 2) || sliderArray[sliderIndex])) {
+                            sliderArray[sliderIndex] = true
+                            sliderVal = mouseX - 5
+                        }
+                    }
+                }
+            }
+            else {
+                sliderArray[sliderIndex] = false
+            }
+
+            ctx.fillRect(sliderVal, y1 - squareSize / 2, squareSize, squareSize)
+            return sliderArray, sliderVal
+        } else {
+            sliderValArray = [(x2 - x1) / 2 - squareSize / 2, sliderVal]
+            // Mouse movement and dragging for vertical slider
+            if (isDragging && (mouseY > y1 && mouseY < y2)) {
+                for ([idx, sliderBool] of sliderArray.entries()) {
+                    if ((idx != sliderIndex) && (!sliderBool)) {
+                        if (((mouseX > x1 - squareSize / 2 && mouseX < x2 + squareSize / 2) || sliderArray[sliderIndex])) {
+                            sliderArray[sliderIndex] = true
+                            sliderVal = mouseY - 5
+                        }
+                    }
+                }
+            }
+            else {
+                sliderArray[sliderIndex] = false
+            }
+            ctx.fillRect(x1 - squareSize / 2, sliderVal, squareSize, squareSize)
+            return sliderArray, sliderVal
+        }
+    }
+
+
     //// Under here are the functions that will go in the valueBorder area
-    sliderVal = [445, 445] // sets default slider values for [radius,color]
-    sliderSelect = [false, false] // sets whether or not slider is selected 
+    var sliderVal = [445, 445,200] // sets default slider values for [radius,color]
+    sliderSelect = [false, false,false] // sets whether or not slider is selected 
     hue = convertRange(sliderVal[1], 410, 490, 0, 300)
     function ballCustomizer() {
 
         drawFakeBall(450, 55, convertRange(sliderVal[0], 410, 490, 10, 30))
 
-        //// Slider Lines
-        ctx.strokeStyle = `white`
-        ctx.beginPath() // Radius Slider
-        ctx.moveTo(410, 105)
-        ctx.lineTo(490, 105)
-        ctx.closePath()
-        ctx.stroke()
+        sliderSelect, sliderVal[0] = slider(x1 = 410, x2 = 490, y1 = 105, y2 = 105, squareSize = 10, sliderVal[0], sliderSelect, sliderIndex = 0, true)
+        sliderSelect, sliderVal[1] = slider(x1 = 410, x2 = 490, y1 = 130, y2 = 130, squareSize = 10, sliderVal[1], sliderSelect, sliderIndex = 1, true)
 
-        ctx.beginPath() // Color Slider
-        ctx.moveTo(410, 130)
-        ctx.lineTo(490, 130)
-        ctx.closePath()
-        ctx.stroke()
 
-        //// Slider Grabbable
-        // This could all be one if statment, but for readability I split it up.
-        if (isDragging) {
-            if (mouseX > 410 && mouseX < 490) {
-                if (((mouseY > 100 && mouseY < 110) || sliderSelect[0]) && !sliderSelect[1]) {
-                    sliderSelect[0] = true
-                    sliderVal[0] = mouseX - 5
-                }
-            }
-        }
-        else {
-            sliderSelect[0] = false
-        }
-        if (isDragging) {
-            if (mouseX > 410 && mouseX < 490) {
-                if (((mouseY > 125 && mouseY < 135) || sliderSelect[1]) && !sliderSelect[0]) {
-                    sliderSelect[1] = true
-                    sliderVal[1] = mouseX - 5
-                }
-            }
-        }
-        else {
-            sliderSelect[1] = false
-        }
 
-        ctx.fillStyle = `white`
-        ctx.fillRect(sliderVal[0], 100, 10, 10)
+        // Redrawing color square to make it colorful!
         hue = convertRange(sliderVal[1], 410, 490, 0, 300)
-
         ctx.fillStyle = `hsl(${hue},80%,50%)`
         ctx.fillRect(sliderVal[1], 125, 10, 10)
     }
@@ -597,9 +654,10 @@ function closure() {
         ctx.fill()
         ctx.fillStyle = "white"
         ctx.font = "12px monospace"
-        ctx.fillText(text, 65, y + 14)
+        ctx.textAlign = "left"
+        ctx.fillText(text, 40, y + 14)
         ctx.closePath()
-        
+
         //check if clicked
         if (checkClickZone(x, y, w, h) || toggle) {
             ctx.beginPath()
@@ -607,7 +665,7 @@ function closure() {
             ctx.roundRect(x, y, w, h, 5)
             ctx.fill()
             ctx.closePath()
-            
+
             if (toggle) {
                 ctx.beginPath()
                 ctx.strokeStyle = "blue"
@@ -619,7 +677,7 @@ function closure() {
                 ctx.closePath()
                 ctx.lineWidth = "1" // revert back or else all lines mess up
             }
-            
+
             if (clicked && checkClickZone(x, y, w, h)) {
                 if (toggle) toggle = false
                 else toggle = true
