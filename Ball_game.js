@@ -473,7 +473,14 @@ function closure() {
     }
 
     function clearBalls() {
+        
         ctx.fillStyle = `rgba(80,60,60,0.5)`
+        if ((mouseX > cWidth && mouseY > cHeight)) {
+            ctx.fillStyle = `rgba(200,60,60,0.5)`
+            if (clicked) {
+                ballArray = []
+            }
+        }
         ctx.strokeStyle = `grey`
         ctx.beginPath()
         ctx.rect(cWidth, cHeight, 100, 100)
@@ -485,13 +492,6 @@ function closure() {
         ctx.textAlign = "center"
         ctx.font = "24px monospace"
         ctx.fillText("CLEAR", cWidth + 50, cHeight + 56)
-
-        if ((mouseX > cWidth && mouseY > cHeight)) {
-            if (clicked) {
-            ballArray = []
-        }
-    }
-
 }
 
 function fpsCounter(timeDiff) {
