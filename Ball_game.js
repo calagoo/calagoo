@@ -46,11 +46,11 @@ function closure() {
 
     //// sim constants
     const debug = false;
-    const fps = 60; // frames per second
-    const dt = 1 / fps * 1000; // milliseconds per frame
+    var fps = 60; // frames per second
+    var dt = 1 / fps * 1000; // milliseconds per frame
     const maxHeight = 100;
     var gravity = -9.81 // gravity
-    const e = .99; // restitution
+    const e = .985; // restitution
     const collisionSections = 12 // choose sqrt of how many boxes -- 9 sections == 3, 81 sections == 9, etc
     let sectionArray = Array(collisionSections ** 2).fill(0).map(x => Array(0).fill(0))
 
@@ -369,7 +369,6 @@ function closure() {
                 initY = canvas2game(mouseY)
                 isPlacing = true
                 if (frame % 4 == 0) {
-
                     ballArray[ballArray.length] = new ball(initX, initY, 0, 0, convertRange(sliderVal[0], 410, 490, 10, 30), ctx)
                 }
                 return
@@ -498,7 +497,7 @@ function closure() {
 
         if (!draw) {
             ctx.fillStyle = `white`
-            ctx.fillText(`\u03A3 Kinetic Energy = ${round(sigKE / 100, 0) / 10} kJ`, 145, cHeight + 30)
+            ctx.fillText(`\u03A3 Kinetic Energy = ${round(sigKE / 100, 0) / 10} kJ`, 145, cHeight + 35)
         }
         if (!item) return
 
@@ -511,7 +510,7 @@ function closure() {
 
         if (!draw) {
             ctx.fillStyle = `white`
-            ctx.fillText(`\u03A3 Potential Energy = ${round(sigPE / 100, 0) / 10} kJ`, 145, cHeight + 45)
+            ctx.fillText(`\u03A3 Potential Energy = ${round(sigPE / 100, 0) / 10} kJ`, 145, cHeight + 55)
         }
         if (!item) return
 
@@ -524,7 +523,7 @@ function closure() {
 
         if (!draw) {
             ctx.fillStyle = `white`
-            ctx.fillText(`\u03A3 Energy = ${round(sigEnergy / 100, 0) / 10} kJ`, 145, cHeight + 60)
+            ctx.fillText(`\u03A3 Energy = ${round(sigEnergy / 100, 0) / 10} kJ`, 145, cHeight + 75)
         }
         if (!item) return
         sigEnergy = sigKE + sigPE
@@ -534,7 +533,7 @@ function closure() {
     function drawAverageVelocity(avgVel, sigKE, sigMass, draw) {
         if (!draw) {
             ctx.fillStyle = `white`
-            ctx.fillText(`Average Velocity = ${round(avgVel, 0)} m/s`, 145, cHeight + 75)
+            ctx.fillText(`Average Velocity = ${round(avgVel, 0)} m/s`, 145, cHeight + 95)
         }
         avgVel = Math.sqrt(2 * sigKE / sigMass)
         return avgVel
@@ -633,27 +632,26 @@ function closure() {
 
 
     //// Under here are the functions that will go in the valueBorder area
-    var sliderVal = [445, 445, 445, 406] // sets default slider values for [radius,color]
+    var sliderVal = [445, 445, 445, 411,411] // sets default slider values for [radius,color]
     sliderSelect = [false, false, false, false] // sets whether or not slider is selected 
-    hue = convertRange(sliderVal[1], 410, 490, 0, 300)
+    hue = convertRange(sliderVal[1], 415, 485, 0, 300)
     massEqualRadius = true
+    ballRandomize = false
     function ballCustomizer() {
 
-        massEqualRadius = drawCheckbox([410, 180, 20, 20], massEqualRadius, "Mass", [440, 193])
+        massEqualRadius = drawCheckbox([405, 185, 20, 20], massEqualRadius, "Mass", [433, 199])
+        ballRandomize = drawCheckbox([405, 215, 20, 20], ballRandomize, "Randomize", [433, 229])
 
 
-        // drawing a ball over the customization sliders
-        convertedRadius = round(convertRange(sliderVal[0], 406, 484, 10, 30), 0)
-        drawFakeBall(450, 55, convertedRadius)
-
+        
         // slider creation
-        sliderSelect, sliderVal[0] = slider([410, 490, 110, 110], squareSize = 10, sliderVal[0], sliderSelect, sliderIndex = 0, true) // radius
-        sliderSelect, sliderVal[1] = slider([410, 490, 140, 140], squareSize = 10, sliderVal[1], sliderSelect, sliderIndex = 1, true) // hue
-        sliderSelect, sliderVal[2] = slider([410, 490, 170, 170], squareSize = 10, sliderVal[2], sliderSelect, sliderIndex = 2, true) // mass
-
+        sliderSelect, sliderVal[0] = slider([415, 485, 110, 110], squareSize = 10, sliderVal[0], sliderSelect, sliderIndex = 0, true) // radius
+        sliderSelect, sliderVal[1] = slider([415, 485, 140, 140], squareSize = 10, sliderVal[1], sliderSelect, sliderIndex = 1, true) // hue
+        sliderSelect, sliderVal[2] = slider([415, 485, 170, 170], squareSize = 10, sliderVal[2], sliderSelect, sliderIndex = 2, true) // mass
+        
         // not really a ball option, but not sure where else to put this
-        sliderSelect, sliderVal[3] = slider([361, 361, cHeight + 10, cHeight + 90], squareSize = 10, sliderVal[3], sliderSelect, sliderIndex = 3, false) // gravity
-        gravity = -round(convertRange(sliderVal[3], 406, 484, 0, 9.81), 2)
+        sliderSelect, sliderVal[3] = slider([361, 361, cHeight + 15, cHeight + 85], squareSize = 10, sliderVal[3], sliderSelect, sliderIndex = 3, false) // gravity
+        gravity = -round(convertRange(sliderVal[3], 411, 479, 0, 9.81), 2)
         ctx.fillText(`${-gravity}`, 370, sliderVal[3] + 8)
         ctx.save()
         ctx.translate(350, 470)
@@ -661,30 +659,53 @@ function closure() {
         ctx.fillText(`Gravity`, 0, 0)
         ctx.restore()
 
+        // also not a ball option, but this is more of a slider container function now
+        sliderSelect, sliderVal[4] = slider([415, 485, 300, 300], squareSize = 10, sliderVal[4], sliderSelect, sliderIndex = 4, true) // slow-time
+        console.log(fps)
+        fps = round(convertRange(sliderVal[4], 411, 479, 60, 5000)/10, 0)*10
+        dt = 1 / fps * 1000; // milliseconds per frame
 
-
-        // adding text.. could have done this in the function, but I think it is already getting a bit heavy on the parameters + not sure how I would place them in a vertical slider
+        // Randomizing
+        if(ballRandomize){
+            rng = 479-411
+            sliderVal[0] = Math.random()*rng+411 // range == 10-30
+            sliderVal[1] = Math.random()*rng+411 // range == 0-300
+            sliderVal[2] = Math.random()*rng+411 // range == 5-55
+        }
+        
+        convertedRadius = round(convertRange(sliderVal[0], 411, 479, 10, 30), 0)
+        hue = round(convertRange(sliderVal[1], 411, 479, 0, 300), 0)        
         ctx.font = "12px monospace"
         ctx.textAlign = "center"
-        ctx.fillText(`Radius = ${convertedRadius}`, 450, 100)
-
-        hue = round(convertRange(sliderVal[1], 406, 484, 0, 300), 0)
-        ctx.fillText(`Hue = ${hue}`, 450, 130)
-
         if (massEqualRadius) {
             ctx.fillText(`Mass = Radius`, 450, 160)
             mass = convertedRadius
         }
         else {
-            mass = round(convertRange(sliderVal[2], 406, 484, 5, 55), 0)
+            mass = round(convertRange(sliderVal[2], 411, 479, 5, 55), 0)
             ctx.fillText(`Mass = ${mass}`, 450, 160)
         }
+        
+        // drawing a ball over the customization sliders
+        drawFakeBall(450, 55, convertedRadius)
+        // adding text.. could have done this in the function, but I think it is already getting a bit heavy on the parameters + not sure how I would place them in a vertical slider
+        ctx.fillStyle = "white"
+        ctx.fillText(`Radius = ${convertedRadius}`, 450, 100)
+        ctx.fillText(`Hue = ${hue}`, 450, 130)
 
 
 
+        ctx.fillText(`Target`, 430, 280)
+        ctx.fillText(`FPS = ${fps}`, 450, 290)
+        
+        
         // Redrawing color square to make it colorful!
         ctx.fillStyle = `hsl(${hue},80%,50%)`
         ctx.fillRect(sliderVal[1], 135, 10, 10)
+
+
+
+
     }
 
     function clearBalls() {
