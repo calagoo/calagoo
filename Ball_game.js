@@ -694,7 +694,7 @@ function closure() {
 
 
 
-        ctx.fillText(`Target`, 430, 280)
+        ctx.fillText(`Target`, 430, 278)
         ctx.fillText(`FPS = ${fps}`, 450, 290)
         
         
