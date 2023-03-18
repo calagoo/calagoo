@@ -402,43 +402,42 @@ function closure() {
     }
     drawMesh = false
     function drawCollisionMesh() {
-        ctx.beginPath()
-        ctx.fillStyle = "grey"
-        ctx.roundRect(10, cHeight + 10, 20, 20, 5)
-        ctx.fill()
-        ctx.fillStyle = "white"
-        ctx.font = "12px monospace"
-        ctx.fillText("Draw Mesh", 65, cHeight + 24)
-        ctx.closePath()
+        // ctx.beginPath()
+        // ctx.fillStyle = "grey"
+        // ctx.roundRect(10, cHeight + 10, 20, 20, 5)
+        // ctx.fill()
+        // ctx.fillStyle = "white"
+        // ctx.font = "12px monospace"
+        // ctx.fillText("Draw Mesh", 65, cHeight + 24)
+        // ctx.closePath()
 
-        //check if clicked
-        if (checkClickZone(10,cWidth+10,20,20) || drawMesh) {
-            ctx.beginPath()
-            ctx.fillStyle = "white"
-            ctx.roundRect(10, cHeight + 10, 20, 20, 5)
-            ctx.fill()
-            ctx.closePath()
-            
-            if(drawMesh){
-                ctx.beginPath()
-                ctx.strokeStyle = "blue"
-                ctx.moveTo(14,cHeight+19)
-                ctx.lineTo(18,cHeight+23)
-                ctx.lineTo(26,cHeight+15)
-                ctx.lineWidth = "3"
-                ctx.stroke()
-                ctx.closePath()
-                ctx.lineWidth = "1" // revert back or else all lines mess up
-            }
-            
-            if (clicked && checkClickZone(10,cWidth+10,20,20)) {
-                if (drawMesh) drawMesh = false
-                else drawMesh = true
-            } 
-        }
+        // //check if clicked
+        // if (checkClickZone(10,cWidth+10,20,20) || drawMesh) {
+        //     ctx.beginPath()
+        //     ctx.fillStyle = "white"
+        //     ctx.roundRect(10, cHeight + 10, 20, 20, 5)
+        //     ctx.fill()
+        //     ctx.closePath()
 
+        //     if(drawMesh){
+        //         ctx.beginPath()
+        //         ctx.strokeStyle = "blue"
+        //         ctx.moveTo(14,cHeight+19)
+        //         ctx.lineTo(18,cHeight+23)
+        //         ctx.lineTo(26,cHeight+15)
+        //         ctx.lineWidth = "3"
+        //         ctx.stroke()
+        //         ctx.closePath()
+        //         ctx.lineWidth = "1" // revert back or else all lines mess up
+        //     }
 
-
+        //     if (clicked && checkClickZone(10,cWidth+10,20,20)) {
+        //         if (drawMesh) drawMesh = false
+        //         else drawMesh = true
+        //     } 
+        // }
+        drawMesh=drawCheckbox(10, cHeight+10, 20, 20, "Draw Mesh", drawMesh)
+        // console.log(drawMesh)
         if (!drawMesh) {
             return
         }
@@ -591,8 +590,46 @@ function closure() {
         return newValue
     }
 
-    function checkClickZone(x,y,w,h){
-        return ((mouseX > x && mouseX < x+w) && (mouseY > y && mouseY < y+h))
+    function drawCheckbox(x, y, w, h, text, toggle) {
+        ctx.beginPath()
+        ctx.fillStyle = "grey"
+        ctx.roundRect(x, y, w, h, 5)
+        ctx.fill()
+        ctx.fillStyle = "white"
+        ctx.font = "12px monospace"
+        ctx.fillText(text, 65, y + 14)
+        ctx.closePath()
+        
+        //check if clicked
+        if (checkClickZone(x, y, w, h) || toggle) {
+            ctx.beginPath()
+            ctx.fillStyle = "white"
+            ctx.roundRect(x, y, w, h, 5)
+            ctx.fill()
+            ctx.closePath()
+            
+            if (toggle) {
+                ctx.beginPath()
+                ctx.strokeStyle = "blue"
+                ctx.moveTo(x + 4, y + 9)
+                ctx.lineTo(x + 8, y + 13)
+                ctx.lineTo(x + 16, y + 5)
+                ctx.lineWidth = "3"
+                ctx.stroke()
+                ctx.closePath()
+                ctx.lineWidth = "1" // revert back or else all lines mess up
+            }
+            
+            if (clicked && checkClickZone(x, y, w, h)) {
+                if (toggle) toggle = false
+                else toggle = true
+            }
+        }
+        return toggle
+    }
+
+    function checkClickZone(x, y, w, h) {
+        return ((mouseX > x && mouseX < x + w) && (mouseY > y && mouseY < y + h))
     }
 
     drawGame();
