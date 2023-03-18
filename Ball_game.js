@@ -1,11 +1,5 @@
 // Things to add:
-// Randomize button for radius and color    -- done
-// Show collision mesh button               -- done
-// Show velocity vectors (maybe...)         -- done
-// Show total kinetic energy                -- done
-// Mass changing (maybe...)
-// Gravity slider (try it out first.. might have issues with stagnation)
-// ...
+//  randomizer
 
 
 // Sets variable currentTab globally for all scripts. This checkTab function checks which tab 
@@ -55,7 +49,7 @@ function closure() {
     const fps = 60; // frames per second
     const dt = 1 / fps * 1000; // milliseconds per frame
     const maxHeight = 100;
-    const gravity = -9.81 // gravity
+    var gravity = -9.81 // gravity
     const e = .99; // restitution
     const collisionSections = 12 // choose sqrt of how many boxes -- 9 sections == 3, 81 sections == 9, etc
     let sectionArray = Array(collisionSections ** 2).fill(0).map(x => Array(0).fill(0))
@@ -211,23 +205,13 @@ function closure() {
         if (currentTab == "WIP") {
             frame++
             if (frame >= fps) {
-                frame = 1
+                frame = 0
             }
 
             startTime = performance.now()
             sectionArray = Array(collisionSections ** 2).fill(0).map(x => Array(0).fill(0))
             setTimeout(drawGame, dt);
             clearScreen();
-
-            // // uncomment for a set amount of balls in the frame 
-            // if (ballArray.length < 50) {
-            //     xRand = (Math.random() * (maxHeight-10))+5
-            //     yRand = (Math.random() * (maxHeight-10))+5
-            //     vxRand = (Math.random() * 20) - 10
-            //     vyRand = (Math.random() * 20) - 10
-            //     rRand = (Math.random() * 5) + 5
-            //     ballArray[ballArray.length] = new ball(xRand, yRand, vxRand, vyRand, rRand, ctx);
-            // }
 
             ballArray.forEach(function (item) {
                 item.drawBall();
@@ -237,13 +221,14 @@ function closure() {
                     item.collidedPast = [];
                 }
 
+
             });
 
             checkBallCollision(ballArray, sectionArray)
 
             endTime = performance.now()
             valueBorder()
-            if (clicked || isPlacing) {
+            if ((clicked || isPlacing)) {
                 placeBall(ballDrawing);
                 clicked = false;
             }
@@ -283,6 +268,16 @@ function closure() {
                         // pos = [[ballA.x,ballB.x], [ballA.y,ballB.y]] //[[ball1x,ball2x],[ball1y,ball2y]]
 
                         dist = math.norm([(ballA.x - ballB.x), (ballA.y - ballB.y)])
+                        if (dist == 0) {
+                            rA = scale2pixel(ballA.r)
+                            rB = scale2pixel(ballB.r)
+                            ballA.x += Math.abs(rA + rB) * Math.cos(0)
+                            ballA.y += Math.abs(rA + rB) * Math.sin(0)
+                            ballB.x -= Math.abs(rA + rB) * Math.cos(0)
+                            ballB.y -= Math.abs(rA + rB) * Math.sin(0)
+                            break loop3;
+                        }
+
                         systemMass = ballA.mass + ballB.mass
                         if (dist < scale2pixel(ballA.r) + scale2pixel(ballB.r)) {
                             if (debug) {
@@ -301,14 +296,17 @@ function closure() {
 
                             loop5:
                             if (ballA.collidedPast.length >= 1) {
-                                for (var collisionPast of ballA.collidedPast.reverse()) {
+                                for ([idx, collisionPast] of ballA.collidedPast.reverse().entries()) {
                                     if (collisionPast == ballB) {
-                                        ballA.collidedPast = []
+                                        ballA.collidedPast[idx] = []
                                         ballB.collidedPast = []
                                         rA = scale2pixel(ballA.r)
                                         rB = scale2pixel(ballB.r)
-                                        ballA.x += Math.abs(rA + rB - dist) * Math.cos(angle)
-                                        ballA.y += Math.abs(rA + rB - dist) * Math.sin(angle)
+                                        // ballA.x += 10
+                                        ballA.x += (Math.abs(rA + rB - dist) * Math.cos(angle)) / 2
+                                        ballA.y += (Math.abs(rA + rB - dist) * Math.sin(angle)) / 2
+                                        ballB.x -= (Math.abs(rA + rB - dist) * Math.cos(angle)) / 2
+                                        ballB.y -= (Math.abs(rA + rB - dist) * Math.sin(angle)) / 2
                                         break loop3;
                                     }
                                 }
@@ -362,34 +360,39 @@ function closure() {
 
 
     function placeBall(drawMode) {
+        if (mouseX < cWidth && mouseY < cHeight) { // must be in play area to draw balls
 
-        if (drawMode && isDragging) {
-            initX = canvas2game(mouseX)
-            initY = canvas2game(mouseY)
-            if (initX > 0 && initY > 0) {
+            if (drawMode && isDragging) {
+                initVx = 0
+                initVy = 0
+                initX = canvas2game(mouseX)
+                initY = canvas2game(mouseY)
                 isPlacing = true
-                if (frame % 5 == 0) ballArray[ballArray.length] = new ball(initX, initY, 0, 0, convertRange(sliderVal[0], 410, 490, 10, 30), ctx)
+                if (frame % 4 == 0) {
+
+                    ballArray[ballArray.length] = new ball(initX, initY, 0, 0, convertRange(sliderVal[0], 410, 490, 10, 30), ctx)
+                }
+                return
             }
-            return
-        }
 
-        if (!isPlacing) {
-            initX = canvas2game(mouseX)
-            initY = canvas2game(mouseY)
-            if (initX > 0 && initY > 0) isPlacing = true
-            else return;
-        }
+            if (!isPlacing) {
+                initX = canvas2game(mouseX)
+                initY = canvas2game(mouseY)
+                if (initX > 0 && initY > 0) isPlacing = true
+                else return;
+            }
 
-        if (isDragging) {
-            drawFakeBall(pixel2scale(initX), pixel2scale(initY), convertRange(sliderVal[0], 410, 490, 10, 30))
-            initVx = -(initX - canvas2game(mouseX))
-            initVy = -(initY - canvas2game(mouseY))
-            drawVelocityLine(game2canvas(initX), game2canvas(initY), mouseX, mouseY)
-        }
+            if (isDragging && !drawMode) {
+                drawFakeBall(pixel2scale(initX), pixel2scale(initY), convertRange(sliderVal[0], 410, 490, 10, 30))
+                initVx = -(initX - canvas2game(mouseX))
+                initVy = -(initY - canvas2game(mouseY))
+                drawVelocityLine(game2canvas(initX), game2canvas(initY), mouseX, mouseY)
+            }
 
-        if (!isDragging) {
-            ballArray[ballArray.length] = new ball(initX, initY, initVx, initVy, convertRange(sliderVal[0], 410, 490, 10, 30), ctx)
-            isPlacing = false
+            if (!isDragging && !drawMode) {
+                ballArray[ballArray.length] = new ball(initX, initY, initVx, initVy, convertRange(sliderVal[0], 410, 490, 10, 30), ctx)
+                isPlacing = false
+            }
         }
     }
 
@@ -411,7 +414,7 @@ function closure() {
     // draws the mesh used for detecting which balls are close to collision
     drawMesh = false
     function drawCollisionMesh() {
-        drawMesh = drawCheckbox(10, cHeight + 10, 20, 20, "Show Mesh", drawMesh)
+        drawMesh = drawCheckbox([10, cHeight + 10, 20, 20], drawMesh, "Show Mesh")
         if (!drawMesh) { // if checkbox is not toggled, exit function now without drawing mesh
             return
         }
@@ -448,7 +451,7 @@ function closure() {
     var drawVV = false
     function drawVelocityVectors(item, draw) {
         if (!draw) {
-            drawVV = drawCheckbox(10, cHeight + 40, 20, 20, "Show Velocity", drawVV)
+            drawVV = drawCheckbox([10, cHeight + 40, 20, 20], drawVV, "Show Velocity")
         }
 
         if (!drawVV || !item) return
@@ -462,26 +465,82 @@ function closure() {
 
     ballDrawing = false
     function toggleDrawMode() {
-        ballDrawing = drawCheckbox(10, cHeight + 70, 20, 20, "Draw Mode", ballDrawing)
+        ballDrawing = drawCheckbox([10, cHeight + 70, 20, 20], ballDrawing, "Draw Mode")
+
 
         if (!ballDrawing) return
-
-        // placeBall()
-
     }
 
+    function drawData(item, sigmaArray, draw) {
+
+        sigmaArray[0] = drawTotalMass(item, sigmaArray[0], draw)
+        sigmaArray[1] = drawTotalKE(item, sigmaArray[1], draw)
+        sigmaArray[2] = drawTotalPE(item, sigmaArray[2], draw)
+        sigmaArray[3] = drawTotalEnergy(item, sigmaArray[3], sigmaArray[1], sigmaArray[2], draw)
+        sigmaArray[4] = drawAverageVelocity(sigmaArray[4], sigmaArray[1], sigmaArray[0], draw)
+        return sigmaArray
+    }
+
+    function drawTotalMass(item, sigMass, draw) {
+        // Calculate mass
+
+        if (!draw) {
+            ctx.fillStyle = `white`
+            ctx.fillText(`\u03A3 Mass = ${round(sigMass, 0)} kg`, 145, cHeight + 15)
+        }
+        if (!item) return
+
+        sigMass += item.mass
+        return sigMass
+    }
     function drawTotalKE(item, sigKE, draw) {
         // Calculate total KE
 
         if (!draw) {
             ctx.fillStyle = `white`
-            ctx.fillText(`\u03A3 Kinetic Energy = ${round(sigKE, 0) / 1000} kJ`, 150, cHeight + 24)
+            ctx.fillText(`\u03A3 Kinetic Energy = ${round(sigKE / 100, 0) / 10} kJ`, 145, cHeight + 30)
         }
         if (!item) return
 
         sigKE += 0.5 * item.mass * (item.vx ** 2 + item.vy ** 2)
         return sigKE
     }
+
+    function drawTotalPE(item, sigPE, draw) {
+        // Calculate total PE
+
+        if (!draw) {
+            ctx.fillStyle = `white`
+            ctx.fillText(`\u03A3 Potential Energy = ${round(sigPE / 100, 0) / 10} kJ`, 145, cHeight + 45)
+        }
+        if (!item) return
+
+        sigPE += item.mass * -gravity * item.y
+        return sigPE
+    }
+
+    function drawTotalEnergy(item, sigEnergy, sigKE, sigPE, draw) {
+        // Calculate total E
+
+        if (!draw) {
+            ctx.fillStyle = `white`
+            ctx.fillText(`\u03A3 Energy = ${round(sigEnergy / 100, 0) / 10} kJ`, 145, cHeight + 60)
+        }
+        if (!item) return
+        sigEnergy = sigKE + sigPE
+        return sigEnergy
+    }
+
+    function drawAverageVelocity(avgVel, sigKE, sigMass, draw) {
+        if (!draw) {
+            ctx.fillStyle = `white`
+            ctx.fillText(`Average Velocity = ${round(avgVel, 0)} m/s`, 145, cHeight + 75)
+        }
+        avgVel = Math.sqrt(2 * sigKE / sigMass)
+        return avgVel
+    }
+
+
 
     // Draw the outer wall that separates the values and sliders from the game area
     function valueBorder() {
@@ -507,20 +566,20 @@ function closure() {
 
         // checks if the items have already been drawn once in the loop so we dont draw it mulitple times
         drawOnce = false
-        sigKE = 0   // init sigKE to 0 every frame
-        // Below I really didn't want to loop for 2 function by themselves so I made these complicated setups to do that. I am not sure how much fast it is but one loop > two loops
+        sigmaArray = [0, 0, 0, 0, 0] // initialize data array mass,KE,PE,total energy,...
+        // Below I really didn't want to loop for n function by themselves so I made these complicated setups to do that. I am not sure how much fast it is but one loop > n loops
         if (!ballArray.length) {
             drawVelocityVectors(false, drawOnce)
-            drawTotalKE(false, sigKE, drawOnce)
+            sigmaArray = drawData(false, sigmaArray, drawOnce)
         }
         for ([idx, item] of ballArray.entries()) {
-            drawVelocityVectors(item, drawOnce)  // loop for this
-            sigKE = drawTotalKE(item, sigKE, true) // loop for this
+            drawVelocityVectors(item, drawOnce)
+            sigmaArray = drawData(item, sigmaArray, true)
+
             if (idx == ballArray.length - 1) {
-                sigKE = drawTotalKE(item, sigKE, false) // loop for this
+                sigmaArray = drawData(item, sigmaArray, false)
             }
             drawOnce = true
-            // console.log(sigKE)
         }
     }
 
@@ -574,33 +633,55 @@ function closure() {
 
 
     //// Under here are the functions that will go in the valueBorder area
-    var sliderVal = [445, 445, 445, cHeight + 45] // sets default slider values for [radius,color]
+    var sliderVal = [445, 445, 445, 406] // sets default slider values for [radius,color]
     sliderSelect = [false, false, false, false] // sets whether or not slider is selected 
     hue = convertRange(sliderVal[1], 410, 490, 0, 300)
+    massEqualRadius = true
     function ballCustomizer() {
 
-        convertedRadius = round(convertRange(sliderVal[0], 406, 484, 10, 30),0)
-        hue = round(convertRange(sliderVal[1], 406, 484, 0, 300),0)
-        mass = round(convertRange(sliderVal[2], 406, 484, 5, 55),0)
-        
+        massEqualRadius = drawCheckbox([410, 180, 20, 20], massEqualRadius, "Mass", [440, 193])
+
+
         // drawing a ball over the customization sliders
+        convertedRadius = round(convertRange(sliderVal[0], 406, 484, 10, 30), 0)
         drawFakeBall(450, 55, convertedRadius)
-        
+
         // slider creation
-        sliderSelect, sliderVal[0] = slider([410, 490, 110, 110], squareSize = 10, sliderVal[0], sliderSelect, sliderIndex = 0, true)
-        sliderSelect, sliderVal[1] = slider([410, 490, 140, 140], squareSize = 10, sliderVal[1], sliderSelect, sliderIndex = 1, true)
-        sliderSelect, sliderVal[2] = slider([410, 490, 170, 170], squareSize = 10, sliderVal[2], sliderSelect, sliderIndex = 2, true)
-        
+        sliderSelect, sliderVal[0] = slider([410, 490, 110, 110], squareSize = 10, sliderVal[0], sliderSelect, sliderIndex = 0, true) // radius
+        sliderSelect, sliderVal[1] = slider([410, 490, 140, 140], squareSize = 10, sliderVal[1], sliderSelect, sliderIndex = 1, true) // hue
+        sliderSelect, sliderVal[2] = slider([410, 490, 170, 170], squareSize = 10, sliderVal[2], sliderSelect, sliderIndex = 2, true) // mass
+
+        // not really a ball option, but not sure where else to put this
+        sliderSelect, sliderVal[3] = slider([361, 361, cHeight + 10, cHeight + 90], squareSize = 10, sliderVal[3], sliderSelect, sliderIndex = 3, false) // gravity
+        gravity = -round(convertRange(sliderVal[3], 406, 484, 0, 9.81), 2)
+        ctx.fillText(`${-gravity}`, 370, sliderVal[3] + 8)
+        ctx.save()
+        ctx.translate(350, 470)
+        ctx.rotate(-90 * Math.PI / 180)
+        ctx.fillText(`Gravity`, 0, 0)
+        ctx.restore()
+
+
+
         // adding text.. could have done this in the function, but I think it is already getting a bit heavy on the parameters + not sure how I would place them in a vertical slider
         ctx.font = "12px monospace"
-        ctx.fillText(`Radius: ${convertedRadius}`,450,100)
-        ctx.fillText(`Hue: ${hue}`,450,130)
-        ctx.fillText(`Mass: ${mass}`,450,160)
-        
-        
-        // sliderSelect, sliderVal[2] = slider(x1 = 350, x2 = 350, y1 = cHeight+10, y2 = cHeight+90, squareSize = 10, sliderVal[2], sliderSelect, sliderIndex = 2, false)
-        
-        
+        ctx.textAlign = "center"
+        ctx.fillText(`Radius = ${convertedRadius}`, 450, 100)
+
+        hue = round(convertRange(sliderVal[1], 406, 484, 0, 300), 0)
+        ctx.fillText(`Hue = ${hue}`, 450, 130)
+
+        if (massEqualRadius) {
+            ctx.fillText(`Mass = Radius`, 450, 160)
+            mass = convertedRadius
+        }
+        else {
+            mass = round(convertRange(sliderVal[2], 406, 484, 5, 55), 0)
+            ctx.fillText(`Mass = ${mass}`, 450, 160)
+        }
+
+
+
         // Redrawing color square to make it colorful!
         ctx.fillStyle = `hsl(${hue},80%,50%)`
         ctx.fillRect(sliderVal[1], 135, 10, 10)
@@ -659,15 +740,29 @@ function closure() {
         return newValue
     }
 
-    function drawCheckbox(x, y, w, h, text, toggle) {
+    function drawCheckbox(checkboxPosition, toggle, text, textBoxPosition) {
+        x = checkboxPosition[0]
+        y = checkboxPosition[1]
+        w = checkboxPosition[2]
+        h = checkboxPosition[3]
+
         ctx.beginPath()
         ctx.fillStyle = "grey"
         ctx.roundRect(x, y, w, h, 5)
         ctx.fill()
+
+        if (!textBoxPosition) {
+            tbx = 40
+            tby = y + 14
+        }
+        else {
+            tbx = textBoxPosition[0]
+            tby = textBoxPosition[1]
+        }
         ctx.fillStyle = "white"
         ctx.font = "12px monospace"
         ctx.textAlign = "left"
-        ctx.fillText(text, 40, y + 14)
+        ctx.fillText(text, tbx, tby)
         ctx.closePath()
 
         //check if clicked
