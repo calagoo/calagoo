@@ -84,7 +84,7 @@ function closure() {
             this.vy = vy;
             this.r = r;
             this.ctx = ctx;
-            this.mass = r; // mass, kg
+            this.mass = mass; // mass, kg
             this.collided = []; // checks if ball has collided in the current frame, and with which ball
             this.collidedPast = []; // checks if ball has collided in the past and current frame, and with which ball
         }
@@ -524,7 +524,13 @@ function closure() {
         }
     }
 
-    function slider(x1, x2, y1, y2, squareSize, sliderVal, sliderArray, sliderIndex, horizontal) {
+    function slider(sliderPosition, squareSize, sliderVal, sliderArray, sliderIndex, horizontal) {
+        x1 = sliderPosition[0]
+        x2 = sliderPosition[1]
+        y1 = sliderPosition[2]
+        y2 = sliderPosition[3]
+
+
         // Making Slider Line
         ctx.strokeStyle = `white`
         ctx.fillStyle = `white`
@@ -538,16 +544,12 @@ function closure() {
             sliderValArray = [sliderVal, (y2 - y1) / 2 - squareSize / 2]
             // Mouse movement and dragging for horizontal slider
             if (isDragging && (mouseX > x1 && mouseX < x2)) {
-                for ([idx, sliderBool] of sliderArray.entries()) {
-                    if ((idx != sliderIndex) && (!sliderBool)) {
-                        if (((mouseY > y1 - squareSize / 2 && mouseY < y2 + squareSize / 2) || sliderArray[sliderIndex])) {
-                            sliderArray[sliderIndex] = true
-                            sliderVal = mouseX - 5
-                        }
-                    }
+                if ((((mouseY > y1 - squareSize / 2 && mouseY < y2 + squareSize / 2) && clicked) || sliderArray[sliderIndex])) {
+                    sliderArray[sliderIndex] = true
+                    sliderVal = mouseX - 5
                 }
             }
-            else {
+            else if (!isDragging) {
                 sliderArray[sliderIndex] = false
             }
 
@@ -557,16 +559,12 @@ function closure() {
             sliderValArray = [(x2 - x1) / 2 - squareSize / 2, sliderVal]
             // Mouse movement and dragging for vertical slider
             if (isDragging && (mouseY > y1 && mouseY < y2)) {
-                for ([idx, sliderBool] of sliderArray.entries()) {
-                    if ((idx != sliderIndex) && (!sliderBool)) {
-                        if (((mouseX > x1 - squareSize / 2 && mouseX < x2 + squareSize / 2) || sliderArray[sliderIndex])) {
-                            sliderArray[sliderIndex] = true
-                            sliderVal = mouseY - 5
-                        }
-                    }
+                if ((((mouseX > x1 - squareSize / 2 && mouseX < x2 + squareSize / 2) && clicked) || sliderArray[sliderIndex])) {
+                    sliderArray[sliderIndex] = true
+                    sliderVal = mouseY - 5
                 }
             }
-            else {
+            else if (!isDragging) {
                 sliderArray[sliderIndex] = false
             }
             ctx.fillRect(x1 - squareSize / 2, sliderVal, squareSize, squareSize)
@@ -576,22 +574,36 @@ function closure() {
 
 
     //// Under here are the functions that will go in the valueBorder area
-    var sliderVal = [445, 445,200] // sets default slider values for [radius,color]
-    sliderSelect = [false, false,false] // sets whether or not slider is selected 
+    var sliderVal = [445, 445, 445, cHeight + 45] // sets default slider values for [radius,color]
+    sliderSelect = [false, false, false, false] // sets whether or not slider is selected 
     hue = convertRange(sliderVal[1], 410, 490, 0, 300)
     function ballCustomizer() {
 
-        drawFakeBall(450, 55, convertRange(sliderVal[0], 410, 490, 10, 30))
-
-        sliderSelect, sliderVal[0] = slider(x1 = 410, x2 = 490, y1 = 105, y2 = 105, squareSize = 10, sliderVal[0], sliderSelect, sliderIndex = 0, true)
-        sliderSelect, sliderVal[1] = slider(x1 = 410, x2 = 490, y1 = 130, y2 = 130, squareSize = 10, sliderVal[1], sliderSelect, sliderIndex = 1, true)
-
-
-
+        convertedRadius = round(convertRange(sliderVal[0], 406, 484, 10, 30),0)
+        hue = round(convertRange(sliderVal[1], 406, 484, 0, 300),0)
+        mass = round(convertRange(sliderVal[2], 406, 484, 5, 55),0)
+        
+        // drawing a ball over the customization sliders
+        drawFakeBall(450, 55, convertedRadius)
+        
+        // slider creation
+        sliderSelect, sliderVal[0] = slider([410, 490, 110, 110], squareSize = 10, sliderVal[0], sliderSelect, sliderIndex = 0, true)
+        sliderSelect, sliderVal[1] = slider([410, 490, 140, 140], squareSize = 10, sliderVal[1], sliderSelect, sliderIndex = 1, true)
+        sliderSelect, sliderVal[2] = slider([410, 490, 170, 170], squareSize = 10, sliderVal[2], sliderSelect, sliderIndex = 2, true)
+        
+        // adding text.. could have done this in the function, but I think it is already getting a bit heavy on the parameters + not sure how I would place them in a vertical slider
+        ctx.font = "12px monospace"
+        ctx.fillText(`Radius: ${convertedRadius}`,450,100)
+        ctx.fillText(`Hue: ${hue}`,450,130)
+        ctx.fillText(`Mass: ${mass}`,450,160)
+        
+        
+        // sliderSelect, sliderVal[2] = slider(x1 = 350, x2 = 350, y1 = cHeight+10, y2 = cHeight+90, squareSize = 10, sliderVal[2], sliderSelect, sliderIndex = 2, false)
+        
+        
         // Redrawing color square to make it colorful!
-        hue = convertRange(sliderVal[1], 410, 490, 0, 300)
         ctx.fillStyle = `hsl(${hue},80%,50%)`
-        ctx.fillRect(sliderVal[1], 125, 10, 10)
+        ctx.fillRect(sliderVal[1], 135, 10, 10)
     }
 
     function clearBalls() {
