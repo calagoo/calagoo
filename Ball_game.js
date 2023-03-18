@@ -1,11 +1,7 @@
-var Ball_mouseDown;
-var Ball_mouseUp;
-var Ball_mouseMove;
-
 // Sets variable currentTab globally for all scripts. This checkTab function checks which tab 
 // is currently open and only runs games in the selected tab. I felt this would help performance, not sure if it does...
 let currentTab = "";
-function checkTab(name){
+function checkTab(name) {
     currentTab = name
     console.log(`Current Tab: ${currentTab}`)
 }
@@ -14,16 +10,43 @@ function closure() {
     const canvas = document.getElementById("Ball_game");
     const ctx = canvas.getContext("2d");
 
+    // mouse initializations
+    let mouseX = 0;
+    let mouseY = 0;
+    let isDragging = false;
+    let isPlacing = false;
+    let clicked = false;
+
+    canvas.addEventListener('mousemove', (e) => {
+        mouseX = window.event.pageX - canvas.offsetLeft
+        mouseY = window.event.pageY - canvas.offsetTop
+    },
+    )
+
+    canvas.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        clicked = true;
+    },
+    )
+
+    canvas.addEventListener('mouseup', (e) => {
+        isDragging = false;
+    },
+    )
+
+    // canvas coordinates
     cWidth = canvas.width - 100
     cHeight = canvas.height - 100
+    const centerX = cWidth / 2;
+    const centerY = cHeight / 2;
 
     //// sim constants
     const debug = false;
     const fps = 60; // frames per second
     const dt = 1 / fps * 1000; // milliseconds per frame
-    const centerX = cWidth / 2;
-    const centerY = cHeight / 2;
     const maxHeight = 100;
+    const gravity = 0//-9.81 // gravity
+    const e = 0.97; // restitution
     const collisionSections = 12 // choose sqrt of how many boxes -- 9 sections == 3, 81 sections == 9, etc
     let sectionArray = Array(collisionSections ** 2).fill(0).map(x => Array(0).fill(0))
 
@@ -39,15 +62,10 @@ function closure() {
 
     var ballArray = [];
     class ball {
-        // forces
         // y: positive=down, negative=up
         //
-        gravity = 0//-9.81 // gravity
-        xy = 0; // magnitude of x and y
-        vel = 0;
-        e = 0.97; // restitution
-
         constructor(x, y, vx, vy, r, ctx) {
+            this.ballHue = hue
             this.x = x;
             this.y = y;
             this.xLast = x;
@@ -60,12 +78,14 @@ function closure() {
             this.collided = []; // checks if ball has collided in the current frame, and with which ball
             this.collidedPast = []; // checks if ball has collided in the past and current frame, and with which ball
         }
+
+
         drawBall(color, last) {
             // if color is not given, draw with white
             if (color != undefined) {
                 this.ctx.fillStyle = color;
-            } else {
-                this.ctx.fillStyle = "white";
+            } else{
+                ctx.fillStyle = `hsl(${this.ballHue},80%,50%)`
             }
 
             if (last) {
@@ -89,36 +109,30 @@ function closure() {
             this.ctx.fill();
         }
         checkWallCollision(x, y, r) {
-            // if (debug) {
-            //     this.drawBall("red"); //debug - circles to light up red when they are close to collision
-            // }
-
             var ballTop = y + r;
             var ballBot = y - r;
             var ballLeft = x - r;
             var ballRight = x + r;
 
             if (ballBot < 0) {
-                this.vy = Math.abs(this.vy) * this.e;
+                this.vy = Math.abs(this.vy) * e;
                 this.y = (-ballBot + r)
             }
             if (ballTop > maxHeight) {
-                this.vy = -Math.abs(this.vy) * this.e;
+                this.vy = -Math.abs(this.vy) * e;
                 this.y = 2 * maxHeight - ballTop - r
             }
             if (ballLeft < 0) {
-                this.vx = Math.abs(this.vx) * this.e;
+                this.vx = Math.abs(this.vx) * e;
                 this.x = (-ballLeft + r)
             }
             if (ballRight > maxHeight) {
-                this.vx = -Math.abs(this.vx) * this.e;
+                this.vx = -Math.abs(this.vx) * e;
                 this.x = 2 * maxHeight - ballRight - r
             }
         }
 
         checkSection(x, y, r) {
-
-
             var ballTop = y + r;
             var ballBot = y - r;
             var ballLeft = x - r;
@@ -152,9 +166,6 @@ function closure() {
                         sectionArray[pos][sectionArray[pos].length] = this;
                     }
                 }
-                // console.log(sectionArray)
-                // sectionArray[pos] = [...new Set(sectionArray[pos])];
-
                 col++
                 if (debug) {
                     // Sections are numbered 1-9 from top left to bottom right
@@ -179,7 +190,6 @@ function closure() {
             var vx = this.vx;
             var y = this.y;
             var vy = this.vy;
-            const gravity = this.gravity;
             var r = this.r;
             r = scale2pixel(r);
             if (y < 5 || y > maxHeight - 5 || x < 5 || x > maxHeight - 5) {
@@ -204,26 +214,26 @@ function closure() {
 
     var frame = 0
     function drawGame() {
-        if(currentTab == "WIP"){
+        if (currentTab == "WIP") {
             frame++
             if (frame >= fps) {
                 frame = 1
             }
-    
+
             startTime = performance.now()
             sectionArray = Array(collisionSections ** 2).fill(0).map(x => Array(0).fill(0))
             setTimeout(drawGame, dt);
             clearScreen();
-    
-            if (ballArray.length < 50) {
-                xRand = (Math.random() * (maxHeight-10))+5
-                yRand = (Math.random() * (maxHeight-10))+5
-                vxRand = (Math.random() * 20) - 10
-                vyRand = (Math.random() * 20) - 10
-                rRand = (Math.random() * 5) + 5
-                ballArray[ballArray.length] = new ball(xRand, yRand, vxRand, vyRand, rRand, ctx);
-            }
-    
+
+            // // if (ballArray.length < 50) {
+            // //     xRand = (Math.random() * (maxHeight-10))+5
+            // //     yRand = (Math.random() * (maxHeight-10))+5
+            // //     vxRand = (Math.random() * 20) - 10
+            // //     vyRand = (Math.random() * 20) - 10
+            // //     rRand = (Math.random() * 5) + 5
+            // //     ballArray[ballArray.length] = new ball(xRand, yRand, vxRand, vyRand, rRand, ctx);
+            // }
+
             ballArray.forEach(function (item) {
                 item.drawBall();
                 item.ballMovement();
@@ -232,14 +242,21 @@ function closure() {
                     item.collidedPast = [];
                 }
             });
-    
+
             checkBallCollision(ballArray, sectionArray)
-    
+
             endTime = performance.now()
             fpsCounter(endTime - startTime)
             valueBorder()
+            ballCustomizer()
+
+            if (clicked || isPlacing) {
+                placeBall();
+                clicked = false;
+            }
+
         }
-        else{
+        else {
             clearScreen()
             setTimeout(drawGame, dt);
         }
@@ -293,8 +310,6 @@ function closure() {
                             if (ballA.collidedPast.length >= 2) {
                                 for (var collisionPast of ballA.collidedPast.reverse()) {
                                     if (collisionPast == ballB) {
-                                        // ballA.drawBall("red",true)
-                                        // ballB.drawBall("blue",true)
                                         ballA.collidedPast = []
                                         ballB.collidedPast = []
                                         rA = scale2pixel(ballA.r)
@@ -352,6 +367,105 @@ function closure() {
         }
     }
 
+
+    function placeBall() {
+        if (!isPlacing) {
+            initX = canvas2game(mouseX)
+            initY = canvas2game(mouseY)
+            if (initX > 0 && initY > 0) isPlacing = true
+            else return;
+
+        }
+
+        if (isDragging) {
+            drawFakeBall(pixel2scale(initX), pixel2scale(initY), convertRange(sliderVal[0],410,490,10,30))
+            initVx = -(initX - canvas2game(mouseX))
+            initVy = -(initY - canvas2game(mouseY))
+            drawVelocityLine(game2canvas(initX), game2canvas(initY), mouseX, mouseY)
+        }
+
+        if (!isDragging) {
+            ballArray[ballArray.length] = new ball(initX, initY, initVx, initVy, convertRange(sliderVal[0],410,490,10,30) , ctx)
+            isPlacing = false
+        }
+    }
+
+    function drawVelocityLine(x1, y1, x2, y2) {
+        ctx.beginPath()
+        ctx.fillStyle = "white";
+        ctx.moveTo(x1, y1)
+        ctx.lineTo(x2, y2)
+        ctx.stroke()
+    }
+
+    function drawFakeBall(x, y, r, color) {
+        ctx.beginPath();
+        ctx.fillStyle = `hsl(${hue},80%,50%)`
+        ctx.arc(x, y, r, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+
+    // Draw the outer wall that separates the values and sliders from the game area
+    function valueBorder() {
+        ctx.beginPath()
+        ctx.moveTo(cWidth, 0)
+        ctx.lineTo(cWidth, cHeight)
+        ctx.lineTo(0, cHeight)
+        ctx.strokeStyle = "white"
+        ctx.stroke()
+    }
+
+    // Under here are the functions that will go in the valueBorder area
+    sliderVal = [445,445] // sets default slider values for [radius,color]
+    sliderSelect = [false,false] // sets whether or not slider is selected 
+    hue = convertRange(sliderVal[1],410,490,0,300)
+    function ballCustomizer() {
+
+        drawFakeBall(450, 55, convertRange(sliderVal[0],410,490,10,30))
+
+        // Slider Lines
+        ctx.beginPath() // Radius Slider
+        ctx.moveTo(410, 105)
+        ctx.lineTo(490, 105)
+        ctx.stroke()
+
+        ctx.beginPath() // Color Slider
+        ctx.moveTo(410, 130)
+        ctx.lineTo(490, 130)
+        ctx.stroke()
+        
+        if(isDragging){
+            if (mouseX > 410 && mouseX < 490 ){
+                if((mouseY > 100 && mouseY < 110) || sliderSelect[0]){
+                    sliderSelect[0] = true
+                    sliderVal[0] = mouseX-5
+                }
+            }
+        }
+        else{
+            sliderSelect[0] = false
+        }
+        if(isDragging){
+            if (mouseX > 410 && mouseX < 490 ){
+                if((mouseY > 125 && mouseY < 135) || sliderSelect[1]){
+                    sliderSelect[1] = true
+                    sliderVal[1] = mouseX-5
+                }
+            }
+        }
+        else{
+            sliderSelect[1] = false
+        }
+
+        // Slider Grabbable
+        ctx.fillStyle = `white`
+        ctx.fillRect(sliderVal[0],100,10,10)
+        hue = convertRange(sliderVal[1],410,490,0,300)
+
+        ctx.fillStyle = `hsl(${hue},80%,50%)`
+        ctx.fillRect(sliderVal[1],125,10,10)
+    }
+
     function fpsCounter(timeDiff) {
         calcFPS = 1000 / (timeDiff + dt)
         if (calcFPS > fps) {
@@ -359,23 +473,31 @@ function closure() {
         }
         ctx.font = "16px monospace";
         ctx.textAlign = "center"
-        ctx.fillText(`FPS : ${round(calcFPS, 0)}`, cWidth+50, 15)
+        ctx.fillStyle = "white"
+        ctx.fillText(`FPS : ${round(calcFPS, 0)}`, cWidth + 50, 15)
     }
 
-    function valueBorder(){
-        ctx.beginPath()
-        ctx.moveTo(cWidth,0)
-        ctx.lineTo(cWidth,cHeight)
-        ctx.lineTo(0,cHeight)
-        ctx.strokeStyle = "white"
-        ctx.stroke()
-    }
-
-    
-    // simpler rounding function than the Math.round()
-    const round = (x, sigfigs) => {
+    // Simpler rounding function than the Math.round()
+    function round(x, sigfigs) {
         return Math.round(x * 10 ** sigfigs) / 10 ** sigfigs;
     };
+
+    // Assumes play area is a square
+    function canvas2game(x) {
+        return maxHeight - (x / cWidth) * maxHeight
+    }
+    function game2canvas(x) {
+        return cWidth - (x / maxHeight) * cWidth
+    }
+    // Converts one range to another ie with the radius slider, 410-490 => 10-30
+    function convertRange(oldValue,oldMin,oldMax,newMin,newMax)
+    {
+        oldRange = oldMax-oldMin
+        newRange = newMax-newMin
+        newValue = newMin + (((oldValue-oldMin)*newRange)/oldRange)
+        return newValue
+    } 
+
     drawGame();
 }
 closure();

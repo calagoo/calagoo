@@ -526,6 +526,7 @@ function drawCloud(cloudObj, color) {
 
   function moveCloudMax(mousePosX, mousePosY){
     diff = 2*canvas.width/3 - canvas.width/3
+
     maxCloudAmount = round(((mousePosX-(canvas.width/3))/diff)*200,0)
   }
   function moveTargetHeight(mousePosX, mousePosY) {
@@ -534,6 +535,8 @@ function drawCloud(cloudObj, color) {
 
 
   PID_mouseDown = function mouseDown() {
+    diff = 2*canvas.width/3 - canvas.width/3
+
     mouseUp_bool = false;
     mouseDown_bool = true;
     mousePosX_click_target = window.event.pageX - canvas.offsetLeft;
