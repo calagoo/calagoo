@@ -46,7 +46,7 @@ function closure() {
     const dt = 1 / fps * 1000; // milliseconds per frame
     const maxHeight = 100;
     const gravity = 0//-9.81 // gravity
-    const e = 0.97; // restitution
+    const e = .99; // restitution
     const collisionSections = 12 // choose sqrt of how many boxes -- 9 sections == 3, 81 sections == 9, etc
     let sectionArray = Array(collisionSections ** 2).fill(0).map(x => Array(0).fill(0))
 
@@ -84,7 +84,7 @@ function closure() {
             // if color is not given, draw with white
             if (color != undefined) {
                 this.ctx.fillStyle = color;
-            } else{
+            } else {
                 ctx.fillStyle = `hsl(${this.ballHue},80%,50%)`
             }
 
@@ -192,7 +192,7 @@ function closure() {
             var vy = this.vy;
             var r = this.r;
             r = scale2pixel(r);
-            if (y < 5 || y > maxHeight - 5 || x < 5 || x > maxHeight - 5) {
+            if (y - r < 5 || y + r > maxHeight || x-r < 5 || x+r > maxHeight) {
                 this.checkWallCollision(x, y, r);
             }
             this.checkSection(x, y, r);
@@ -213,6 +213,7 @@ function closure() {
     }
 
     var frame = 0
+    //// basically a main function. Handles all drawing and all functions involved with this
     function drawGame() {
         if (currentTab == "WIP") {
             frame++
@@ -225,13 +226,14 @@ function closure() {
             setTimeout(drawGame, dt);
             clearScreen();
 
-            // // if (ballArray.length < 50) {
-            // //     xRand = (Math.random() * (maxHeight-10))+5
-            // //     yRand = (Math.random() * (maxHeight-10))+5
-            // //     vxRand = (Math.random() * 20) - 10
-            // //     vyRand = (Math.random() * 20) - 10
-            // //     rRand = (Math.random() * 5) + 5
-            // //     ballArray[ballArray.length] = new ball(xRand, yRand, vxRand, vyRand, rRand, ctx);
+            // // uncomment for a set amount of balls in the frame 
+            // if (ballArray.length < 50) {
+            //     xRand = (Math.random() * (maxHeight-10))+5
+            //     yRand = (Math.random() * (maxHeight-10))+5
+            //     vxRand = (Math.random() * 20) - 10
+            //     vyRand = (Math.random() * 20) - 10
+            //     rRand = (Math.random() * 5) + 5
+            //     ballArray[ballArray.length] = new ball(xRand, yRand, vxRand, vyRand, rRand, ctx);
             // }
 
             ballArray.forEach(function (item) {
@@ -249,6 +251,7 @@ function closure() {
             fpsCounter(endTime - startTime)
             valueBorder()
             ballCustomizer()
+            clearBalls()
 
             if (clicked || isPlacing) {
                 placeBall();
@@ -374,25 +377,24 @@ function closure() {
             initY = canvas2game(mouseY)
             if (initX > 0 && initY > 0) isPlacing = true
             else return;
-
         }
 
         if (isDragging) {
-            drawFakeBall(pixel2scale(initX), pixel2scale(initY), convertRange(sliderVal[0],410,490,10,30))
+            drawFakeBall(pixel2scale(initX), pixel2scale(initY), convertRange(sliderVal[0], 410, 490, 10, 30))
             initVx = -(initX - canvas2game(mouseX))
             initVy = -(initY - canvas2game(mouseY))
             drawVelocityLine(game2canvas(initX), game2canvas(initY), mouseX, mouseY)
         }
 
         if (!isDragging) {
-            ballArray[ballArray.length] = new ball(initX, initY, initVx, initVy, convertRange(sliderVal[0],410,490,10,30) , ctx)
+            ballArray[ballArray.length] = new ball(initX, initY, initVx, initVy, convertRange(sliderVal[0], 410, 490, 10, 30), ctx)
             isPlacing = false
         }
     }
 
     function drawVelocityLine(x1, y1, x2, y2) {
         ctx.beginPath()
-        ctx.fillStyle = "white";
+        ctx.strokeStyle = "white";
         ctx.moveTo(x1, y1)
         ctx.lineTo(x2, y2)
         ctx.stroke()
@@ -415,89 +417,114 @@ function closure() {
         ctx.stroke()
     }
 
-    // Under here are the functions that will go in the valueBorder area
-    sliderVal = [445,445] // sets default slider values for [radius,color]
-    sliderSelect = [false,false] // sets whether or not slider is selected 
-    hue = convertRange(sliderVal[1],410,490,0,300)
+    //// Under here are the functions that will go in the valueBorder area
+    sliderVal = [445, 445] // sets default slider values for [radius,color]
+    sliderSelect = [false, false] // sets whether or not slider is selected 
+    hue = convertRange(sliderVal[1], 410, 490, 0, 300)
     function ballCustomizer() {
 
-        drawFakeBall(450, 55, convertRange(sliderVal[0],410,490,10,30))
+        drawFakeBall(450, 55, convertRange(sliderVal[0], 410, 490, 10, 30))
 
-        // Slider Lines
+        //// Slider Lines
+        ctx.strokeStyle = `white`
         ctx.beginPath() // Radius Slider
         ctx.moveTo(410, 105)
         ctx.lineTo(490, 105)
+        ctx.closePath()
         ctx.stroke()
 
         ctx.beginPath() // Color Slider
         ctx.moveTo(410, 130)
         ctx.lineTo(490, 130)
+        ctx.closePath()
         ctx.stroke()
-        
-        if(isDragging){
-            if (mouseX > 410 && mouseX < 490 ){
-                if((mouseY > 100 && mouseY < 110) || sliderSelect[0]){
+
+        //// Slider Grabbable
+        // This could all be one if statment, but for readability I split it up.
+        if (isDragging) {
+            if (mouseX > 410 && mouseX < 490) {
+                if (((mouseY > 100 && mouseY < 110) || sliderSelect[0]) && !sliderSelect[1]) {
                     sliderSelect[0] = true
-                    sliderVal[0] = mouseX-5
+                    sliderVal[0] = mouseX - 5
                 }
             }
         }
-        else{
+        else {
             sliderSelect[0] = false
         }
-        if(isDragging){
-            if (mouseX > 410 && mouseX < 490 ){
-                if((mouseY > 125 && mouseY < 135) || sliderSelect[1]){
+        if (isDragging) {
+            if (mouseX > 410 && mouseX < 490) {
+                if (((mouseY > 125 && mouseY < 135) || sliderSelect[1]) && !sliderSelect[0]) {
                     sliderSelect[1] = true
-                    sliderVal[1] = mouseX-5
+                    sliderVal[1] = mouseX - 5
                 }
             }
         }
-        else{
+        else {
             sliderSelect[1] = false
         }
 
-        // Slider Grabbable
         ctx.fillStyle = `white`
-        ctx.fillRect(sliderVal[0],100,10,10)
-        hue = convertRange(sliderVal[1],410,490,0,300)
+        ctx.fillRect(sliderVal[0], 100, 10, 10)
+        hue = convertRange(sliderVal[1], 410, 490, 0, 300)
 
         ctx.fillStyle = `hsl(${hue},80%,50%)`
-        ctx.fillRect(sliderVal[1],125,10,10)
+        ctx.fillRect(sliderVal[1], 125, 10, 10)
     }
 
-    function fpsCounter(timeDiff) {
-        calcFPS = 1000 / (timeDiff + dt)
-        if (calcFPS > fps) {
-            calcFPS = fps
-        }
-        ctx.font = "16px monospace";
+    function clearBalls() {
+        ctx.fillStyle = `rgba(80,60,60,0.5)`
+        ctx.strokeStyle = `grey`
+        ctx.beginPath()
+        ctx.rect(cWidth, cHeight, 100, 100)
+        ctx.fill()
+        ctx.stroke()
+        ctx.closePath()
+
+        ctx.fillStyle = `white`
         ctx.textAlign = "center"
-        ctx.fillStyle = "white"
-        ctx.fillText(`FPS : ${round(calcFPS, 0)}`, cWidth + 50, 15)
+        ctx.font = "24px monospace"
+        ctx.fillText("CLEAR", cWidth + 50, cHeight + 56)
+
+        if ((mouseX > cWidth && mouseY > cHeight)) {
+            if (clicked) {
+            ballArray = []
+        }
     }
 
-    // Simpler rounding function than the Math.round()
-    function round(x, sigfigs) {
-        return Math.round(x * 10 ** sigfigs) / 10 ** sigfigs;
-    };
+}
 
-    // Assumes play area is a square
-    function canvas2game(x) {
-        return maxHeight - (x / cWidth) * maxHeight
+function fpsCounter(timeDiff) {
+    calcFPS = 1000 / (timeDiff + dt)
+    if (calcFPS > fps) {
+        calcFPS = fps
     }
-    function game2canvas(x) {
-        return cWidth - (x / maxHeight) * cWidth
-    }
-    // Converts one range to another ie with the radius slider, 410-490 => 10-30
-    function convertRange(oldValue,oldMin,oldMax,newMin,newMax)
-    {
-        oldRange = oldMax-oldMin
-        newRange = newMax-newMin
-        newValue = newMin + (((oldValue-oldMin)*newRange)/oldRange)
-        return newValue
-    } 
+    ctx.font = "16px monospace";
+    ctx.textAlign = "center"
+    ctx.fillStyle = "white"
+    ctx.fillText(`FPS : ${round(calcFPS, 0)}`, cWidth + 50, 15)
+}
 
-    drawGame();
+// Simpler rounding function than the Math.round()
+function round(x, sigfigs) {
+    return Math.round(x * 10 ** sigfigs) / 10 ** sigfigs;
+};
+
+// Assumes play area is a square
+function canvas2game(x) {
+    return maxHeight - (x / cWidth) * maxHeight
+}
+function game2canvas(x) {
+    return cWidth - (x / maxHeight) * cWidth
+}
+// Converts one range to another ie with the radius slider, 410-490 => 10-30
+function convertRange(oldValue, oldMin, oldMax, newMin, newMax) {
+    oldRange = oldMax - oldMin
+    newRange = newMax - newMin
+    newValue = newMin + (((oldValue - oldMin) * newRange) / oldRange)
+    return newValue
+}
+
+drawGame();
 }
 closure();
