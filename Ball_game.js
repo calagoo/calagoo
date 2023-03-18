@@ -661,7 +661,6 @@ function closure() {
 
         // also not a ball option, but this is more of a slider container function now
         sliderSelect, sliderVal[4] = slider([415, 485, 300, 300], squareSize = 10, sliderVal[4], sliderSelect, sliderIndex = 4, true) // slow-time
-        console.log(fps)
         fps = round(convertRange(sliderVal[4], 411, 479, 60, 5000)/10, 0)*10
         dt = 1 / fps * 1000; // milliseconds per frame
 
