@@ -1,3 +1,13 @@
+// Things to add:
+// Randomize button for radius and color
+// Show collision mesh button
+// Show velocity vectors (maybe...)
+// Show total kinetic energy
+// Mass changing (maybe...)
+// Gravity slider (try it out first.. might have issues with stagnation)
+// ...
+
+
 // Sets variable currentTab globally for all scripts. This checkTab function checks which tab 
 // is currently open and only runs games in the selected tab. I felt this would help performance, not sure if it does...
 let currentTab = "";
@@ -45,7 +55,7 @@ function closure() {
     const fps = 60; // frames per second
     const dt = 1 / fps * 1000; // milliseconds per frame
     const maxHeight = 100;
-    const gravity = 0//-9.81 // gravity
+    const gravity = -9.81 // gravity
     const e = .99; // restitution
     const collisionSections = 12 // choose sqrt of how many boxes -- 9 sections == 3, 81 sections == 9, etc
     let sectionArray = Array(collisionSections ** 2).fill(0).map(x => Array(0).fill(0))
@@ -142,8 +152,6 @@ function closure() {
             var col = 1;
             var sectionsPerRow = (sectionArray.length) ** 0.5
             var sectionSize = maxHeight / sectionsPerRow
-            var rowBall = 0;
-            var colBall = 0;
             for (const section in sectionArray) {
                 if (col > sectionsPerRow) {
                     row++
@@ -167,21 +175,6 @@ function closure() {
                     }
                 }
                 col++
-                if (debug) {
-                    // Sections are numbered 1-9 from top left to bottom right
-                    // |1|2|3|
-                    // |4|5|6|
-                    // |7|8|9|
-                    // This is only for 9 boxes (duh!)
-
-                    ctx.beginPath();
-                    ctx.moveTo(pixel2scale(wallRight), pixel2scale(wallTop));
-                    ctx.lineTo(pixel2scale(wallRight), pixel2scale(wallBot));
-                    ctx.moveTo(pixel2scale(wallRight), pixel2scale(wallTop));
-                    ctx.lineTo(pixel2scale(wallLeft), pixel2scale(wallTop));
-                    ctx.strokeStyle = "white";
-                    ctx.stroke();
-                }
             }
         }
 
@@ -192,7 +185,7 @@ function closure() {
             var vy = this.vy;
             var r = this.r;
             r = scale2pixel(r);
-            if (y - r < 5 || y + r > maxHeight || x-r < 5 || x+r > maxHeight) {
+            if (y - r < 5 || y + r > maxHeight || x - r < 5 || x + r > maxHeight) {
                 this.checkWallCollision(x, y, r);
             }
             this.checkSection(x, y, r);
@@ -240,9 +233,10 @@ function closure() {
                 item.drawBall();
                 item.ballMovement();
                 item.collided = [];
-                if (frame % 2 == 0) { // Every other frame clear the collided past array. If it hasnt collided in a turn we know it is not inside another ball
+                if (item.collidedPast.length >= 5) {
                     item.collidedPast = [];
                 }
+
             });
 
             checkBallCollision(ballArray, sectionArray)
@@ -252,7 +246,7 @@ function closure() {
             valueBorder()
             ballCustomizer()
             clearBalls()
-
+            drawCollisionMesh()
             if (clicked || isPlacing) {
                 placeBall();
                 clicked = false;
@@ -310,7 +304,7 @@ function closure() {
                             angle = Math.atan2((ballA.y - ballB.y), (ballA.x - ballB.x))
 
                             loop5:
-                            if (ballA.collidedPast.length >= 2) {
+                            if (ballA.collidedPast.length >= 1) {
                                 for (var collisionPast of ballA.collidedPast.reverse()) {
                                     if (collisionPast == ballB) {
                                         ballA.collidedPast = []
@@ -406,6 +400,78 @@ function closure() {
         ctx.arc(x, y, r, 0, 2 * Math.PI);
         ctx.fill();
     }
+    drawMesh = false
+    function drawCollisionMesh() {
+        ctx.beginPath()
+        ctx.fillStyle = "grey"
+        ctx.roundRect(10, cHeight + 10, 20, 20, 5)
+        ctx.fill()
+        ctx.fillStyle = "white"
+        ctx.font = "12px monospace"
+        ctx.fillText("Draw Mesh", 65, cHeight + 24)
+        ctx.closePath()
+
+        //check if clicked
+        if (checkClickZone(10,cWidth+10,20,20) || drawMesh) {
+            ctx.beginPath()
+            ctx.fillStyle = "white"
+            ctx.roundRect(10, cHeight + 10, 20, 20, 5)
+            ctx.fill()
+            ctx.closePath()
+            
+            if(drawMesh){
+                ctx.beginPath()
+                ctx.strokeStyle = "blue"
+                ctx.moveTo(14,cHeight+19)
+                ctx.lineTo(18,cHeight+23)
+                ctx.lineTo(26,cHeight+15)
+                ctx.lineWidth = "3"
+                ctx.stroke()
+                ctx.closePath()
+                ctx.lineWidth = "1" // revert back or else all lines mess up
+            }
+            
+            if (clicked && checkClickZone(10,cWidth+10,20,20)) {
+                if (drawMesh) drawMesh = false
+                else drawMesh = true
+            } 
+        }
+
+
+
+        if (!drawMesh) {
+            return
+        }
+
+
+        var row = 1;
+        var col = 1;
+        var sectionsPerRow = (sectionArray.length) ** 0.5
+        var sectionSize = maxHeight / sectionsPerRow
+        for (const section in sectionArray) {
+            if (col > sectionsPerRow) {
+                row++
+                col = 1
+            }
+            if (row > sectionsPerRow) {
+                row = 1
+                col = 1
+            }
+
+            var wallRight = maxHeight - sectionSize * (col - 1)
+            var wallLeft = maxHeight - sectionSize * col
+            var wallTop = maxHeight - sectionSize * (row - 1)
+            var wallBot = maxHeight - sectionSize * row
+            col++
+            ctx.beginPath();
+            ctx.moveTo(pixel2scale(wallRight), pixel2scale(wallTop));
+            ctx.lineTo(pixel2scale(wallRight), pixel2scale(wallBot));
+            ctx.moveTo(pixel2scale(wallRight), pixel2scale(wallTop));
+            ctx.lineTo(pixel2scale(wallLeft), pixel2scale(wallTop));
+            ctx.strokeStyle = "white";
+            ctx.stroke();
+        }
+    }
 
     // Draw the outer wall that separates the values and sliders from the game area
     function valueBorder() {
@@ -473,7 +539,7 @@ function closure() {
     }
 
     function clearBalls() {
-        
+
         ctx.fillStyle = `rgba(80,60,60,0.5)`
         if ((mouseX > cWidth && mouseY > cHeight)) {
             ctx.fillStyle = `rgba(200,60,60,0.5)`
@@ -492,39 +558,43 @@ function closure() {
         ctx.textAlign = "center"
         ctx.font = "24px monospace"
         ctx.fillText("CLEAR", cWidth + 50, cHeight + 56)
-}
-
-function fpsCounter(timeDiff) {
-    calcFPS = 1000 / (timeDiff + dt)
-    if (calcFPS > fps) {
-        calcFPS = fps
     }
-    ctx.font = "16px monospace";
-    ctx.textAlign = "center"
-    ctx.fillStyle = "white"
-    ctx.fillText(`FPS : ${round(calcFPS, 0)}`, cWidth + 50, 15)
-}
 
-// Simpler rounding function than the Math.round()
-function round(x, sigfigs) {
-    return Math.round(x * 10 ** sigfigs) / 10 ** sigfigs;
-};
+    function fpsCounter(timeDiff) {
+        calcFPS = 1000 / (timeDiff + dt)
+        if (calcFPS > fps) {
+            calcFPS = fps
+        }
+        ctx.font = "16px monospace";
+        ctx.textAlign = "center"
+        ctx.fillStyle = "white"
+        ctx.fillText(`FPS : ${round(calcFPS, 0)}`, cWidth + 50, 15)
+    }
 
-// Assumes play area is a square
-function canvas2game(x) {
-    return maxHeight - (x / cWidth) * maxHeight
-}
-function game2canvas(x) {
-    return cWidth - (x / maxHeight) * cWidth
-}
-// Converts one range to another ie with the radius slider, 410-490 => 10-30
-function convertRange(oldValue, oldMin, oldMax, newMin, newMax) {
-    oldRange = oldMax - oldMin
-    newRange = newMax - newMin
-    newValue = newMin + (((oldValue - oldMin) * newRange) / oldRange)
-    return newValue
-}
+    // Simpler rounding function than the Math.round()
+    function round(x, sigfigs) {
+        return Math.round(x * 10 ** sigfigs) / 10 ** sigfigs;
+    };
 
-drawGame();
+    // Assumes play area is a square
+    function canvas2game(x) {
+        return maxHeight - (x / cWidth) * maxHeight
+    }
+    function game2canvas(x) {
+        return cWidth - (x / maxHeight) * cWidth
+    }
+    // Converts one range to another ie with the radius slider, 410-490 => 10-30
+    function convertRange(oldValue, oldMin, oldMax, newMin, newMax) {
+        oldRange = oldMax - oldMin
+        newRange = newMax - newMin
+        newValue = newMin + (((oldValue - oldMin) * newRange) / oldRange)
+        return newValue
+    }
+
+    function checkClickZone(x,y,w,h){
+        return ((mouseX > x && mouseX < x+w) && (mouseY > y && mouseY < y+h))
+    }
+
+    drawGame();
 }
 closure();
