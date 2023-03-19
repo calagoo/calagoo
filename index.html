@@ -43,13 +43,13 @@
     </p>
     <div class="tab">
       <script src="tabs.js"></script>
-      <button class="tablinks" onclick="openSection(event, 'AboutMe');checkTab('AboutMe')">
+      <button class="tablinks" onclick="openSection(event, 'AboutMe');checkTab('AboutMe')" id="defaultOpen">
         About Me
       </button>
       <button class="tablinks" onclick="openSection(event, 'Simulations');checkTab('Simulations')">
         Simulations
       </button>
-      <button class="tablinks" onclick="openSection(event, 'WIP');checkTab('WIP')" id="defaultOpen">
+      <button class="tablinks" onclick="openSection(event, 'WIP');checkTab('WIP')">
         WIP
       </button>
     </div>
@@ -126,88 +126,117 @@
         </p>
       </div>
     </div>
-
+    <script>
+      // Get the element with id="defaultOpen" and click on it
+      document.getElementById("defaultOpen").click();
+    </script>
   </div>
   <div id="Simulations" class="tabcontent">
     <h2>Simulations</h2>
     <p style="margin-left: auto; margin-right: auto; text-align: justify;">
-      I have added these small simulations to showcase my coding and
+      &emsp; I have added these small simulations to showcase my coding and
       interests. As a disclaimer, I don't have much experience with
-      Javascript, and these are my first tries with it. I have always loved
+      Javascript, and these are my first tries with it. Orbiter being my first creation and . I have always loved
       games that are scientifically based, such as Kerbal Space Program or
-      Universe Sandbox. Although I have tried, solo game dev is not for me,
-      but I have come to realize I love putting together small simulations
+      Universe Sandbox. I have come to realize I love putting together small simulations
       such as the ones below. Visualizing how physics interact I think is
       amazing, and it helps me stay sharp on math from university as well as learning new concepts and most importantly,
       how to implement it into code.<br><br>
-      Also of course this entire website is always a work in progress. Please
+      &emsp; Also of course this entire website is always a work in progress. Please
       feel free and take a look at the source code on github to see how I
-      created these little sims.
+      created these sims.
     </p>
     <div style="max-width: 1050px; column-gap: 10px;" class="row">
       <div style="max-width: 500px;">
-        <h3 style="text-align: justify; color: rgb(30,60,60); margin: auto;">Orbiter</h3>
-        <p style="
+        <div id="ORBIT_SIMULATOR" style="padding-bottom: 75px;">
+
+          <h3 style="text-align: justify; color: rgb(30,60,60); margin: auto;">Orbits</h3>
+          <p style="
             height: 520px;
             width: 500px;
             padding: 20px 0px 0px 0px ;
             text-align: justify;
+            "> &emsp; Throughout college I enjoyed most my classes, but one of the few that really stood out for me was
+            orbital dynamics and space vehicle dynamics. It felt great being able to predict the delta-V requirements
+            for different orbital maneuvers. I enjoyed calculating entire orbits from the few Keplerian elements given.
+            <br>&emsp; Below is my orbits simulation. This simulation uses data from the
+            Earth and the Sun in order to accurately model orbits. To model the gravitation forces, Newtons universal
+            law
+            of gravitation is used. This is then converted to acceleration from
+            the planets mass, and then converted further into velocity and
+            position.<br>&emsp;Instead of calculating the entire orbit and having the planet travel on a fixed path, I
+            instead
+            calculate the force every frame. I think that makes this a more interesting simulation, although due to the
+            framerate and timestep, some anomalies may occur. This can be seen in the values that should remain constant
+            in an orbit with no outside forces, such as eccentricity, semi-major axis, period, apoapsis, and periapsis.
+            We can see these values slightly deviate throughout the orbit and especially so in the high velocity areas.
+            If the frame rate was higher it would help immensely, but also slow down the simulation. I had to pick a
+            balance between perfect values and entertaining sim.
+          </p>
+          <canvas id="orbit_game" width="500" height="500" onmousedown="orbit_mouseDown()" onmouseup="orbit_mouseUp()"
+            onmousemove="orbit_checkMouseDrag()"></canvas>
+          <script src="orbit_game.js"></script>
+        </div>
+        <div id="BALL_SIMULATOR" style="padding-bottom: 75px;">
+          <h3 style="text-align: justify;color: rgb(30,60,60); margin: auto;">Collisions</h3>
+          <p style="
+              height: 520px;
+              width: 500px;
+              padding: 20px 0px 20px 0px ;
+              text-align: justify;
             ">
-          This is my orbiter simulation. This simulation uses data from the
-          Earth and the Sun in order to accurately model orbits. To model the gravitation forces, Newtons universal law
-          of gravitation is used. This is then converted to acceleration from
-          the planets mass, and then converted further into velocity and
-          position.<br><br>The gravity force angle is calculated through a
-          arctangent function, Math.atan2().<br><br>The distance is simply
-          the magnitude of the x and y position relative to the sun, and the
-          orbital speed is found using the orbital speed equation with values
-          G, Mass-sun, distance and semi-major axis.<br><br>
-          The semi-major axis is found using the specific orbital energy
-          equation.<br><br>
-          Eccentricity is found by first finding the eccentricity vector and
-          then taking the magnitude of it.<br><br>
-          Finally, apoapsis and periapsis are easily found by using the
-          semi-major axis and the eccentrity.
-        </p>
-        <canvas id="orbit_game" width="500" height="500" onmousedown="orbit_mouseDown()" onmouseup="orbit_mouseUp()"
-          onmousemove="orbit_checkMouseDrag()"></canvas>
-        <script src="orbit_game.js"></script>
-        <small style="width: 500px; color:rgb(30,60,60);">
-          NOTE: The reason some items fluctuate (such as period, or
-          eccentricity) is because of the larger timestep. The smaller the
-          timestep, the more accurate the values become.
-        </small>
+            &emsp; This is my third simulation. I wanted to work with physics after creating the autopilot - PID sim. I
+            have attempted this type of code before in Python but I am not fond of PyGame, so the attempts usually
+            sizzle out. The canvases in Javascript are really nice for seeing quick updates to your work. This by itself
+            allowed me to finish this side project. This simulator uses spatial partitioning to monitor collision
+            detection. Although most CPU's can handle a brute force collision detection with this amount of entities, I
+            want to prioritize performance.<br>
+            &emsp; Overall with this collision detection, there are only around 200 collision checks per frame for 25
+            entities, by comparison with brute force there are 300 checks. As the amount of entities increase the broad
+            phase collision detection shows its true colors with its performance benefits.<br>
+            &emsp; This script was useful for me to learn about classes in Javascript. Each ball is its own class with
+            many different objects inside of it, including X and Y position, speed, color, mass, radius and many
+            more. The major difficulties in creating this simulator were stopping balls from "morphing" into one
+            another. With the lower framerates, there are problems with faster moving balls. Since they move a set
+            amount each frame, if they move into the space where another ball is moving, the collision check will not happen
+            until the frame after. This can cause problems with balls "sticking" together. This was solved by checking
+            if the balls have been touching for more than one frame in a row. This works well in most situations.
+          </p>
+          <canvas id="Ball_game" width="500" height="500"></canvas>
+          <script src="Ball_game.js"></script>
+        </div>
       </div>
       <div style="max-width: 500px;">
-        <h3 style="text-align: justify;color: rgb(30,60,60); margin: auto;">Flight Control</h3>
-        <p style="
+        <div id="PID_SIMULATOR" style="padding-bottom: 75px;">
+          <h3 style="text-align: justify;color: rgb(30,60,60); margin: auto;">Autopilot</h3>
+          <p style="
               height: 520px;
               width: 500px;
               padding: 20px 0px 0px 0px ;
               text-align: justify;
             ">
-          This simulation takes values of a Boeing 737 (including mass, CL,
-          CD, thrust, and more) and inputs it into a PID controller to keep it
-          both level on the target height, and in the X-center of the
-          window.<br><br>
-          The coefficient of lift and drag are found by taking values from
-          airfoiltools.com, they are then linearly interpolated using the
-          angle of attack. The lift is found by using the lift equation and
-          plugging in the density of air, the velocity of the aircraft and the
-          aircrafts wing reference area (sref).<br><br>
-          In the case of this simulation we are taking the density of air to
-          be near sea-level at 1.225 kg/m<sup>3</sup>, and velocity is 200
-          m/s. The SREF of the Boeing 737 is about 125 m<sup>2</sup>.<br><br>
-          This simulation also features procedurally generated clouds. Each
-          cloud is created out of a random number of "lobes", and each lobe is
-          placed randomly around the cloud. The further out a lobe, the more
-          transparent it becomes. I felt like this gave the clouds a neat
-          digital look. Currently there is a 75% chance to spawn a cloud per
-          tick. I implemented a cloud slider in case they get distracting.
-        </p>
-        <canvas id="PID_game" width="500" height="500" onmousedown="PID_mouseDown()" onmouseup="PID_mouseUp()"
-          onmousemove="PID_mouseMove()"></canvas>
-        <script src="PID_game.js"></script>
+            &emsp; This simulation takes values of a Boeing 737 (including mass, CL,
+            CD, thrust, and more) and inputs it into a PID controller to keep it
+            both level on the target height, and in the X-center of the
+            window.<br>&emsp; The coefficient of lift and drag are found by taking values from
+            airfoiltools.com, they are then linearly interpolated using the
+            angle of attack. The lift is found by using the lift equation and
+            plugging in the density of air, the velocity of the aircraft and the
+            aircrafts wing reference area (sref).<br>&emsp; In the case of this simulation we are taking the density of
+            air to
+            be near sea-level at 1.225 kg/m<sup>3</sup>, and velocity is 200
+            m/s. The SREF of the Boeing 737 is about 125 m<sup>2</sup>.<br>&emsp; This simulation also features
+            procedurally generated clouds. Each
+            cloud is created out of a random number of "lobes", and each lobe is
+            placed randomly around the cloud. The further out a lobe, the more
+            transparent it becomes. I felt like this gave the clouds a neat
+            digital look. Currently there is a 75% chance to spawn a cloud per
+            tick. I implemented a cloud slider in case they get distracting.
+          </p>
+          <canvas id="PID_game" width="500" height="500" onmousedown="PID_mouseDown()" onmouseup="PID_mouseUp()"
+            onmousemove="PID_mouseMove()"></canvas>
+          <script src="PID_game.js"></script>
+        </div>
       </div>
     </div>
   </div>
@@ -215,18 +244,10 @@
     <h2>Work in Progress</h2>
     <p style="padding-bottom: 20px;">Want to see what I am working on currently? The simulation or visualizer should be
       on this page. It could range
-      from just an empty canvas to a 99% complete sim. Currently, this is showing colliding balls, my attempt at a
-      simple physics system. As of 3/16/23, it is 95% complete, with all of the math finalized. The next step for this
-      project is figuring out how to implement more interactive features to it, such as customizable gravity, or the ability to enable viewing meshes.
+      from just an empty canvas to a 99% complete sim. Currently, there is nothing.
     </p>
-    <canvas id="Ball_game" width="500" height="500"></canvas>
-    <script src="Ball_game.js"></script>
-    <script>
-      // Get the element with id="defaultOpen" and click on it
-      document.getElementById("defaultOpen").click();
-    </script>
   </div>
-  <div id="footer">Version: 0.5.0.2</div>
+  <div id="footer">Version: 0.5.1.0</div>
 </body>
 
 </html>

@@ -4,7 +4,7 @@
 
 // Sets variable currentTab globally for all scripts. This checkTab function checks which tab 
 // is currently open and only runs games in the selected tab. I felt this would help performance, not sure if it does...
-let currentTab = "";
+// let currentTab = "";
 function checkTab(name) {
     currentTab = name
     console.log(`Current Tab: ${currentTab}`)
@@ -202,7 +202,7 @@ function closure() {
     var frame = 0
     //// basically a main function. Handles all drawing and all functions involved with this
     function drawGame() {
-        if (currentTab == "WIP") {
+        if (currentTab == "Simulations") {
             frame++
             if (frame >= fps) {
                 frame = 0
@@ -220,10 +220,10 @@ function closure() {
                 if (item.collidedPast.length >= 5) {
                     item.collidedPast = [];
                 }
-
-
+                
+                
             });
-
+            
             checkBallCollision(ballArray, sectionArray)
 
             endTime = performance.now()
@@ -244,8 +244,9 @@ function closure() {
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
-
+    
     function checkBallCollision(ballArray, sectionArray) {
+        
         loop1:
         for (i = 0; i < sectionArray.length; i++) {
             if (sectionArray[i].length >= 2) {
@@ -277,13 +278,15 @@ function closure() {
                             ballB.y -= Math.abs(rA + rB) * Math.sin(0)
                             break loop3;
                         }
-
+                        
                         systemMass = ballA.mass + ballB.mass
                         if (dist < scale2pixel(ballA.r) + scale2pixel(ballB.r)) {
+                            
+                            
                             if (debug) {
                                 console.log("Collision!")
                             }
-
+                            
                             loop4:
                             for (var collision of ballA.collided) {
                                 if (collision == ballB) {
