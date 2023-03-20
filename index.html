@@ -4,6 +4,7 @@
 <head>
   <meta name="viewport" content="width=1024, initial-scale=1">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.6.0/math.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.18.2.min.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Robert Rodriguez</title>
@@ -43,13 +44,13 @@
     </p>
     <div class="tab">
       <script src="tabs.js"></script>
-      <button class="tablinks" onclick="openSection(event, 'AboutMe');checkTab('AboutMe')" id="defaultOpen">
+      <button class="tablinks" onclick="openSection(event, 'AboutMe');checkTab('AboutMe')">
         About Me
       </button>
       <button class="tablinks" onclick="openSection(event, 'Simulations');checkTab('Simulations')">
         Simulations
       </button>
-      <button class="tablinks" onclick="openSection(event, 'WIP');checkTab('WIP')">
+      <button class="tablinks" onclick="openSection(event, 'WIP');checkTab('WIP')" id="defaultOpen">
         WIP
       </button>
     </div>
@@ -102,10 +103,6 @@
         </p>
       </div>
     </div>
-    <script>
-      // Get the element with id="defaultOpen" and click on it
-      document.getElementById("defaultOpen").click();
-    </script>
   </div>
   <div id="Simulations" class="tabcontent">
     <h2>Simulations</h2>
@@ -221,9 +218,19 @@
     <h2>Work in Progress</h2>
     <p style="padding-bottom: 20px;">Want to see what I am working on currently? The simulation or visualizer should be
       on this page. It could range
-      from just an empty canvas to a 99% complete sim. Currently, there is nothing.
+      from just an empty canvas to a 99% complete sim. Currently, I am working on this computational fluid dynamics
+      simulator you see below. The math is all but finalized, with just some iteration bugs to sort out. To play with it
+      simply click and draw a shape on the grid, hit set shape and start. It will take a anywhere from 0.5 - 2 seconds
+      to finish, but you should see the velocity gradient map once it is done. Currently this is pretty bare bones, and
+      I plan on adding more UI elements.
     </p>
+    <canvas id="CFD_game" width="500" height="500"></canvas>
+    <script src="CFD_game.js"></script>
   </div>
+  <script>
+    // Get the element with id="defaultOpen" and click on it
+    document.getElementById("defaultOpen").click();
+  </script>
   <div id="footer">Version: 0.5.1.0</div>
 </body>
 

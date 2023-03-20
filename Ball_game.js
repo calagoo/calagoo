@@ -668,7 +668,7 @@ function closure() {
         dt = 1 / fps * 1000; // milliseconds per frame
 
         // Randomizing
-        if(ballRandomize){
+        if(ballRandomize && (clicked || (ballDrawing && isDragging))){
             rng = 479-411
             sliderVal[0] = Math.random()*rng+411 // range == 10-30
             sliderVal[1] = Math.random()*rng+411 // range == 0-300
@@ -771,7 +771,7 @@ function closure() {
 
         ctx.beginPath()
         ctx.fillStyle = "grey"
-        ctx.roundRect(x, y, w, h, 5)
+        roundRectangle(x, y, w, h, 5)
         ctx.fill()
 
         if (!textBoxPosition) {
@@ -792,7 +792,7 @@ function closure() {
         if (checkClickZone(x, y, w, h) || toggle) {
             ctx.beginPath()
             ctx.fillStyle = "white"
-            ctx.roundRect(x, y, w, h, 5)
+            roundRectangle(x, y, w, h, 5)
             ctx.fill()
             ctx.closePath()
 
@@ -820,6 +820,32 @@ function closure() {
         return ((mouseX > x && mouseX < x + w) && (mouseY > y && mouseY < y + h))
     }
 
+    function roundRectangle(x, y, w, h, r) {
+        // roundRect() does not work on some browsers (early safari and ALL firefox) so I created my own rounded rectangle function 
+        ctx.beginPath()
+        //seg 1
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y)
+        //curve 1
+        ctx.quadraticCurveTo(x + w, y, x + w, y+r);
+
+        //seg 2
+        ctx.lineTo(x + w, y + h - r)
+        //curve 2
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+
+        //seg 3
+        ctx.lineTo(x + r, y + h)
+        //curve 3
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+
+        //seg 4
+        ctx.lineTo(x, y + r)
+        //curve 4
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath()
+        ctx.fill();
+    }
     drawGame();
 }
 closure();
