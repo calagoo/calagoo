@@ -6,6 +6,7 @@
 // add more buttons? ask for ideas?
 // add a noticeable area where it shows it is done
 // think of more todo things hehe
+// continue button for more iterations (+1000?)
 
 
 
