@@ -1008,8 +1008,8 @@ function closure() {
             ctx.fillStyle = "white"
             ctx.font = "14px monospace"
             ctx.fillText("Solution could not converge,", centerX, centerY - 20)
-            ctx.fillText("please wait or reset to try again.", centerX, centerY)
-            ctx.fillText("(Velocity)", centerX, centerY + 20)
+            ctx.fillText("please wait or reset to try again. (Velocity)", centerX, centerY)
+            ctx.fillText("Ensure you have clicked 'Set Shape'", centerX, centerY + 20)
         }
         if (errorText == "pressure") {
             ctx.textAlign = "center"
