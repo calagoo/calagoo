@@ -352,7 +352,7 @@ function closure() {
         loops = round(convertRange(sliderVal[0],410,490,1,3),0)
         ctx.fillStyle = "navy"
         ctx.textAlign = "start"
-        ctx.fillText(`Iteration`,410,235)
+        ctx.fillText(`Interp.`,410,235)
         ctx.fillText(`Loops: ${loops}`,410,248)
         
         

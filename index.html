@@ -44,13 +44,13 @@
     </p>
     <div class="tab">
       <script src="tabs.js"></script>
-      <button class="tablinks" onclick="openSection(event, 'AboutMe');checkTab('AboutMe')">
+      <button class="tablinks" onclick="openSection(event, 'AboutMe');checkTab('AboutMe')" id="defaultOpen">
         About Me
       </button>
       <button class="tablinks" onclick="openSection(event, 'Simulations');checkTab('Simulations')">
         Simulations
       </button>
-      <button class="tablinks" onclick="openSection(event, 'WIP');checkTab('WIP')" id="defaultOpen">
+      <button class="tablinks" onclick="openSection(event, 'WIP');checkTab('WIP')">
         WIP
       </button>
     </div>
@@ -60,8 +60,7 @@
     <h2>About Me</h2>
     <div style="max-width: 1050px; column-gap: 10px;" class="row">
       <div>
-
-        <p style="text-align: justify;">
+        <p style="text-align: left;">
           <!-- I don't know how to add a tab..? please help -->
           &emsp; Hello, I am Robert Rodriguez. I graduated in December 2022 from Arizona State University with a
           bachelor's in aeronautical engineering and started working shortly after. I have been interested in mechanical
@@ -75,13 +74,14 @@
           with a computer that wasn't happy about all of this new CPU stress. <br> &emsp; I have always loved cars and
           racing, especially Formula 1, so I thought going into a field closely related to aerodynamics would be fun. I
           figured that if I combined my love for cars and aircraft, I would have no problem pursuing aerospace
-          engineering. Over the course of my education, I found out that I enjoy more than just aerodynamics but just
+          engineering. Luckily this turned out to be true, and even in times I was struggling I still really enjoyed
+          every subject that I took while at Arizona State. Over the course of my education, I found out that I enjoy
+          more than just aerodynamics but just
           about all parts of aerospace engineering, including flight planning, flight testing, orbits, and geodesy.
         </p>
       </div>
       <div>
-
-        <p style="text-align: justify;">
+        <p style="text-align: left;">
           &emsp; My capstone project was really engaging and entertaining because I really enjoyed what I was doing. The
           project involved designing and simulating a space tourism aircraft capable of taking off and landing on a
           runway and being able to make it above 300,000 feet. This project was a lot of fun. I was involved in most
@@ -103,6 +103,10 @@
         </p>
       </div>
     </div>
+    <script>
+      // Get the element with id="defaultOpen" and click on it
+      document.getElementById("defaultOpen").click();
+    </script>
   </div>
   <div id="Simulations" class="tabcontent">
     <h2>Simulations</h2>
@@ -211,6 +215,43 @@
             onmousemove="PID_mouseMove()"></canvas>
           <script src="PID_game.js"></script>
         </div>
+        <div id="CFD_SIMULATOR" style="padding-bottom: 75px;">
+          <h3 style="text-align: justify;color: rgb(30,60,60); margin: auto;">Computational Fluid Solver</h3>
+          <p style="
+              height: 520px;
+              width: 500px;
+              padding: 20px 0px 20px 0px ;
+              text-align: justify;
+            ">
+            &emsp; This simulator takes fluid dynamics equations and solves. The equations in particular are the
+            Navier-Stokes Equation and the Poisson Pressure Equation. This took many days and nights of studying,
+            especially LorenABarba's Python CFD lessons.
+            <br>
+            &emsp; To use the simulator first draw a shape on the grid, click the
+            "Set Shape" button, and then click start run. Hopefully everything works and the solution should converge
+            within a second or so. After it completes there should be a heat map of X velocity. Feel free to change that
+            to Y velocity, total velocity, or pressure in the lower left dropdown window.
+            <br>
+            &emsp; Next to this dropdown window
+            is the scale showing the coloring of the minimum, maximum, and the average. Another feature I added was a
+            particle visualizer, to use this choose the interpolation loop amount,
+            where the larger the loops the larger the final matrix will become. Click the particle mode to enable it,
+            and then you can choose how many particles you want.
+            <br>
+            &emsp; This program taught and reaffirmed many things about fluid dynamics and coding for me. To ensure all
+            the particles can move we have to check every particle if they are in every mesh square and only change the
+            velocity of the particle by the value of the grid square it is in. With 200 particles on a 41x41 matrix, we
+            must loop 336,200 times per frame to figure out the velocities of all the particles. To fix this I
+            incorporated a hashmap function for each row of the array. This allowed me to bring the loops to only about
+            5000 per frame, and it runs must smoother.
+          </p>
+          <canvas id="CFD_game" width="500" height="500"></canvas>
+          <script src="CFD_game.js"></script>
+          <small style="color: rgb(30,60,60);">NOTE: This simulator is not 100% accurate, nor near it. It does give
+            correct looking results to the cavity-lid problem. Overall I am happy with it. It is hard to balance
+            performance vs entertainment, so I tried to make it as accurate as possible and also able for any computer
+            to run smoothly.</small>
+        </div>
       </div>
     </div>
   </div>
@@ -218,19 +259,15 @@
     <h2>Work in Progress</h2>
     <p style="padding-bottom: 20px;">Want to see what I am working on currently? The simulation or visualizer should be
       on this page. It could range
-      from just an empty canvas to a 99% complete sim. Currently, I am working on this computational fluid dynamics
-      simulator you see below. The math is all but finalized, with just some iteration bugs to sort out. To play with it
-      simply click and draw a shape on the grid, hit set shape and start. It will take a anywhere from 0.5 - 2 seconds
-      to finish, but you should see the velocity gradient map once it is done. I am 99% done with this. Let me know any ideas.
+      from just an empty canvas to a 99% complete sim. Currently, I just finished up the CFD solver shown in the bottom
+      right of the simulation page, go check it out! That took a lot out of me with the dozens of hours to program and
+      debug, so I am going on a Javascript break now. I have many more ideas for simulations in the future so feel free
+      to check back later!
     </p>
-    <canvas id="CFD_game" width="500" height="500"></canvas>
-    <script src="CFD_game.js"></script>
+    <canvas id="InProg" width="500" height="500"></canvas>
+    <script src="InProg.js"></script>
   </div>
-  <script>
-    // Get the element with id="defaultOpen" and click on it
-    document.getElementById("defaultOpen").click();
-  </script>
-  <div id="footer">Version: 0.7.5.0</div>
+  <div id="footer">Version: 0.9.0.0</div>
 </body>
 
 </html>
