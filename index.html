@@ -48,13 +48,13 @@
     </p>
     <div class="tab">
       <script src="tabs.js"></script>
-      <button class="tablinks" onclick="openSection(event, 'AboutMe');checkTab('AboutMe')">
+      <button class="tablinks active" onclick="openSection(event, 'AboutMe');checkTab('AboutMe')" id="defaultOpen">
         About Me
       </button>
       <button class="tablinks" onclick="openSection(event, 'Simulations');checkTab('Simulations')">
         Simulations
       </button>
-      <button class="tablinks" onclick="openSection(event, 'WIP');checkTab('WIP')" id="defaultOpen">
+      <button class="tablinks" onclick="openSection(event, 'WIP');checkTab('WIP')">
         WIP
       </button>
     </div>
@@ -107,6 +107,10 @@
         </p>
       </div>
     </div>
+    <script>
+      // Get the element with id="defaultOpen" and click on it
+      document.getElementById("defaultOpen").click();
+    </script>
   </div>
   <div id="Simulations" class="tabcontent">
     <h2>Simulations</h2>
@@ -266,10 +270,6 @@
     </p>
     <canvas id="InProg" width="500" height="500"></canvas>
     <script src="InProg.js"></script>
-    <script>
-      // Get the element with id="defaultOpen" and click on it
-      document.getElementById("defaultOpen").click();
-    </script>
   </div>
   <div id="footer">Version: 1.0.0.2</div> 
 </body>

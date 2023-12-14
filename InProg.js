@@ -1,3 +1,9 @@
+currentTab = "";
+function checkTab(name){
+    currentTab = name
+    console.log(`Current Tab: ${currentTab}`)
+}
+
 function closure() {
     const canvas = document.getElementById("InProg");
     const ctx = canvas.getContext("2d");

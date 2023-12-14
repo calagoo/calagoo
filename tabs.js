@@ -1,3 +1,9 @@
+currentTab = "";
+function checkTab(name){
+    currentTab = name
+    console.log(`Current Tab: ${currentTab}`);
+  }
+
 function openSection(evt, tabName) {
     // Declare all variables
     var i, tabcontent, tablinks;
@@ -17,5 +23,5 @@ function openSection(evt, tabName) {
     // Show the current tab, and add an "active" class to the button that opened the tab
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
-
-  }
+    console.log(tabName)
+}
