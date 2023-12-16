@@ -1,3 +1,11 @@
+// TODO: 
+// Bounce slider
+// fix white lines being drawn multiple times when bouncing
+// fix moving box being init everytime the shape button goes to it, leading to it going off the screen.
+// have fun! :-)
+
+
+
 currentTab = "";
 function checkTab(name){
     currentTab = name
@@ -16,8 +24,8 @@ function closure() {
             this.a = { x: x1, y: y1 };
             this.b = { x: x2, y: y2 };
             this.type = type
-            this.velX = 0
-            this.velY = 0
+            this.offsetX = 0
+            this.offsetY = 0
         }
 
         show() {
@@ -26,20 +34,18 @@ function closure() {
             ctx.moveTo(this.a.x, this.a.y);
             ctx.lineTo(this.b.x, this.b.y);
             ctx.stroke();
+            ctx.closePath();
         }
-        update(canvasWidth, canvasHeight, seed, avg) {
-            if (this.type == "ext"){
+
+        update() {
+            if (this.type == "ext") {
                 return;
             }
-            
-            this.velX += seed.x * avg.x/1000
-            this.velY += seed.y * avg.y/1000
+            this.a.x += this.offsetX
+            this.b.x += this.offsetX
+            this.a.y += this.offsetY
+            this.b.y += this.offsetY
 
-            // Apply the difference to both endpoints
-            this.a.x += this.velX;
-            this.a.y += this.velY;
-            this.b.x += this.velX;
-            this.b.y += this.velY;
         }
     }
 
@@ -51,6 +57,7 @@ function closure() {
             this.centerY = canvas.height / 2;
             this.calculateRectangle();
             this.raynum = 9;
+            this.avgSpeed = [];
             for (let i = 0; i <= this.raynum; i += 1) {
                 this.rays.push(new Ray({ x:0, y:0 },0,i))
             }
@@ -62,6 +69,7 @@ function closure() {
         
             // Draw the rotating rectangle
             ctx.beginPath();
+            ctx.strokeStyle = "white";
             ctx.lineWidth = 5; // Set the stroke width
             ctx.moveTo(this.rect.x1, this.rect.y1);
             ctx.lineTo(this.rect.x2, this.rect.y2);
@@ -85,7 +93,7 @@ function closure() {
             }
         }
 
-        look(boundaries) {
+        look(boundaries,radarView) {
             for (let ray of this.rays) {
                 let closest = null;
                 let record = Infinity;
@@ -103,21 +111,23 @@ function closure() {
                     }
                 }
 
-                if (closest && isMouseOnCanvas) {
+                if (closest && isMouseOnCanvas && !radarView) {
                     // Draw the initial ray
-                    ctx.beginPath();
-                    ctx.strokeStyle = "white";
-                    ctx.moveTo(ray.pos.x, ray.pos.y);
-                    ctx.lineTo(closest.x, closest.y);
-                    ctx.stroke();
-                    ctx.closePath();
+                    if(ray.bounces == 0){
+                        ctx.beginPath();
+                        ctx.strokeStyle = "white";
+                        ctx.moveTo(ray.pos.x, ray.pos.y);
+                        ctx.lineTo(closest.x, closest.y);
+                        ctx.stroke();
+                        ctx.closePath();
+                    }
                 }
             }
             for (let ray of this.rays) {
                 let closest = null;
                 let record = Infinity;
                 let closestBoundary = null; // Store the closest boundary
-        
+                let ext = false;
                 for (let boundary of boundaries) {
                     const pt = ray.cast(boundary);
                     if (pt) {
@@ -126,13 +136,19 @@ function closure() {
                             record = dist;
                             closest = pt;
                             closestBoundary = boundary;
+                            if (boundary.type == "ext"){
+                                ext = true
+                            }
                         }
                     }
                 }
-
+                
                 if (closest && isMouseOnCanvas) {
+                    if (ext){
+                        continue
+                    }
                     // Check for bounce
-                    if (ray.bounces < ray.max_bounces && ray.bounce(closestBoundary, closest) && closestBoundary.type != "ext") {
+                    if (ray.bounce(closestBoundary, closest) && closestBoundary.type != "ext") {
                         let bouncedRecord = Infinity;
                         let bouncedClosest = null;
                         let bouncedClosestBoundary = null;
@@ -142,7 +158,7 @@ function closure() {
                         for (let boundary of boundaries) {
                             const pt = ray.cast(boundary);
                             const pt2 = ray.cast(dishxy)
-                            if (pt && !pt2) {
+                            if (pt && !pt2 && !radarView) {
                                 let dist = Math.sqrt(Math.pow((pt.x - closest.x), 2) + Math.pow((pt.y - closest.y), 2));
                                 if (dist < bouncedRecord) {
                                     bouncedRecord = dist;
@@ -170,6 +186,18 @@ function closure() {
                                 bouncedClosestBoundary = dishxy;
                                 // Draw the bounced ray
                                 if (bouncedClosest) {
+                                    let dist = Math.sqrt(Math.pow((dishxyPoint.x - closest.x), 2) + Math.pow((dishxyPoint.y - closest.y), 2));
+                                    let distEstimate = ((record + dist))
+                                    ray.dist.push(distEstimate)
+                                    if (ray.dist.length >= 2){
+                                        this.avgSpeed.push((ray.dist[1] - ray.dist[0])/0.016666666);
+                                        if(this.avgSpeed.length >2){
+                                            this.avgSpeed.shift()
+                                        }
+                                        ray.dist.shift();
+                                    }
+                                    // continue
+                                    // console.log(pt)
                                     ctx.save();
                                     ctx.beginPath();
                                     ctx.strokeStyle = "red";
@@ -225,7 +253,7 @@ function closure() {
             this.mag = 100 // for drawing only
             this.index = index
             this.bounces = 0 // amount of bounces
-            this.max_bounces = 2
+            this.dist = [];
         }
 
         lookAt(x, y) {
@@ -286,10 +314,6 @@ function closure() {
         }
 
         bounce(boundary,pt) {
-            if (this.bounces > this.max_bounces) {
-                return;
-            }
-        
             // Calculate normal to the boundary
             let boundaryDir = { x: boundary.b.x - boundary.a.x, y: boundary.b.y - boundary.a.y };
             let normal = { x: -boundaryDir.y, y: boundaryDir.x };
@@ -413,29 +437,42 @@ function closure() {
         mousePressed = true;
         // Checking if shape box is changed
         // left triangle
-        if (mouseX > 330 && mouseX < 345 && mouseY > 430 && mouseY < 460) {
+        if (mouseX > 320 && mouseX < 335 && mouseY > 420 && mouseY < 450) {
             wallIndex -= 1;
             if (wallIndex < 0) {
                 wallIndex += wallKeys.length; // Wrap around to the end of the array
             }
         } 
         // right triangle
-        if (mouseX > 455 && mouseX < 470 && mouseY > 430 && mouseY < 460) {
+        if (mouseX > 465 && mouseX < 480 && mouseY > 420 && mouseY < 450) {
             wallIndex += 1;
         }
         wallIndex = wallIndex % wallKeys.length; // Ensure the index stays within bounds
+        
+        // Checking if radarView is checked        roundRectangle(24,450,20,20,7)
+
+        if (mouseX > 24 && mouseX < 44 && mouseY > 450 && mouseY < 470) {
+            if (radarView){
+                radarView = false
+            }else{
+                radarView = true
+            }
+            // radarView = radarView ? true : false
+        }
+
     });
     
     canvas.addEventListener('mouseup', function () {
         mousePressed = false;
     });
 
-    let wallSet = {fighter:[], circle:[],triangle:[],moving:[]}
+    let wallSet = {fighter:[], circle:[],triangle:[],invTriangle:[],moving:[]}
     let wallIndex = 0;
     let wallKeys = Object.keys(wallSet);
     let dish;
     let sliderRays;
-
+    let radarView = false;
+    
     function setup() {
 
         // fighter jet test
@@ -471,21 +508,18 @@ function closure() {
         wallSet.triangle.push(new Boundary(canvas.width/2 + 50,canvas.height/2+20,canvas.width/2 - 50,canvas.height/2+20))
         wallSet.triangle.push(new Boundary(canvas.width/2 + 50,canvas.height/2+20,canvas.width/2-1,canvas.height/2-50))
         wallSet.triangle.push(new Boundary(canvas.width/2-1,canvas.height/2 - 50 ,canvas.width/2 - 50,canvas.height/2+20))
+        // Inverse 
+        wallSet.invTriangle.push(new Boundary(canvas.width/2 + 50,canvas.height/2+20,canvas.width/2 - 50,canvas.height/2+20))
+        wallSet.invTriangle.push(new Boundary(canvas.width/2 + 50,canvas.height/2+20,canvas.width/2-1,canvas.height/2-50))
 
-        // Moving circle
-
-        for (let i = 0; i < numSegments; i++) {
-            // Calculate start point
-            let x1 = canvas.width/2 + radius * Math.cos(angleStep * i);
-            let y1 = canvas.height/2 + radius * Math.sin(angleStep * i);
-    
-            // Calculate end point
-            let x2 = canvas.width/2 + radius * Math.cos(angleStep * (i + 1));
-            let y2 = canvas.height/2 + radius * Math.sin(angleStep * (i + 1));
-    
-            // Create a boundary for this segment
-            wallSet.moving.push(new Boundary(x1, y1, x2, y2));
-        }
+        // Moving rect
+        // Create a boundary for this segment
+        wallSet.moving.push(new Boundary(canvas.width/2-25,canvas.height/2-25,canvas.width/2+25,canvas.height/2-25));
+        wallSet.moving.push(new Boundary(canvas.width/2+25,canvas.height/2-25,canvas.width/2+25,canvas.height/2+25));
+        wallSet.moving.push(new Boundary(canvas.width/2-25,canvas.height/2+25,canvas.width/2+25,canvas.height/2+25));
+        wallSet.moving.push(new Boundary(canvas.width/2-25,canvas.height/2+25,canvas.width/2-25,canvas.height/2-25));
+        
+        
         // Exterior walls
         for (let shape in wallSet){
             wallSet[shape].push(new Boundary(0,0,canvas.width,0,"ext")) // top
@@ -496,49 +530,70 @@ function closure() {
 
         // ray = new Ray(100, 200);
         dish = new Dish(100,200);
-        sliderRays = new Slider(25,450,100,0)
+        sliderRays = new Slider(25,425,100,0)
     }
+    
+    let wallMoveIndex = 0;
+    let i = 0;
 
+    let last_mouseX;
+    let last_mouseY;
+    let ticks = 0;
+    let relSpeed = 0;
+    let bounces = 2;
     function drawGame() {
         setTimeout(drawGame, 16.666); // Approximately 60 frames per second
         clearScreen();
-        seed = {x: Math.random()-0.5, y: Math.random()-0.5};
-        for (let wall of wallSet[wallKeys[wallIndex]]){
-            wall.show();
-            if (wallKeys[wallIndex] == "moving"){
-                let totalX = 0;
-                let totalY = 0;
-                let wallCount = wallSet[wallKeys[wallIndex]].length;
-                
-                for (let wall of wallSet[wallKeys[wallIndex]]) {
-                    let midX = (wall.a.x + wall.b.x) / 2;
-                    let midY = (wall.a.y + wall.b.y) / 2;
-                
-                    totalX += midX;
-                    totalY += midY;
-                }
-                
-                let avg = {x: totalX / wallCount,y:totalY / wallCount};
-                wall.update(canvas.width, canvas.height, seed, avg);
+        i += Math.PI/100
+        i = i%(Math.PI*2)
+        for (let wall of wallSet[wallKeys[wallIndex]]) {
+            if(!radarView){
+                wall.show();
             }
-        }
+            if (wallKeys[wallIndex] == "moving") {
+                wall.offsetX = 4*(Math.sin(i))**3
+                wall.offsetY = 0
+                wall.update()
+            } else {
+                wall.offsetX = 0
+                wall.offsetY = 0
+            }
+        }    
+        wallMoveIndex += 1;
         dish.show();
-        dish.look(wallSet[wallKeys[wallIndex]]);
-        dish.raynum = Math.round(sliderRays.value*40 + 10) 
-        dish.updateRays()
-        dish.update(mouseX,mouseY)
-        bottomBar()
-        
+        for (let b = 0; b<bounces; b++){
+            dish.look(wallSet[wallKeys[wallIndex]],radarView);
+        }
+        dish.raynum = Math.round(sliderRays.value*40 + 10);
+        if (ticks%2){
+            dish.updateRays(mouseX,mouseY,last_mouseX,last_mouseY);
+        }
+        dish.update(mouseX,mouseY);
+        last_mouseX = mouseX;
+        last_mouseY = mouseY;
+        bottomBar();
+
+        relSpeed = Math.round(sum(dish.avgSpeed)/dish.avgSpeed.length);
+        if (isNaN(relSpeed)){
+            relSpeed = 0;
+        }
+
+        radarView = radarViewCheckbox(radarView)
         sliderRays.update(mouseX,mouseY,mousePressed)
         sliderRays.draw(ctx)
-
+        
         wallIndex = shapeBox(Object.keys(wallSet),wallIndex)
-
+        
         ctx.font = '20px Arial'; // Font size and type
         ctx.fillStyle = 'white'; // Text color
+        ctx.textAlign = 'left'; // Alignment of text
+        ctx.fillText("Relative Speed: " + relSpeed, 295, 30);
+        ctx.fillText("Radar Sim", 10, 30);
         ctx.textAlign = 'center'; // Alignment of text
-        ctx.fillText("Rays:", 50, 430);
-        ctx.fillText(dish.raynum, 155, 457);
+        ctx.fillText("Beams", 200, 432);
+        ctx.fillText(dish.raynum, 155, 432);
+        ticks ++
+        ticks %= 60
     }
 
     function clearScreen() {
@@ -550,31 +605,44 @@ function closure() {
         // Draw left arrow
         ctx.fillStyle = "white"
         ctx.beginPath();
-        ctx.moveTo(345, 460);
-        ctx.lineTo(330, 445);
-        ctx.lineTo(345, 430);
+        ctx.moveTo(335, 450);
+        ctx.lineTo(320, 435);
+        ctx.lineTo(335, 420);
         ctx.fill();
         
         // Draw right arrow
         ctx.beginPath();
-        ctx.moveTo(455, 460);
-        ctx.lineTo(470, 445);
-        ctx.lineTo(455, 430);
+        ctx.moveTo(465, 450);
+        ctx.lineTo(480, 435);
+        ctx.lineTo(465, 420);
         ctx.fill();
         
         // Draw box
-        ctx.strokeRect(350, 430, 100, 30);
+        ctx.strokeRect(340, 420, 120, 30);
         
         ctx.font = '20px Arial'; // Font size and type
         ctx.fillStyle = 'white'; // Text color
         ctx.textAlign = 'center'; // Alignment of text
-
         // let shapeString = 'Circle'
-        
         let shapeString = keys[index]
-        ctx.fillText(shapeString.charAt(0).toUpperCase() + shapeString.slice(1), 350+100/2, 451);
+        ctx.fillText(shapeString.charAt(0).toUpperCase() + shapeString.slice(1), 350+100/2, 441);
         return index
     }
+
+    function radarViewCheckbox(radarView){
+        // Draw box
+        if (radarView){
+            ctx.fillStyle = "red"
+        }else{
+            ctx.fillStyle = "white"
+        }
+        roundRectangle(24,450,20,20,7)
+        ctx.font = '20px Arial'; // Font size and type
+        ctx.fillStyle = 'white'; // Text color
+        ctx.textAlign = 'left'; // Alignment of text
+        ctx.fillText("Radar View: "+ radarView, 50,468);
+        return radarView;
+        }
 
     function bottomBar() {
         ctx.save()
@@ -586,6 +654,47 @@ function closure() {
         ctx.stroke()
         ctx.closePath()
         ctx.restore()
+
+        // Adding a top bar too
+        ctx.save()
+        ctx.beginPath()
+        ctx.fillStyle = "black";
+        ctx.strokeStyle = "white"
+        ctx.rect(0, 0, canvas.width, 50);
+        ctx.fill()
+        ctx.stroke()
+        ctx.closePath()
+        ctx.restore()
+    }
+    function roundRectangle(x, y, w, h, r) {
+        // roundRect() does not work on some browsers (early safari and ALL firefox) so I created my own rounded rectangle function 
+        ctx.beginPath()
+        //seg 1
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y)
+        //curve 1
+        ctx.quadraticCurveTo(x + w, y, x + w, y+r);
+
+        //seg 2
+        ctx.lineTo(x + w, y + h - r)
+        //curve 2
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+
+        //seg 3
+        ctx.lineTo(x + r, y + h)
+        //curve 3
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+
+        //seg 4
+        ctx.lineTo(x, y + r)
+        //curve 4
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath()
+        ctx.fill();
+    }
+
+    function sum(arr) {
+        return arr.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
     }
 
     setup();
