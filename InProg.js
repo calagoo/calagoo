@@ -16,6 +16,8 @@ function closure() {
             this.a = { x: x1, y: y1 };
             this.b = { x: x2, y: y2 };
             this.type = type
+            this.velX = 0
+            this.velY = 0
         }
 
         show() {
@@ -25,6 +27,20 @@ function closure() {
             ctx.lineTo(this.b.x, this.b.y);
             ctx.stroke();
         }
+        update(canvasWidth, canvasHeight, seed, avg) {
+            if (this.type == "ext"){
+                return;
+            }
+            
+            this.velX += seed.x * avg.x/1000
+            this.velY += seed.y * avg.y/1000
+
+            // Apply the difference to both endpoints
+            this.a.x += this.velX;
+            this.a.y += this.velY;
+            this.b.x += this.velX;
+            this.b.y += this.velY;
+        }
     }
 
     class Dish {
@@ -33,19 +49,10 @@ function closure() {
             this.rays = []
             this.centerX = canvas.width / 2;
             this.centerY = canvas.height / 2;
-            this.angle = Math.atan2((this.pos.y - this.centerY), this.pos.x - this.centerX);
-            this.dist = Math.sqrt(Math.pow((this.centerX - this.pos.x), 2) + Math.pow((this.centerY - this.pos.y), 2));
-            this.dist -= 20;
-            this.rectW = 50
-            this.rect = {
-                x1: (this.dist * Math.cos(this.angle)) + this.centerX  + (this.rectW * Math.cos(this.angle + Math.PI/2)),
-                y1: (this.dist * Math.sin(this.angle)) + this.centerY  + (this.rectW * Math.sin(this.angle + Math.PI/2)),
-                x2: (this.dist * Math.cos(this.angle)) + this.centerX  + (this.rectW * Math.cos(this.angle - Math.PI/2)),
-                y2: (this.dist * Math.sin(this.angle)) + this.centerY  + (this.rectW * Math.sin(this.angle - Math.PI/2))
-            }
-            this.raynum = 15
-            for (let i = 0; i < this.raynum; i += 1) {
-                this.rays.push(new Ray({ x:this.rect.x1*i/this.raynum, y:this.rect.y1*i/this.raynum },i*(Math.PI/180),i))
+            this.calculateRectangle();
+            this.raynum = 9;
+            for (let i = 0; i <= this.raynum; i += 1) {
+                this.rays.push(new Ray({ x:0, y:0 },0,i))
             }
         }
         
@@ -71,6 +78,13 @@ function closure() {
             ctx.restore(); // Restore the context to its original state
         }
 
+        updateRays() {
+            this.rays = [];
+            for (let i = 0; i <= this.raynum; i += 1) {
+                this.rays.push(new Ray({ x:0, y:0 },0,i))
+            }
+        }
+
         look(boundaries) {
             for (let ray of this.rays) {
                 let closest = null;
@@ -88,7 +102,8 @@ function closure() {
                         }
                     }
                 }
-                if (closest) {
+
+                if (closest && isMouseOnCanvas) {
                     // Draw the initial ray
                     ctx.beginPath();
                     ctx.strokeStyle = "white";
@@ -96,17 +111,38 @@ function closure() {
                     ctx.lineTo(closest.x, closest.y);
                     ctx.stroke();
                     ctx.closePath();
+                }
+            }
+            for (let ray of this.rays) {
+                let closest = null;
+                let record = Infinity;
+                let closestBoundary = null; // Store the closest boundary
         
+                for (let boundary of boundaries) {
+                    const pt = ray.cast(boundary);
+                    if (pt) {
+                        let dist = Math.sqrt(Math.pow((pt.x - ray.pos.x), 2) + Math.pow((pt.y - ray.pos.y), 2));
+                        if (dist < record) {
+                            record = dist;
+                            closest = pt;
+                            closestBoundary = boundary;
+                        }
+                    }
+                }
+
+                if (closest && isMouseOnCanvas) {
                     // Check for bounce
                     if (ray.bounces < ray.max_bounces && ray.bounce(closestBoundary, closest) && closestBoundary.type != "ext") {
                         let bouncedRecord = Infinity;
                         let bouncedClosest = null;
                         let bouncedClosestBoundary = null;
-        
+                        const dishxy = { a: { x: this.rect.x1, y: this.rect.y1 }, b: { x: this.rect.x2, y: this.rect.y2 }};
+                        
                         // Check for intersection with each boundary
                         for (let boundary of boundaries) {
                             const pt = ray.cast(boundary);
-                            if (pt) {
+                            const pt2 = ray.cast(dishxy)
+                            if (pt && !pt2) {
                                 let dist = Math.sqrt(Math.pow((pt.x - closest.x), 2) + Math.pow((pt.y - closest.y), 2));
                                 if (dist < bouncedRecord) {
                                     bouncedRecord = dist;
@@ -125,7 +161,6 @@ function closure() {
                             }
                         }
         
-                        const dishxy = { a: { x: this.rect.x1, y: this.rect.y1 }, b: { x: this.rect.x2, y: this.rect.y2 }};
                         const dishxyPoint = ray.cast(dishxy);
                         if (dishxyPoint) {
                             let dishxyDist = Math.sqrt(Math.pow((dishxyPoint.x - closest.x), 2) + Math.pow((dishxyPoint.y - closest.y), 2));
@@ -152,28 +187,33 @@ function closure() {
             }
         }
         
-        
-        update(x,y) {
-            this.pos.x = x
-            this.pos.y = y
-
+        calculateRectangle() {
             this.angle = Math.atan2((this.pos.y - this.centerY), this.pos.x - this.centerX);
             this.dist = Math.sqrt(Math.pow((this.centerX - this.pos.x), 2) + Math.pow((this.centerY - this.pos.y), 2));
-            this.dist -= 20;
+            this.dist -= 20; // Adjust the distance if necessary
+            this.rectW = 50;
+
             this.rect = {
                 x1: (this.dist * Math.cos(this.angle)) + this.centerX  + (this.rectW * Math.cos(this.angle + Math.PI/2)),
                 y1: (this.dist * Math.sin(this.angle)) + this.centerY  + (this.rectW * Math.sin(this.angle + Math.PI/2)),
                 x2: (this.dist * Math.cos(this.angle)) + this.centerX  + (this.rectW * Math.cos(this.angle - Math.PI/2)),
                 y2: (this.dist * Math.sin(this.angle)) + this.centerY  + (this.rectW * Math.sin(this.angle - Math.PI/2))
-            }
+            };
+        }
 
-
-            for (let ray of this.rays) {
-                ray.pos.x = (this.rect.x1 + ray.index/this.raynum * (this.rect.x2 - this.rect.x1))
-                ray.pos.y = (this.rect.y1 + ray.index/this.raynum * (this.rect.y2 - this.rect.y1))
-                ray.dir.x = -Math.cos(this.angle)
-                ray.dir.y = -Math.sin(this.angle)
-                ray.bounces = 0
+        update(x,y) {
+            // Check if the mouse is inside the canvas
+            if (isMouseOnCanvas) {
+                this.pos.x = x;
+                this.pos.y = y;
+                this.calculateRectangle();
+                for (let ray of this.rays) {
+                    ray.pos.x = (this.rect.x1 + ray.index/this.raynum * (this.rect.x2 - this.rect.x1))
+                    ray.pos.y = (this.rect.y1 + ray.index/this.raynum * (this.rect.y2 - this.rect.y1))
+                    ray.dir.x = -Math.cos(this.angle);
+                    ray.dir.y = -Math.sin(this.angle);
+                    ray.bounces = 0;
+                }
             }
         }
     }
@@ -185,7 +225,7 @@ function closure() {
             this.mag = 100 // for drawing only
             this.index = index
             this.bounces = 0 // amount of bounces
-            this.max_bounces = 1
+            this.max_bounces = 2
         }
 
         lookAt(x, y) {
@@ -217,7 +257,7 @@ function closure() {
             const y1 = boundary.a.y;
             const x2 = boundary.b.x;
             const y2 = boundary.b.y;
-
+            
             // Line segment 2
             const x3 = this.pos.x;
             const y3 = this.pos.y;
@@ -263,29 +303,139 @@ function closure() {
             let dot = 2 * (this.dir.x * normal.x + this.dir.y * normal.y);
             this.dir.x -= dot * normal.x;
             this.dir.y -= dot * normal.y;
-        
+
             // Set the ray's position to the point of reflection
             this.pos.x = pt.x;
             this.pos.y = pt.y;
         
+            // Move the ray's position by 1 unit in its facing direction, this stops it from hitting the same wall after bouncing
+            this.pos.x += this.dir.x;
+            this.pos.y += this.dir.y;
+
             // Mark the ray as bounced
             this.bounces += 1;
             return true
         }
     }
 
-    let mouseX = 0;
-    let mouseY = 0;
+    class Slider {
+        constructor(x, y, w, h) {
+            this.x = x;
+            this.y = y;
+            this.width = w === 0 ? 2 : w; // Ensure a minimum width for vertical sliders
+            this.height = h === 0 ? 2 : h; // Ensure a minimum height for horizontal sliders
+            this.isVertical = w === 0;
+            this.value = 0; // Initial value
+            this.isDragging = false; // Flag to track if the handle is being dragged
+        }
+    
+        update(mouseX, mouseY, mousePressed) {
+            if (mousePressed && this.isMouseOver(mouseX, mouseY)) {
+                this.isDragging = true;
+            } else if (!mousePressed) {
+                this.isDragging = false;
+            }
+    
+            if (this.isDragging) {
+                if (this.isVertical) {
+                    // Calculate the value for a vertical slider
+                    this.value = (mouseY - this.y) / this.height;
+                } else {
+                    // Calculate the value for a horizontal slider
+                    this.value = (mouseX - this.x) / this.width;
+                }
+    
+                // Clamp the value between 0 and 1
+                this.value = Math.max(0, Math.min(1, this.value));
+            }
+        }
+    
+        isMouseOver(mouseX, mouseY) {
+            // Calculate handle position
+            let handleX = this.isVertical ? this.x - this.width * 2.5 : this.x + this.value * this.width;
+            let handleY = this.isVertical ? this.y + this.value * this.height : this.y - this.height * 5;
+            let handleWidth = this.isVertical ? this.width * 5 : this.width / 10;
+            let handleHeight = this.isVertical ? this.height / 10 : this.height * 10;
+    
+            // Check if the mouse is over the handle
+            return mouseX >= handleX && mouseX <= handleX + handleWidth &&
+                   mouseY >= handleY && mouseY <= handleY + handleHeight;
+        }
+    
+        draw(ctx) {
+            // Draw the slider
+            ctx.save();
+            ctx.fillStyle = 'lightgray';
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+    
+            // Draw the slider handle
+            let handlePos;
+            if (this.isVertical) {
+                handlePos = this.y + this.value * this.height;
+                ctx.fillRect(this.x - this.width * 2.5, handlePos, this.width * 5, this.height / 10); // Handle for vertical slider
+            } else {
+                handlePos = this.x + this.value * this.width;
+                ctx.fillRect(handlePos, this.y - this.height * 5, this.width / 10, this.height * 10); // Handle for horizontal slider
+            }
+    
+            ctx.restore();
+        }
+    
+        getValue() {
+            return this.value;
+        }
+    }
+      
+
+
+    let mouseX = -1;
+    let mouseY = -1;
     canvas.addEventListener('mousemove', function (event) {
         var rect = canvas.getBoundingClientRect();
         mouseX = event.clientX - rect.left;
         mouseY = event.clientY - rect.top;
     });
 
-    let wallSet = {fighter:[], circle:[]}
-    let selectedShape = "fighter"
-    let ray;
+    isMouseOnCanvas = false;
+    // Event listener for mouseenter
+    canvas.addEventListener('mouseenter', function () {
+        isMouseOnCanvas = true;
+    });
+
+    // Event listener for mouseleave
+    canvas.addEventListener('mouseleave', function () {
+        isMouseOnCanvas = false;
+    });
+
+    let mousePressed = false;
+
+    canvas.addEventListener('mousedown', function () {
+        mousePressed = true;
+        // Checking if shape box is changed
+        // left triangle
+        if (mouseX > 330 && mouseX < 345 && mouseY > 430 && mouseY < 460) {
+            wallIndex -= 1;
+            if (wallIndex < 0) {
+                wallIndex += wallKeys.length; // Wrap around to the end of the array
+            }
+        } 
+        // right triangle
+        if (mouseX > 455 && mouseX < 470 && mouseY > 430 && mouseY < 460) {
+            wallIndex += 1;
+        }
+        wallIndex = wallIndex % wallKeys.length; // Ensure the index stays within bounds
+    });
+    
+    canvas.addEventListener('mouseup', function () {
+        mousePressed = false;
+    });
+
+    let wallSet = {fighter:[], circle:[],triangle:[],moving:[]}
+    let wallIndex = 0;
+    let wallKeys = Object.keys(wallSet);
     let dish;
+    let sliderRays;
+
     function setup() {
 
         // fighter jet test
@@ -300,7 +450,7 @@ function closure() {
         wallSet.fighter.push(new Boundary(canvas.width/2+40,canvas.height/2+5,canvas.width/2+50,canvas.height/2))
 
         // circle
-        const numSegments = 50
+        const numSegments = 25
         const radius = 25
         let angleStep = Math.PI * 2 / numSegments;
 
@@ -317,7 +467,26 @@ function closure() {
             wallSet.circle.push(new Boundary(x1, y1, x2, y2));
         }
 
-        // exterior walls
+        // Triangle
+        wallSet.triangle.push(new Boundary(canvas.width/2 + 50,canvas.height/2+20,canvas.width/2 - 50,canvas.height/2+20))
+        wallSet.triangle.push(new Boundary(canvas.width/2 + 50,canvas.height/2+20,canvas.width/2-1,canvas.height/2-50))
+        wallSet.triangle.push(new Boundary(canvas.width/2-1,canvas.height/2 - 50 ,canvas.width/2 - 50,canvas.height/2+20))
+
+        // Moving circle
+
+        for (let i = 0; i < numSegments; i++) {
+            // Calculate start point
+            let x1 = canvas.width/2 + radius * Math.cos(angleStep * i);
+            let y1 = canvas.height/2 + radius * Math.sin(angleStep * i);
+    
+            // Calculate end point
+            let x2 = canvas.width/2 + radius * Math.cos(angleStep * (i + 1));
+            let y2 = canvas.height/2 + radius * Math.sin(angleStep * (i + 1));
+    
+            // Create a boundary for this segment
+            wallSet.moving.push(new Boundary(x1, y1, x2, y2));
+        }
+        // Exterior walls
         for (let shape in wallSet){
             wallSet[shape].push(new Boundary(0,0,canvas.width,0,"ext")) // top
             wallSet[shape].push(new Boundary(canvas.width,0,canvas.width,canvas.height,"ext")) // right
@@ -327,22 +496,96 @@ function closure() {
 
         // ray = new Ray(100, 200);
         dish = new Dish(100,200);
+        sliderRays = new Slider(25,450,100,0)
     }
 
     function drawGame() {
         setTimeout(drawGame, 16.666); // Approximately 60 frames per second
         clearScreen();
-        for (let wall of wallSet[selectedShape]){
+        seed = {x: Math.random()-0.5, y: Math.random()-0.5};
+        for (let wall of wallSet[wallKeys[wallIndex]]){
             wall.show();
+            if (wallKeys[wallIndex] == "moving"){
+                let totalX = 0;
+                let totalY = 0;
+                let wallCount = wallSet[wallKeys[wallIndex]].length;
+                
+                for (let wall of wallSet[wallKeys[wallIndex]]) {
+                    let midX = (wall.a.x + wall.b.x) / 2;
+                    let midY = (wall.a.y + wall.b.y) / 2;
+                
+                    totalX += midX;
+                    totalY += midY;
+                }
+                
+                let avg = {x: totalX / wallCount,y:totalY / wallCount};
+                wall.update(canvas.width, canvas.height, seed, avg);
+            }
         }
         dish.show();
-        dish.look(wallSet[selectedShape]);
+        dish.look(wallSet[wallKeys[wallIndex]]);
+        dish.raynum = Math.round(sliderRays.value*40 + 10) 
+        dish.updateRays()
         dish.update(mouseX,mouseY)
+        bottomBar()
+        
+        sliderRays.update(mouseX,mouseY,mousePressed)
+        sliderRays.draw(ctx)
+
+        wallIndex = shapeBox(Object.keys(wallSet),wallIndex)
+
+        ctx.font = '20px Arial'; // Font size and type
+        ctx.fillStyle = 'white'; // Text color
+        ctx.textAlign = 'center'; // Alignment of text
+        ctx.fillText("Rays:", 50, 430);
+        ctx.fillText(dish.raynum, 155, 457);
     }
 
     function clearScreen() {
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    
+    function shapeBox(keys,index) {
+        // Draw left arrow
+        ctx.fillStyle = "white"
+        ctx.beginPath();
+        ctx.moveTo(345, 460);
+        ctx.lineTo(330, 445);
+        ctx.lineTo(345, 430);
+        ctx.fill();
+        
+        // Draw right arrow
+        ctx.beginPath();
+        ctx.moveTo(455, 460);
+        ctx.lineTo(470, 445);
+        ctx.lineTo(455, 430);
+        ctx.fill();
+        
+        // Draw box
+        ctx.strokeRect(350, 430, 100, 30);
+        
+        ctx.font = '20px Arial'; // Font size and type
+        ctx.fillStyle = 'white'; // Text color
+        ctx.textAlign = 'center'; // Alignment of text
+
+        // let shapeString = 'Circle'
+        
+        let shapeString = keys[index]
+        ctx.fillText(shapeString.charAt(0).toUpperCase() + shapeString.slice(1), 350+100/2, 451);
+        return index
+    }
+
+    function bottomBar() {
+        ctx.save()
+        ctx.beginPath()
+        ctx.fillStyle = "black";
+        ctx.strokeStyle = "white"
+        ctx.rect(0, 400, canvas.width, canvas.height);
+        ctx.fill()
+        ctx.stroke()
+        ctx.closePath()
+        ctx.restore()
     }
 
     setup();
