@@ -1,0 +1,41 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px;
+}
+
+#terminal {
+    background-color: black;
+    color: limegreen;
+    padding: 20px;
+    height: 100%;
+}
+
+.input-line {
+    display: flex;
+}
+
+.prompt {
+    margin-right: 7px;
+}
+
+#input {
+    background-color: black;
+    color: limegreen;
+    border: none;
+    outline: none;
+    width: 100%;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px;
+}
+
+.link-title {
+    padding-bottom: 20px;
+}
+
+.linkButton {
+    color: limegreen;
+    text-decoration: none;
+}   
