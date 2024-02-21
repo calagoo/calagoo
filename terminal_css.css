@@ -1,4 +1,6 @@
 body, html {
+    background-color: black;
+    color: limegreen;
     height: 100%;
     margin: 0;
     overflow: hidden;
@@ -6,11 +8,39 @@ body, html {
     font-size: 16px;
 }
 
+/* width */
+::-webkit-scrollbar {
+    width: 20px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #000000;
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #696969;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #ededed;
+  }
+  
 #terminal {
     background-color: black;
     color: limegreen;
+    height: 80%;
     padding: 20px;
-    height: 100%;
+    overflow-y: scroll;
+}
+
+#heading {
+    background-color: black;
+    color: limegreen;
+    padding: 20px;
+    font-family: 'Courier New', Courier, monospace;
 }
 
 .input-line {

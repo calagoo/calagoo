@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="terminal_css.css">
 </head>
 <body>
-    <div id="terminal">
+    <div id="heading">
         <div id="terminalTitle">
             <h1>Robert Rodriguez</h1>
         </div>
@@ -19,10 +19,17 @@
             <a class="linkButton" href="https://calagoo.github.io/resume.html"
               target="_blank">RESUME</a>
         </div>
-        
+        <div id="buffer">_________________________________________</div>
+        <div id="buffer">&nbsp;</div>
+    </div>
+    <div id="terminal">
         <div id="output"></div>
-        <div id="inputLine" class="input-line">
-            <div class="prompt">$</div><div><input type="text" id="input" autofocus></div>
+        <div id="inputLine" class="input-line" width = "100%">
+            <div class="prompt">$</div>
+            <div style="
+            width: 100%";>
+                <input type="text" id="input" autofocus>
+            </div>
         </div>
     </div>
     <script src="terminal_js.js"></script>
