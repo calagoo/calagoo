@@ -48,13 +48,13 @@
     </p>
     <div class="tab">
       <script src="tabs.js"></script>
-      <button class="tablinks active" onclick="openSection(event, 'AboutMe');checkTab('AboutMe')" id="defaultOpen">
+      <button class="tablinks" onclick="openSection(event, 'AboutMe');checkTab('AboutMe')">
         About Me
       </button>
       <button class="tablinks" onclick="openSection(event, 'Simulations');checkTab('Simulations')">
         Simulations
       </button>
-      <button class="tablinks" onclick="openSection(event, 'WIP');checkTab('WIP')">
+      <button class="tablinks active" onclick="openSection(event, 'WIP');checkTab('WIP')" id="defaultOpen">
         WIP
       </button>
     </div>
@@ -65,7 +65,6 @@
     <div style="max-width: 1050px; column-gap: 10px;" class="row">
       <div>
         <p style="text-align: left;">
-          <!-- I don't know how to add a tab..? please help -->
           &emsp; Hello, I am Robert Rodriguez. I graduated in December 2022 from Arizona State University with a
           bachelor's in aeronautical engineering and started working shortly after. I have been interested in mechanical
           objects since I was very young. I figured out my aerospace-related passions towards the end of high school due
@@ -107,10 +106,6 @@
         </p>
       </div>
     </div>
-    <script>
-      // Get the element with id="defaultOpen" and click on it
-      document.getElementById("defaultOpen").click();
-    </script>
   </div>
   <div id="Simulations" class="tabcontent">
     <h2>Simulations</h2>
@@ -302,6 +297,10 @@
     <canvas id="InProg" width="500" height="500"></canvas>
     <script src="InProg.js"></script>
   </div>
+  <script>
+    // Get the element with id="defaultOpen" and click on it
+    document.getElementById("defaultOpen").click();
+  </script>
   <div id="footer">Version: 1.0.0.2</div> 
 </body>
 

@@ -6,7 +6,7 @@ rgb(30,60,60)
 
 */
 html {
-  background-color: #0a192f;
+  background-color: rgb(10, 25, 47);
   display: flex;
   flex-direction: column;
   justify-content: top;
