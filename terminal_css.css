@@ -1,71 +1,93 @@
-body, html {
-    background-color: black;
-    color: limegreen;
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 16px;
+body,
+html {
+  background-color: black;
+  color: limegreen;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 16px;
 }
 
 /* width */
 ::-webkit-scrollbar {
-    width: 20px;
-  }
-  
-  /* Track */
-  ::-webkit-scrollbar-track {
-    background: #000000;
-  }
-  
-  /* Handle */
-  ::-webkit-scrollbar-thumb {
-    background: #696969;
-  }
-  
-  /* Handle on hover */
-  ::-webkit-scrollbar-thumb:hover {
-    background: #ededed;
-  }
-  
+  width: 20px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #696969;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #ededed;
+}
+
 #terminal {
-    background-color: black;
-    color: limegreen;
-    height: 80%;
-    padding: 20px;
-    overflow-y: scroll;
+  background-color: black;
+  color: limegreen;
+  height: 80%;
+  padding: 20px;
+  overflow-y: scroll;
 }
 
 #heading {
-    background-color: black;
-    color: limegreen;
-    padding: 20px;
-    font-family: 'Courier New', Courier, monospace;
+  background-color: black;
+  color: limegreen;
+  padding: 20px;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .input-line {
-    display: flex;
+  display: flex;
 }
 
+#divMain {
+  display: none;
+}
+#divAboutme {
+  display: none;
+}
+#divProject {
+  display: none;
+}
+#divContact {
+  display: none;
+}
+#divResume {
+  display: none;
+}
+
+.green-link {
+  color: limegreen;
+}
+
+
 .prompt {
-    margin-right: 7px;
+  margin-right: 7px;
 }
 
 #input {
-    background-color: black;
-    color: limegreen;
-    border: none;
-    outline: none;
-    width: 100%;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 16px;
+  background-color: black;
+  color: limegreen;
+  border: none;
+  outline: none;
+  width: 100%;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 16px;
 }
 
 .link-title {
-    padding-bottom: 20px;
+  padding-bottom: 20px;
 }
 
 .linkButton {
-    color: limegreen;
-    text-decoration: none;
-}   
+  color: limegreen;
+  text-decoration: none;
+}

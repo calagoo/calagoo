@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terminal Website</title>
     <link rel="stylesheet" href="terminal_css.css">
 </head>
+
 <body>
     <div id="heading">
         <div id="terminalTitle">
@@ -13,25 +15,88 @@
         </div>
         <div id="link-title" style="padding-bottom: 20px;">
             <a class="linkButton" href="https://github.com/calagoo" target="_blank">
-              GITHUB</a>
+                GITHUB</a>
             <a class="linkButton" href="http://mailto:robbierodiguez98@gmail.com"
-              target="_blank">ROBBIERODRIGUEZ98@GMAIL.COM</a>
-            <a class="linkButton" href="https://calagoo.github.io/resume.html"
-              target="_blank">RESUME</a>
+                target="_blank">ROBBIERODRIGUEZ98@GMAIL.COM</a>
+            <a class="linkButton" href="https://calagoo.github.io/resume.html" target="_blank">RESUME</a>
         </div>
         <div id="buffer">_________________________________________</div>
         <div id="buffer">&nbsp;</div>
     </div>
     <div id="terminal">
+        <div id="divMain">
+            <h1>Welcome to My Portfolio</h1>
+            <p>Hello, I'm Robert Rodriguez, I have a passion for coding, security, aerospace and much more! This portfolio showcases my work, projects, and the skills I've developed over my career. Thank you for visiting!</p>
+        </div>
+        <div id="divAboutme">
+            <p>Hello, I'm Robert Rodriguez, an Aerospace Engineer with a Bachelor's from Arizona State University, class of December 2022. My journey into engineering began in high school, fueled by a fascination for mechanical objects and a love for physics and 3D design. Early exposure to SOLIDWORKS and flow simulation ignited my passion for aerodynamics, leading me to explore the dynamics of air and water across various objects.</p>
+            <p>My affinity for cars and racing, particularly Formula 1, steered me towards aerospace engineering—a field where my interests in aerodynamics, flight planning, and testing converge. Throughout my education, I found joy in the diverse aspects of aerospace, from orbits to geodesy.</p>
+            <p>The highlight of my academic career was my capstone project, where I led the design and simulation of a space tourism aircraft, achieving sustained flight above 300,000 feet with 14 passengers. This project not only honed my leadership skills but also deepened my expertise in flight testing and simulations.</p>
+            <p>Professionally, I began as an intern in GNSS receiver testing, where my intrigue for data analysis led me to Python. This skill advancement transitioned me into a Test Automation Engineer role, focusing on optimizing testing procedures and enhancing my understanding of geodesy and GNSS.</p>
+            <p>Beyond engineering, my passions extend to motorcycles, CAD designing, and outdoor adventures like snowboarding and rock climbing, embodying my love for adrenaline and nature.</p>
+        </div>
+        <div id="divContact">
+            <h2>Contact Information</h2>
+            <p><strong>Email:</strong> robbierodiguez98@gmail.com</p>
+            <p><strong>LinkedIn:</strong> <a class="green-link" href="https://www.linkedin.com/in/robertrodriguez98/">LinkedIn/robertrodriguez</a></p>
+            <p><strong>Address:</strong> Danville, Ca</p>
+        </div>
+        <div id="divProject">
+            <h2>Selected Projects</h2>
+            <ul>
+                <li>
+                    <h3>Project 1: [Project Name]</h3>
+                    <p>[Brief description of the project, technologies used, and your role in it.]</p>
+                </li>
+                <li>
+                    <h3>Project 2: [Project Name]</h3>
+                    <p>[Brief description of the project, technologies used, and your role in it.]</p>
+                </li>
+                <!-- Add more projects as needed -->
+            </ul>
+        </div>
+        <div id="divResume">
+            <h2>Resume</h2>
+            <h3>Education</h3>
+            <p><strong>Aerospace Engineer</strong>, Arizona State University - 2021</p>
+            <h3>Experience</h3>
+            <ul>
+                <li>
+                    <h4>Test Automation Engineer - Topcon</h4>
+                    <p>2yrs 1mnth</p>
+                    <p>Used dual-band GNSS technology to identify ionospheric delays, leading to the development of a comprehensive heatmap depicting ionospheric disturbances.</p>
+                    <p>Conducted rigorous testing of positioning and auto-driving tractor systems, documenting procedures and outcomes on Jira with precision and clarity for future reference.</p>
+                    <p>Enhanced internal GNSS receiver testing software, utilizing PyQT and Git for feature upgrades and maintenance, improving efficiency and capabilities.</p>
+                    <p>Managed a team of data engineering interns, focusing on troubleshooting and problem-solving in both hardware and software domains.</p>
+                </li>
+                <li>
+                    <h4>3D Modeling Contractor - Crystal Communications</h4>
+                    <p>June 2021 - July 2021</p>
+                    <p>Crafted intricate replacement parts for handheld radios and other devices using Solidworks, demonstrating precision and attention to detail in design.</p>
+                    <p>Utilized the Solidworks assembly feature to construct and visualize complex assemblies, presenting sophisticated models to clients that showcased functionality and aesthetic appeal.</p>
+                </li>                
+                <!-- Add more experiences as needed -->
+            </ul>
+            <h3>Technical Skills</h3>
+            <ul>
+                <li>Programming: VBA, SQL (1yr) | HTML/CSS/JavaScript (2yrs) | Python (3yrs) | MATLAB (4yrs)</li>
+                <li>CAD: Solidworks (FEA), AutoCAD, Ansys (Fluent) (2yrs) | Solidworks (5+yrs)</li>
+                <li>Operating Systems: Linux, Raspberry Pi (2yrs) | Windows (5+yrs)</li>
+                <li>Microsoft Office: PowerPoint, Teams (3yrs) | Word, Excel (5+yrs)</li>
+                <li>Fabrication: Hand/Power Tools, Prototyping, Designing (5+yrs)</li>
+            </ul>
+        </div>
+        <div id="buffer">&nbsp;</div>
         <div id="output"></div>
-        <div id="inputLine" class="input-line" width = "100%">
+        <div id="inputLine" class="input-line" width="100%">
             <div class="prompt">$</div>
             <div style="
-            width: 100%";>
+            width: 100%" ;>
                 <input type="text" id="input" autofocus>
             </div>
         </div>
     </div>
     <script src="terminal_js.js"></script>
 </body>
+
 </html>

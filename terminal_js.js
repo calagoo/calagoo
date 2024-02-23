@@ -107,34 +107,37 @@ function catCommand(args) {
     const output = document.getElementById('output');
     const newLine = document.createElement('div');
 
+    const divMain = document.getElementById('divMain');
+    const divAboutme = document.getElementById('divAboutme');
+    const divContact = document.getElementById('divContact');
+    const divProject = document.getElementById('divProject');
+    const divResume = document.getElementById('divResume');
+    divMain.style.display = 'none';
+    divAboutme.style.display = 'none';
+    divContact.style.display = 'none';
+    divProject.style.display = 'none';
+    divResume.style.display = 'none';
     
     if (args === 'main_page.txt') {
-        newLine.textContent = 'Welcome to my personal website!';
-        
+        divMain.style.display = 'block';
     }
     else if (args === 'about_me.txt') {
-        newLine.textContent = 'I am a software developer.';
-        
+        divAboutme.style.display = 'block';
     }
     else if (args === 'contact.txt') {
-        newLine.textContent = 'You can contact me at: robbierodriguez98@gmail.com';
-        
+        divContact.style.display = 'block';
     }
     else if (args === 'projects.txt') {
-        newLine.textContent = 'These are my projects:';
-        
+        divProject.style.display = 'block';
     }
     else if (args === 'resume.txt') {
-        newLine.textContent = 'This is my resume:';
-        
+        divResume.style.display = 'block';
     }
     else {
         newLine.textContent = `File not found: ${args}`;
-        
     }
     if (args === '' || args === 'help') {
         newLine.textContent = 'Usage: cat <filename>';
-        
     }
 
     output.appendChild(newLine);
@@ -319,18 +322,15 @@ function processCommand(command, args) {
     switch(command) {
         case 'echo':
             newLine.textContent = args;
-            
             break;
         case 'help':
             newLine.textContent = 'Available commands: big, cat, clear, echo, help, ls';
-            
             break;
         case 'clear':
             output.innerHTML = '';
             return;
         case 'ls':
             newLine.textContent = 'main_page.txt  about_me.txt  contact.txt  projects.txt  resume.txt';
-            
             break;
         case 'cat':
             catCommand(args);
@@ -341,19 +341,15 @@ function processCommand(command, args) {
         case 'cd':
             textOptions = ['Where are you trying to go...','What is this?', 'I am not a real terminal!', 'I am a website!', 'One day I will implement this...', 'command not found: cd']
             newLine.textContent = textOptions[Math.floor(Math.random() * textOptions.length)];
-            
             break;
         case 'pwd':
             newLine.textContent = '/home/website';
-            
             break;
         case 'whoami':
             newLine.textContent = 'visitor';
-            
             break;
         case 'uname':
             newLine.textContent = 'FakeOS';
-            
             break;
         case 'rm':
             rmCommand(args);
@@ -361,11 +357,9 @@ function processCommand(command, args) {
         case 'sudo':
             textOptions = ['Sudo?? Try "please"', 'Sudo, more like su-don\'t!', 'Please try again later','You don\'t even have the password..']
             newLine.textContent = textOptions[Math.floor(Math.random() * textOptions.length)];
-            
             break;
         case 'please':
             newLine.textContent = 'I didn\'t think you would try this... but no.';
-            
             break;
         case 'info':
             infoCommand(args);
