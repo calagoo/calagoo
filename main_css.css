@@ -1,21 +1,30 @@
-/* Colors Used Lightest to darkest
-rgb(230,225,233)
-rgb(172,170,175)
-rgb(30,60,60) 
+/* CSS Reset */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, caption {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  font-size: 100%;
+  vertical-align: baseline;
+  background: transparent;
+}
 
-
-*/
 html {
-  background-color: #0a192f;
+  background-color: #465f3e;
   display: flex;
   flex-direction: column;
-  justify-content: top;
   align-items: center;
   min-height: 100%;
+
+  /* background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M10,100 L10,45 S10,30 25,30 L75,30 S90,30 90,15 L90,0" stroke="%23FFD700" stroke-width="2" fill="none"/><path d="M15,100 L15,45 S15,35 25,35 L75,35 S95,35 95,15 L95,0" stroke="%23FFD700" stroke-width="2" fill="none"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100%;
+  background-attachment: relative; */
 }
 
 body {
-  background-color: rgb(172,170,175);
+  background-color: rgb(255, 246, 229);
   display: flex;
   margin-top: 0px;
   margin-bottom: 0px;
@@ -29,14 +38,14 @@ body {
 }
 
 a {
-  color: rgb(30,60,60);
+  color: #465f3e;
   padding: 0em 0em;
   text-decoration: none;
   text-transform: uppercase;
 }
 
 .link-container {
-  background-color: #5a5a5a;
+  /* background-color: #FFD700; */
   width: 100%;
   color: rgb(230,225,233);
   font-family: Verdana, Geneva, Tahoma, sans-serif;
@@ -44,15 +53,15 @@ a {
 }
 
 .header-container {
-  background-color: #5a5a5a;
+  background: linear-gradient(to bottom, rgb(255, 240, 101) 0%,rgba(241,218,54,1) 49%,rgba(241,218,54,1) 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+
+  /* background-color: #FFD700; */
   width: 100%;
-  color: rgb(230,225,233);
+  color: #465f3e
 }
 
 
 h1 {
-  background-color: #5A5A5A;
-  color: rgb(230,225,233);
   padding: 10px 0%;
   width: 100%;
   margin-top: 0%;
@@ -63,7 +72,7 @@ h1 {
 
 h2 {
   /* background-color: #5A5A5A; */
-  color: rgb(30,60,60);
+  color: #465f3e;
   padding: 50px 0px 0px 0px;
   width: 100%;
   margin: 0px;
@@ -73,13 +82,13 @@ h2 {
 }
 
 h3{
+  color: #465f3e;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-
 }
 
 .subHeader {
-  background-color: #5A5A5A;
-  color: rgb(230,225,233);
+  /* background-color: #FFD700; */
+  /* color: #465f3e; */
   padding: 0px 0%;
   width: 100%;
   text-decoration: none;
@@ -89,7 +98,7 @@ h3{
 }
 
 p {
-  color: rgb(30,60,60);
+  color: #465f3e;
   padding: 50px 20px;
   margin-top: auto;
   text-decoration: none;
@@ -101,7 +110,7 @@ p {
 }
 
 figcaption {
-  color: rgb(30,60,60);
+  color: #465f3e;
   padding: 0em 0em;
   text-decoration: none;
   text-align: center;
@@ -127,14 +136,14 @@ canvas {
   bottom: 0;
   text-align: right;
   width: 100%;
-  color: #5A5A5A;
+  color: #959595;
 }
 
 .linkButton
 {
-    background-color: #5a5a5a;
+    /* background-color: #FFD700; */
     border: none;
-    color: white;
+    color: #465f3e;
     padding: 16px 32px;
     text-align: center;
     text-decoration: none;
@@ -147,8 +156,8 @@ canvas {
   }
 
   .linkButton:hover {
-    background-color: rgb(172, 170, 175);
-    color: rgb(30,60,60);
+    background-color: #465f3e;
+    color: #FFD700;
   }
 
 
@@ -169,7 +178,7 @@ canvas {
   align-items: center;
   justify-content: center;
   display: flex;
-  background-color: #5A5A5A;
+  /* background-color: #FFD700; */
 }
 
 /* Style the buttons that are used to open the tab content */
@@ -181,20 +190,20 @@ canvas {
   cursor: pointer;
   padding: 14px 10%;
   transition: 0.3s;
-  color: rgb(230,225,233);
+  color: #465f3e;
   box-shadow: inset black 0px 2px 2px;
 
 }
 
 /* Change background color of buttons on hover */
 .tab button:hover {
-  background-color: rgb(172,170,175);
+  background-color: rgb(255, 246, 229);
   color: rgb(30,60,60);
 }
 
 /* Create an active/current tablink class */
 .tab button.active {
-  background-color: rgb(172,170,175);
+  background-color: rgb(255, 246, 229);
   color: rgb(30,60,60);
 }
 
@@ -204,6 +213,26 @@ canvas {
   display: none;
   border-top: none;
   animation: fadeEffect 0.5s;
+}
+
+.background {
+  position: relative;
+  top: 0px;
+  left: -40px;
+  width: 200%;
+  height: 200%;
+  
+  z-index: -1;
+
+  max-width: 1550px;
+
+}
+
+.background-svg1 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: 1550px;
 }
 
 /* Go from zero to full opacity */

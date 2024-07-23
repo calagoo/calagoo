@@ -12,7 +12,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Robert Rodriguez</title>
-
   <link rel="stylesheet" href="main_css.css">
   <script>
     var siteWidth = 1280;
@@ -27,19 +26,27 @@
 </head>
 
 <body>
-  <div class="link-container" style="text-align: center">
-    <nav data-hover-hint="nav">
-      <div class="link-title">
-        <a class="linkButton" href="https://github.com/calagoo" target="_blank">
-          GITHUB</a>
-        <a class="linkButton" href="http://mailto:robbierodiguez98@gmail.com"
-          target="_blank">ROBBIERODRIGUEZ98@GMAIL.COM</a>
-        <a class="linkButton" href="https://calagoo.github.io/resume.html"
-          target="_blank">RESUME</a>
-      </div>
-    </nav>
+  <div class="background">
+    <svg class="background-svg1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 70" preserveAspectRatio = "none">
+      <path d="M5,55 L5,45 S5,30 25,30 L75,30 S94,30 94,15 L94,0" stroke="#FFD700" stroke-width="2" fill="none"/>
+      <path d="M10,55 L10,45 S10,35 25,35 L75,35 S99,35 99,15 L99,0" stroke="#FFD700" stroke-width="2" fill="none"/>
+      <path d="M5,55 S5,69 20,69" stroke="#FFD700" stroke-width="2" fill="none"/>
+      <path d="M10,55 S10,64 20,64" stroke="#FFD700" stroke-width="2" fill="none"/>
+    </svg>  
   </div>
   <div class="header-container">
+    <div class="link-container" style="text-align: center">
+      <nav data-hover-hint="nav">
+        <div class="link-title">
+          <a class="linkButton" href="https://github.com/calagoo" target="_blank">
+            GITHUB</a>
+          <a class="linkButton" href="http://mailto:robbierodiguez98@gmail.com"
+            target="_blank">ROBBIERODRIGUEZ98@GMAIL.COM</a>
+          <a class="linkButton" href="https://calagoo.github.io/resume.html"
+            target="_blank">RESUME</a>
+        </div>
+      </nav>
+    </div>
     <h1 contenteditable="false" data-text-keypath="customizations.masthead.title.text">
       Robert Rodriguez Jr
     </h1>
@@ -131,7 +138,7 @@
       <div style="max-width: 500px;">
         <div id="ORBIT_SIMULATOR" style="padding-bottom: 75px;">
 
-          <h3 style="text-align: justify; color: rgb(30,60,60); margin: auto;">Orbits</h3>
+          <h3 style="text-align: justify; margin: auto;">Orbits</h3>
           <p style="
             height: 520px;
             width: 500px;
@@ -159,7 +166,7 @@
           <script src="orbit_game.js"></script>
         </div>
         <div id="BALL_SIMULATOR" style="padding-bottom: 75px;">
-          <h3 style="text-align: justify;color: rgb(30,60,60); margin: auto;">Collisions</h3>
+          <h3 style="text-align: justify; margin: auto;">Collisions</h3>
           <p style="
               height: 520px;
               width: 500px;
@@ -188,7 +195,7 @@
           <script src="Ball_game.js"></script>
         </div>
         <div id="RADAR_SIMULATOR" style="padding-bottom: 75px;">
-          <h3 style="text-align: justify;color: rgb(30,60,60); margin: auto;">Collisions</h3>
+          <h3 style="text-align: justify; margin: auto;">Radar Simulator</h3>
           <p style="
               height: 520px;
               width: 500px;
@@ -221,7 +228,7 @@
       </div>
       <div style="max-width: 500px;">
         <div id="PID_SIMULATOR" style="padding-bottom: 75px;">
-          <h3 style="text-align: justify;color: rgb(30,60,60); margin: auto;">Autopilot</h3>
+          <h3 style="text-align: justify; margin: auto;">Autopilot</h3>
           <p style="
               height: 520px;
               width: 500px;
@@ -251,7 +258,7 @@
           <script src="PID_game.js"></script>
         </div>
         <div id="CFD_SIMULATOR" style="padding-bottom: 75px;">
-          <h3 style="text-align: justify;color: rgb(30,60,60); margin: auto;">Computational Fluid Solver</h3>
+          <h3 style="text-align: justify; margin: auto;">Computational Fluid Solver</h3>
           <p style="
               height: 520px;
               width: 500px;
@@ -291,6 +298,11 @@
     </div>
   </div>
   <div id="WIP" class="tabcontent">
+    <style>
+      #InProg {
+        margin-bottom: 100px;
+      }
+    </style>
     <h2>Work in Progress</h2>
     <p style="padding-bottom: 20px;">Want to see what I am working on currently? The simulation or visualizer should be
       on this page. It could range
@@ -302,7 +314,6 @@
     <canvas id="InProg" width="500" height="500"></canvas>
     <script src="InProg.js"></script>
   </div>
-  <div id="footer">Version: 1.0.0.2</div> 
+  <div id="footer">Version: 1.2.0</div> 
 </body>
-
 </html>
