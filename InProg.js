@@ -241,7 +241,7 @@ function closure() {
 
                 //check if pawn is on starting rank
                 if (this.color == "white"){
-                    if (pos >= 15){
+                    if (pos > 15){
                         if (offset == "forward2"){
                             continue
                         }
@@ -276,8 +276,6 @@ function closure() {
             }
         }
         move(pos, target_pos, number_to_edge, bitboards){
-            
-
             // if(number_to_edge.numWest < (pos + (target_pos-pos))%8){
             //     return
             // }
@@ -540,6 +538,10 @@ function closure() {
                 // 2.1. Get piece
                 
                 piece = board.getPiece(mouse_board_coord)
+                if (piece[0] == null){ // No piece on square
+                    select_square = [-1,-1]
+                    target_square = [-1,-1]
+                }
                 
                 if (select_square[0]+select_square[1] >= 0 && target_square[0]+target_square[1] >= 0){
                     piece = board.getPiece(select_square)
