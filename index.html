@@ -297,22 +297,26 @@
       </div>
     </div>
   </div>
-  <div id="WIP" class="tabcontent">
-    <style>
+  <div id="WIP" class="tabcontent" style="padding-bottom: 600px;">
+    <!-- <style>
       #InProg {
-        margin-bottom: 100px;
+        
       }
-    </style>
+    </style> -->
     <h2>Work in Progress</h2>
-    <p style="padding-bottom: 20px;">Want to see what I am working on currently? The simulation or visualizer should be
-      on this page. It could range
-      from just an empty canvas to a 99% complete sim. Currently, I just finished up the CFD solver shown in the bottom
-      right of the simulation page, go check it out! That took a lot out of me with the dozens of hours to program and
-      debug, so I am going on a Javascript break now. I have many more ideas for simulations in the future so feel free
-      to check back later!
+    <p style="padding-bottom: 50px;">My latest and current project is creating a heatmap for rental units in San Francisco.
+      Check my github for how it works, but it simply uses the RentCast API to call the data and then post-processes it into
+      neighborhoods using geoJson. The heatmap is then created using folium. I am hoping this will help me (and potentially others)
+      to find a rental unit in San Francisco.
     </p>
-    <canvas id="InProg" width="500" height="500"></canvas>
-    <script src="InProg.js"></script>
+    <!-- Add Link, justify in middle-->
+    <div style="text-align: center;">
+      <a href="maps/sf_rent_heatmap.html" target="_blank" style="text-decoration: underline; color: blue; font-size: 24px;">
+          San Francisco Rental Heatmap
+      </a>
+    </div>
+    <!-- <canvas id="InProg" width="500" height="500"></canvas> -->
+    <!-- <script src="InProg.js"></script> -->
   </div>
   <div id="footer">Version: 1.2.0</div> 
 </body>
